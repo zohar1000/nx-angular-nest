@@ -9,5 +9,7 @@ if (environment.production) {
 }
 
 platformBrowserDynamic()
-  .bootstrapModule(AppModule)
+  // .bootstrapModule(AppModule, { ngZone: 'noop', ngZoneEventCoalescing: true })
+  .bootstrapModule(AppModule, { ngZoneEventCoalescing: true })
+  // .bootstrapModule(AppModule)
   .catch((err) => console.error(err));

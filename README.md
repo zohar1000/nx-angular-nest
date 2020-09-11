@@ -1,9 +1,26 @@
-A starter kit for nx workspace having sample app built with angular and nest.
+A base project using angular and nest in a nx workspace.
+
+The project contains a sample app.
 
 Angular version 10.0.11 and nest version 7.4.2.
 
-Start by running: nx serve sample-app (or just: nx serve)
 <br/>
+
+#### Angular optimization:
+running without zone.js
+using ngZoneEventCoalescing to reduce change detection cycles
+
+#### Server:
+configuration is made by using json5 file which enables comments
+
+#### Serving
+serve the server: nx serve api<br/>
+serve the app: nx serve sample-app (or just: nx serve)
+
+#### Building
+for prod: nx build \<project\> --prod
+
+
 
 # About Nx Workspace
 

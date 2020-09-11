@@ -21,11 +21,11 @@
             "polyfills": "apps/sample-app/src/polyfills.ts",
             "tsConfig": "apps/sample-app/tsconfig.app.json",
             "aot": true,
-            "assets": [
-              "apps/sample-app/src/favicon.ico",
-              "apps/sample-app/src/assets"
+            "assets": [],
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "apps/sample-app/src/styles.scss"
             ],
-            "styles": ["apps/sample-app/src/styles.scss"],
             "scripts": []
           },
           "configurations": {
@@ -84,7 +84,10 @@
               "apps/sample-app/tsconfig.app.json",
               "apps/sample-app/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!apps/sample-app/**/*"]
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/sample-app/**/*"
+            ]
           }
         },
         "test": {
@@ -119,8 +122,13 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": ["apps/sample-app-e2e/tsconfig.e2e.json"],
-            "exclude": ["**/node_modules/**", "!apps/sample-app-e2e/**/*"]
+            "tsConfig": [
+              "apps/sample-app-e2e/tsconfig.e2e.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/sample-app-e2e/**/*"
+            ]
           }
         }
       }
@@ -138,7 +146,7 @@
             "outputPath": "dist/apps/api",
             "main": "apps/api/src/main.ts",
             "tsConfig": "apps/api/tsconfig.app.json",
-            "assets": ["apps/api/src/assets"]
+            "assets": []
           },
           "configurations": {
             "production": {
@@ -147,8 +155,8 @@
               "inspect": false,
               "fileReplacements": [
                 {
-                  "replace": "apps/api/src/environments/environment.ts",
-                  "with": "apps/api/src/environments/environment.prod.ts"
+                  "replace": "apps/sample-app/src/environments/environment.ts",
+                  "with": "apps/sample-app/src/environments/environment.prod.ts"
                 }
               ]
             }
@@ -167,7 +175,10 @@
               "apps/api/tsconfig.app.json",
               "apps/api/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!apps/api/**/*"]
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/api/**/*"
+            ]
           }
         },
         "test": {
@@ -193,7 +204,10 @@
               "libs/api-interfaces/tsconfig.lib.json",
               "libs/api-interfaces/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!libs/api-interfaces/**/*"]
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/api-interfaces/**/*"
+            ]
           }
         },
         "test": {

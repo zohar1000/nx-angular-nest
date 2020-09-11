@@ -15,9 +15,13 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
+    "suppressImplicitAnyIndexErrors": true,
     "paths": {
       "@nx-angular-nest/api-interfaces": ["libs/api-interfaces/src/index.ts"]
     }
+  },
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true
   },
   "exclude": ["node_modules", "tmp"]
 }

@@ -1,6 +1,5 @@
-import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Message } from '@nx-angular-nest/api-interfaces';
+import { Component, ViewChild, ViewChildren } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'nx-angular-nest-root',
@@ -8,6 +7,14 @@ import { Message } from '@nx-angular-nest/api-interfaces';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  hello$ = this.http.get<Message>('/api/hello');
-  constructor(private http: HttpClient) {}
+  @ViewChild('sidenav') sidenav;
+  isSideNavOpened = true;
+
+  constructor(private router: Router) {}
+
+  onClickSidenavItem(item = '') {
+    this.sidenav.close();
+    this.router.navigate([item]).then();
+  }
+
 }
