@@ -1,4 +1,6 @@
 .container {
+  display: flex;
+  flex-direction: column;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -7,8 +9,12 @@
 
   .sidenav {
     width: 200px;
-    .logo {
-      cursor: pointer;
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      .logo {
+        cursor: pointer;
+      }
     }
     .content {
       background: yellow;

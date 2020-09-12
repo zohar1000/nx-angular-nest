@@ -18,7 +18,7 @@ import { ConfigService } from './shared/services/config.service';
   providers: [
     AppService,
     { provide: APP_INTERCEPTOR, useClass: TransformInterceptor }
-  ],
+  ]
 })
 export class AppModule {
   constructor(mongoService: ZMongoService, configService: ConfigService) {

@@ -1,5 +1,5 @@
-import { Component, ViewChild, ViewChildren } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, ViewChild } from '@angular/core';
+import { ActivationEnd, Router } from '@angular/router';
 
 @Component({
   selector: 'nx-angular-nest-root',
@@ -8,13 +8,20 @@ import { Router } from '@angular/router';
 })
 export class AppComponent {
   @ViewChild('sidenav') sidenav;
-  isSideNavOpened = true;
+  isSideNavOpened = false;
+  isFullPage;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) {
+    this.router.events.subscribe(e => {
+      if (e instanceof ActivationEnd) {
+        this.isFullPage = e.snapshot && e.snapshot.data ? e.snapshot.data.isFullPage : false;
+      }
+    });
+  }
 
-  onClickSidenavItem(item = '') {
+  onClickSidenavItem(path = '') {
     this.sidenav.close();
-    this.router.navigate([item]).then();
+    this.router.navigate([path]).then();
   }
 
 }

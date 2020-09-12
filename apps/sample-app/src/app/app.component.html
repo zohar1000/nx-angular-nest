@@ -1,18 +1,20 @@
-<mat-sidenav-container class="container" [hasBackdrop]="true">
+<router-outlet *ngIf="isFullPage"></router-outlet>
+
+<mat-sidenav-container *ngIf="!isFullPage" class="container" [hasBackdrop]="true">
   <mat-sidenav #sidenav class="sidenav" mode="side" [(opened)]="isSideNavOpened">
     <mat-toolbar class="toolbar">
       <div class="logo" (click)="onClickSidenavItem()">Logo</div>
       <mat-icon (click)="sidenav.close()">close</mat-icon>
     </mat-toolbar>
     <div class="content">
-<!--      <a [routerLink]="['user']">User</a>-->
+      <div (click)="onClickSidenavItem('login')">Login</div>
       <div (click)="onClickSidenavItem('user')">User</div>
     </div>
   </mat-sidenav>
 
   <mat-sidenav-content class="main">
     <mat-toolbar class="header">
-      <mat-icon *ngIf="!sidenav.opened" (click)="sidenav.toggle()">menu</mat-icon>
+      <mat-icon *ngIf="!sidenav.opened" (click)="sidenav.open()">menu</mat-icon>
       <div class="title">Header</div>
     </mat-toolbar>
     <router-outlet></router-outlet>

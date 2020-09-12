@@ -1,13 +1,15 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialDesignModule } from './material-design.module';
 
 const modules = [
+  // angular
   CommonModule,
   FormsModule,
-  // ReactiveFormsModule,
+  ReactiveFormsModule,
 
+  // app
   MaterialDesignModule
 ]
 

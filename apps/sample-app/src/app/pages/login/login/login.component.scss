@@ -1,0 +1,35 @@
+@import 'variables';
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  height: 100vh;
+  background: $full-page-background-color;
+}
+
+.mat-form-field {
+  width: 100%;
+  min-width: 300px;
+}
+
+mat-card-title,
+mat-card-content {
+  display: flex;
+  justify-content: center;
+}
+
+.error {
+  //padding: 16px;
+  //width: 300px;
+  //color: white;
+  //background-color: red;
+  color: red;
+  font-weight: lighter;
+}
+
+.button {
+  display: flex;
+  justify-content: flex-end;
+}
