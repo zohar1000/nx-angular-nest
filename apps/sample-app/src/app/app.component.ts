@@ -1,5 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivationEnd, Router } from '@angular/router';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 @Component({
   selector: 'nx-angular-nest-root',
@@ -11,12 +12,14 @@ export class AppComponent {
   isSideNavOpened = false;
   isFullPage;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private spinnerService: NgxUiLoaderService) {
     this.router.events.subscribe(e => {
       if (e instanceof ActivationEnd) {
         this.isFullPage = e.snapshot && e.snapshot.data ? e.snapshot.data.isFullPage : false;
       }
     });
+
+    // this.spinnerService.start();
   }
 
   onClickSidenavItem(path = '') {

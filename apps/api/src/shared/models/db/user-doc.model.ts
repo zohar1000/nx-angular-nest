@@ -1,9 +1,9 @@
 export interface UserDoc {
   _id?: number;
   status: number;
+  email: string;
   firstName: string;
   lastName: string;
-  email: string;
   role: string;
   lastLoginTime: number;
   password: {
