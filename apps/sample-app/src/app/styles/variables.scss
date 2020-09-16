@@ -1,1 +1,16 @@
 $full-page-background-color: #eee;
+
+$primary-color: cyan;
+$menu-item-hover-bg-color: rgba(0, 0, 0, 0.25);
+
+$header-height: 8rem; //    84px; // 5rem;
+$main-content-padding-horizontal: 1rem;
+$main-content-padding-vertical: 2rem;
+
+$default-main-vertical-padding-vertical: 2rem;
+$default-main-vertical-padding-horizontal: 1rem;
+$default-main-vertical-padding-top: $default-main-vertical-padding-vertical;
+$default-main-vertical-padding-bottom: $default-main-vertical-padding-vertical;
+$default-main-vertical-padding-left: $default-main-vertical-padding-horizontal;
+$default-main-vertical-padding-right: $default-main-vertical-padding-horizontal;
+

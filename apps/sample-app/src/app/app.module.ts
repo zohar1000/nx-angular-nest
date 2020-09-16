@@ -31,7 +31,7 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
     BrowserModule,
     HttpClientModule,
     NgxUiLoaderModule.forRoot(ngxUiLoaderConfig),
-    ToastrModule.forRoot({timeOut: 3000}),
+    ToastrModule.forRoot({ timeOut: 3000 }),
 
     // app
     AppRoutingModule,

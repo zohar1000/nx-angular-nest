@@ -1,4 +1,5 @@
 <app-login-form
+  [ngRouterOutletComm]="{ type: 'child', sender: sendToParentEmitter }"
   [errorMessage$]="errorMessage$"
   (submitEmitter)="onSubmit($event)">
 </app-login-form>

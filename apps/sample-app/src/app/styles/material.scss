@@ -1,0 +1,92 @@
+
+//.mat-form-field {
+//  width: 24rem !important; // #69f0ae !important;
+//  font-size: 1rem !important;
+//}
+
+//.mat-form-field-label {
+//  color: cyan !important;
+//}
+
+// form field underline color when typing
+//.mat-form-field.mat-focused .mat-form-field-ripple {
+//  background-color: cyan !important; // #69f0ae !important;
+//}
+
+// input text color
+//.mat-form-field, .mat-select-value-text {
+//  color: white !important;
+//}
+
+//.mat-form-field-underline {
+//  background-color: #666 !important;  // black !important; // change black with your color
+//}
+
+.mat-form-field.ng-dirty.ng-invalid .mat-form-field-label,
+.mat-form-field.ng-dirty.ng-invalid .mat-form-field-ripple {
+  color: red !important;
+}
+
+.mat-checkbox {
+  font-size: 1rem !important;
+}
+
+.mat-dialog-content {
+  font-size: 1.2rem !important;
+}
+
+//.mat-form-field-infix {
+//  font-size: 1.1rem !important;
+//}
+
+.material-icons {
+  font-size: 1.8rem !important;
+}
+
+.mat-dialog-container {
+  background: #e0e0e0 !important;
+
+  .mat-dialog-content {
+    color: black !important;
+  }
+}
+
+.mat-menu-item {
+  display: flex !important;
+  align-items: center !important;
+  //font-size: 1.3rem !important;
+
+  i {
+    margin-right: 0.5rem;
+  }
+
+/*  &:hover {
+    background: $menu-item-hover-bg-color !important;
+    color: $primary-color;
+  }*/
+}
+
+.mat-paginator {
+  background: #333333 !important;
+  font-size: 1rem !important;
+
+  .mat-paginator-container {
+    .mat-paginator-page-size-select {
+      width: 4rem !important;
+
+      .mat-select-trigger {
+        font-size: 1rem !important;
+      }
+    }
+    .mat-form-field-wrapper {
+      width: 4rem !important;
+    }
+    .mat-button-base {
+      width: 2.5rem !important;
+
+      .mat-paginator-icon {
+        height: 2rem;
+      }
+    }
+  }
+}

@@ -17,18 +17,21 @@
       }
     }
     .content {
-      background: yellow;
       display: block;
-      height: 500px;
     }
   }
 
   .main {
     .header {
       display: inline-flex;
+      align-items: center;
       justify-content: space-between;
-      .title {
-        margin-left: 1rem;
+      .header-menu {
+        display: inline-flex;
+        align-items: center;
+        .title {
+          margin-left: 1rem;
+        }
       }
     }
   }

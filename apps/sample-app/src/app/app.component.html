@@ -1,4 +1,4 @@
-<router-outlet *ngIf="isFullPage"></router-outlet>
+<router-outlet *ngIf="isFullPage" [ngRouterOutletComm]="{ type: 'parent', receiver: onChildEvent.bind(this) }"></router-outlet>
 
 <mat-sidenav-container *ngIf="!isFullPage" class="container" [hasBackdrop]="true">
   <mat-sidenav #sidenav class="sidenav" mode="side" [(opened)]="isSideNavOpened">
@@ -7,20 +7,27 @@
       <mat-icon (click)="sidenav.close()">close</mat-icon>
     </mat-toolbar>
     <div class="content">
-      <div (click)="onClickSidenavItem('login')">Login</div>
-      <div (click)="onClickSidenavItem('user')">User</div>
+      <button mat-menu-item (click)="onClickSidenavItem('login')"><i class="material-icons">exit_to_app</i>Login</button>
+      <button mat-menu-item (click)="onClickSidenavItem('user')"><i class="material-icons">exit_to_app</i>User</button>
     </div>
   </mat-sidenav>
 
   <mat-sidenav-content class="main">
     <mat-toolbar class="header">
-      <div>
+      <div class="header-menu">
         <mat-icon *ngIf="!sidenav.opened" (click)="sidenav.open()">menu</mat-icon>
         <div class="title">Header</div>
       </div>
       <div>
-<!--        <mat-icon *ngIf="!sidenav.opened" (click)="sidenav.open()">menu</mat-icon>-->
-<!--        <div class="title">Header</div>-->
+        <div>
+          <mat-icon *ngIf="!sidenav.opened"  [matMenuTriggerFor]="userAccount">account_circle</mat-icon>
+        </div>
+        <mat-menu #userAccount="matMenu">
+          <button mat-menu-item (click)="logout()">
+            <i class="material-icons">exit_to_app</i>
+            Logout
+          </button>
+        </mat-menu>
       </div>
     </mat-toolbar>
     <router-outlet></router-outlet>

@@ -1,9 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { ServerResponse } from '@shared/models/server-response.model';
-import { LocalStrategyResponse } from '@shared/models/local-strategy-response.model';
+import { Component, ChangeDetectionStrategy, EventEmitter } from '@angular/core';
 import { BaseContainerComponent } from '../../../shared/classes/base-container.component';
 import { BehaviorSubject } from 'rxjs';
-import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -14,17 +11,18 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class LoginContainerComponent extends BaseContainerComponent {
   errorMessage$ = new BehaviorSubject<string>('');
+  sendToParentEmitter = new EventEmitter();
 
-  constructor(private authService: AuthService, private router: Router) {
+  constructor(private authService: AuthService) {
     super();
   }
 
   onSubmit(formValue) {
-    this.authService.login(formValue).subscribe(isSucess => {
-      if (!isSucess) {
+    this.authService.login(formValue).subscribe(user => {
+      if (user === null) {
         this.errorMessage$.next('incorrect user/password');
       } else {
-        this.router.navigate(['/user']);
+        this.sendToParentEmitter.emit({ type: 'LoginSuccess', user })
       }
     })
   }

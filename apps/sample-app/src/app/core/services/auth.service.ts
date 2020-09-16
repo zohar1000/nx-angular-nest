@@ -36,13 +36,13 @@ export class AuthService {
 
   login(data) {
     return this.http.post(`${this.url}/login`, data).pipe(
-      map((response: ServerResponse) => {
+      map((response: ServerResponse): UserProfile | null => {
         const localStrategyResponse: LocalStrategyResponse = response.data;
         if (!localStrategyResponse.isLoginSuccess) {
-          return false;
+          return null;
         } else {
           this.storeAuthTokens(localStrategyResponse.user);
-          return true;
+          return localStrategyResponse.user;
         }
       })
     )
@@ -53,12 +53,12 @@ export class AuthService {
     const authState = { firstName: user.firstName, email: user.email, role: user.role };
     this.store.dispatch(Login(authState));
   }
-
+*/
   public logout() {
     this.localStorageService.clear();
-    this.store.dispatch(Logout());
+    // this.store.dispatch(Logout());
   }
-*/
+
   getAccessToken() {
     return localStorage.getItem(AuthTokenName.Access);
   }

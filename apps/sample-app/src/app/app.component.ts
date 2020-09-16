@@ -15,6 +15,7 @@ export class AppComponent extends BaseComponent {
   isSideNavOpened = false;
   isFullPage;
   isInitialized = false;
+  userProfile = null;
 
   constructor(private authService: AuthService) {
     super();
@@ -40,4 +41,18 @@ export class AppComponent extends BaseComponent {
     this.router.navigate([path]).then();
   }
 
+  onChildEvent(data) {
+    // your logic here
+    if (data.type === 'LoginSuccess') {
+      this.userProfile = data.user;
+console.log('this:', this);
+      this.router.navigate(['/user']);
+    }
+  }
+
+  logout() {
+    this.userProfile = null;
+    this.authService.logout();
+    this.router.navigate(['/login'], { state: { isLogout: true }});
+  }
 }
