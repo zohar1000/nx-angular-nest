@@ -1,6 +1,5 @@
 // import { GlobalService}      from './global.service';
 import { ErrorService }      from './error.service';
-import { ConfigService }     from './config.service';
 // import { MailService }       from './mail.service';
 import { SanitationService } from './sanitation.service';
 import { FileService }       from './file.service';
@@ -10,7 +9,6 @@ const mongodb = require('mongodb');
 
 export abstract class BaseService extends EventEmitter {
   protected errorService: ErrorService;
-  protected configService: ConfigService;
   // protected mailService: MailService;
   protected sanitationService: SanitationService;
   protected fileService: FileService;

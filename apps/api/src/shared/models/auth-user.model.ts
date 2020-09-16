@@ -1,4 +1,5 @@
 export interface AuthUser {
-  userId: number;
+  id: number;
   role: string;
+  status: number
 }

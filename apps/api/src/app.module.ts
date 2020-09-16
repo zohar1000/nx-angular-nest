@@ -5,8 +5,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SharedModule } from './shared/shared.module';
 import { TransformInterceptor } from './shared/interceptors/transform.interceptor';
-import { ConfigService } from './shared/services/config.service';
 import { AuthModule } from './routes/auth/auth.module';
+import { appConfig } from './app-config';
 
 @Global()
 @Module({
@@ -23,8 +23,8 @@ import { AuthModule } from './routes/auth/auth.module';
   ]
 })
 export class AppModule {
-  constructor(mongoService: ZMongoService, configService: ConfigService) {
-    const mongoConfig = configService.appConfig.mongo;
+  constructor(mongoService: ZMongoService) {
+    const mongoConfig = appConfig.mongo;
     mongoService.init(mongoConfig.connStr, mongoConfig.dbName);
 
   }

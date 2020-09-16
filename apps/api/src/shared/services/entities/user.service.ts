@@ -4,7 +4,7 @@ import { Injectable }         from '@nestjs/common';
 import { BaseEntityService } from './base-entity.service';
 import { EncryptionService } from '../encryption.service';
 import { AddUserDto } from '../../../routes/user/dtos/add-user.dto';
-import { UserDoc } from '../../models/db/user-doc.model';
+import { UserDoc } from '@shared/models/user-doc.model';
 import { ZMongoService } from 'zshared-server';
 import { UpdateUserDto } from '../../../routes/user/dtos/update-user.dto';
 

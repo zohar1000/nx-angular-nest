@@ -13,7 +13,7 @@ export class ApiService {
   }
 
   post(url, data) {
-    return this.http.get(this.getFUllUrl(url), data);
+    return this.http.post(this.getFUllUrl(url), data);
   }
 
   getFUllUrl(url) {

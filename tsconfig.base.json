@@ -17,7 +17,9 @@
     "baseUrl": ".",
     "suppressImplicitAnyIndexErrors": true,
     "paths": {
-      "@nx-angular-nest/api-interfaces": ["libs/api-interfaces/src/index.ts"]
+      "@nx-angular-nest/api-interfaces": ["libs/api-interfaces/src/index.ts"],
+      "@nx-angular-nest/shared": ["libs/shared/src/index.ts"],
+      "@shared/*": ["libs/shared/src/lib/*"]
     }
   },
   "angularCompilerOptions": {

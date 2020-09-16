@@ -4,8 +4,8 @@ import { map }                                                        from 'rxjs
 import { HttpStatusCodes }                                            from '../enums/http-status-codes.enum';
 import { logt } from 'zshared';
 import { SanitationService }                                          from '../services/sanitation.service';
-import { appConfig } from '../services/config.service';
 import { ErrorService } from '../services/error.service';
+import { appConfig } from '../../app-config';
 
 export interface Response<T> {
   data: T;

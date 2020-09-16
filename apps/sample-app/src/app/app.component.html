@@ -14,8 +14,14 @@
 
   <mat-sidenav-content class="main">
     <mat-toolbar class="header">
-      <mat-icon *ngIf="!sidenav.opened" (click)="sidenav.open()">menu</mat-icon>
-      <div class="title">Header</div>
+      <div>
+        <mat-icon *ngIf="!sidenav.opened" (click)="sidenav.open()">menu</mat-icon>
+        <div class="title">Header</div>
+      </div>
+      <div>
+<!--        <mat-icon *ngIf="!sidenav.opened" (click)="sidenav.open()">menu</mat-icon>-->
+<!--        <div class="title">Header</div>-->
+      </div>
     </mat-toolbar>
     <router-outlet></router-outlet>
   </mat-sidenav-content>

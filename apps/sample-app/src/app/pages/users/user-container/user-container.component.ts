@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'nx-angular-nest-user-container',
+  selector: 'app-user-container',
   templateUrl: './user-container.component.html',
-  styleUrls: ['./user-container.component.css']
+  styleUrls: ['./user-container.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserContainerComponent implements OnInit {
 

@@ -28,6 +28,10 @@ console.log('query:', query);
     return this.findOne({ _id: id }, projection);
   }
 
+  async findByEmail(email, projection?): Promise<any[]> {
+    return this.findOne({ email }, projection);
+  }
+
   async findMany(query?, projection?, opts?: ZMongoReadOpts): Promise<any[]> {
     return this.mongoService.findMany(this.collectionName, query, projection, opts);
   }

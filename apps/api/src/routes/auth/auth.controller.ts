@@ -5,9 +5,9 @@ import { BaseEntityController } from '../../shared/controllers/base-entity.contr
 import { AuthService } from './services/auth.service';
 import { UserService } from '../../shared/services/entities/user.service';
 import { LoginDto } from './dtos/login.dto';
-import { LocalStrategyResponse } from './models/local-strategy-response.model';
+import { LocalStrategyResponse } from '../../../../../libs/shared/src/lib/models/local-strategy-response.model';
 
-@Controller('/api/v1/auth')
+@Controller('/v1/auth')
 export class AuthController extends BaseEntityController {
   constructor(private readonly authService: AuthService,
               private readonly userService: UserService,
@@ -30,7 +30,7 @@ export class AuthController extends BaseEntityController {
   @Post('login')
   async login(@Request() req, @Body() dto: LoginDto) {
     try {
-      const resp: LocalStrategyResponse = await this.authService.login(dto, req.user as LocalStrategyResponse);
+    const resp: LocalStrategyResponse = await this.authService.login(dto, req.user as LocalStrategyResponse);
       return this.successResponse(resp);
     } catch(e) {
       return this.errorResponse(e.message);

@@ -25,6 +25,8 @@
 
   .main {
     .header {
+      display: inline-flex;
+      justify-content: space-between;
       .title {
         margin-left: 1rem;
       }

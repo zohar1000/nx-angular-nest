@@ -1,6 +1,7 @@
+import { appConfig } from '../../app-config';
+
 const crypto = require('crypto');
 import { Injectable }    from '@nestjs/common';
-import { ConfigService } from './config.service';
 
 @Injectable()
 export class EncryptionService {
@@ -8,8 +9,8 @@ export class EncryptionService {
   passwordConfig;
   bufferedConfirmationEncKey;
 
-  constructor(private readonly configService: ConfigService) {
-    this.encryptionConfig = configService.getEncryption();
+  constructor() {
+    this.encryptionConfig = appConfig.encryption;
     this.passwordConfig = this.encryptionConfig.password;
     this.bufferedConfirmationEncKey = Buffer.from(this.encryptionConfig.key);
   }

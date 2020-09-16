@@ -1,6 +1,5 @@
 import { Global, Module } from '@nestjs/common';
 import { ErrorService } from './services/error.service';
-import { ConfigService } from './services/config.service';
 import { FileService } from './services/file.service';
 import { SanitationService } from './services/sanitation.service';
 import { EncryptionService } from './services/encryption.service';
@@ -14,7 +13,6 @@ import { UserModule } from '../routes/user/user.module';
 const services = [
   // { provide: APP_INTERCEPTOR, useClass: TransformInterceptor },
 
-  ConfigService,
   EncryptionService,
   ErrorService,
   // MailService,

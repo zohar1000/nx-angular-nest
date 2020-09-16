@@ -1,15 +1,17 @@
-import { Injectable, Request } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as jwt from 'jsonwebtoken';
 import { BaseService } from '../../../shared/services/base.service';
 import { EncryptionService } from '../../../shared/services/encryption.service';
 import { UserService } from '../../../shared/services/entities/user.service';
 import { LoginDto } from '../dtos/login.dto';
-import { UserDoc } from '../../../shared/models/db/user-doc.model';
+import { UserDoc } from '@shared/models/user-doc.model';
 import { ZObj } from 'zshared';
-import { LocalStrategyResponse } from '../models/local-strategy-response.model';
-import { UserProfile } from '../../../shared/models/db/user-profile.model';
 import { UserStatus } from '../enums/user-status.enum';
+import { appConfig } from '../../../app-config';
+import { AuthUser } from '../../../shared/models/auth-user.model';
+import { LocalStrategyResponse } from '@shared/models/local-strategy-response.model';
+import { UserProfile } from '@shared/models/user-profile.model';
 
 @Injectable()
 export class AuthService extends BaseService {
@@ -18,21 +20,16 @@ export class AuthService extends BaseService {
               private readonly encryptionService: EncryptionService) {
     super();
   }
-/*
-  test() {
-    return this.mailService.send('zohar1000@gmail.com', 'test subject', 'test body');
-  }
-*/
 
   /*************************************/
   /*   L O G I N  /  S I G N   U P     */
   /*************************************/
 
-  async permissions(user) {
+  async permissions(user: AuthUser) {
     // console.log('permissions, authTokenPayload:', user);
     return new Promise(async (resolve, reject) => {
       try {
-        const userDoc = user ? await this.userService.findById(user.userId) : null;
+        const userDoc = user ? await this.userService.findById(user.id) : null;
         if (!userDoc) {
           this.logi('permission request was made for a user which does not exist', user);
           reject(new Error('user does not exist'));
@@ -99,7 +96,7 @@ export class AuthService extends BaseService {
         console.log(`password has been changed for user ${userDoc._id}/${email}, the new password is: ${verbalPassword}`);
         const password = this.encryptionService.getHashedPassword(verbalPassword);
         await this.userService.updateById(userDoc._id, {password});
-        const subject = this.configService.getBrandName() + ' support - reset password';
+        const subject = appConfig.brandName + ' support - reset password';
         const body = 'Your password has been reset.<br/><br/>Your new password is: ' + verbalPassword;
         // await this.mailService.send(email, subject, body);
         resolve();
@@ -165,14 +162,14 @@ export class AuthService extends BaseService {
   }
 
   async getAccessToken(payload) {
-    return this.jwtService.signAsync({ sub: payload }, { expiresIn: this.configService.getAuthJwt().accessTokenExpiresIn });
+    return this.jwtService.signAsync({ sub: payload }, { expiresIn: appConfig.auth.jwt.accessTokenExpiresIn });
   }
 
   async getRefreshToken(payload) {
     return new Promise<any>(async (resolve, reject) => {
       try {
-        const opts = { expiresIn: this.configService.getAuthJwt().refreshTokenExpiresIn };
-        jwt.sign(payload, this.configService.getAuthJwt().refreshTokenSecretKey, opts, (err, token) => {
+        const opts = { expiresIn: appConfig.auth.jwt.refreshTokenExpiresIn };
+        jwt.sign(payload, appConfig.auth.jwt.refreshTokenSecretKey, opts, (err, token) => {
           if (err) {
             reject(err);
           } else {
@@ -189,7 +186,7 @@ export class AuthService extends BaseService {
   async verifyRefreshToken(token) {
     return new Promise(async (resolve, reject) => {
       try {
-        jwt.verify(token, this.configService.getAuthJwt().refreshTokenSecretKey, (err, decoded) => {
+        jwt.verify(token, appConfig.auth.jwt.refreshTokenSecretKey, (err, decoded) => {
           if (err) {
             resolve(null);
           } else {

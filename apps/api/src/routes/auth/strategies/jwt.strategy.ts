@@ -3,26 +3,26 @@ import { PassportStrategy }     from '@nestjs/passport';
 import { Injectable }           from '@nestjs/common';
 import { UserStatus } from '../enums/user-status.enum';
 import { UserService } from '../../../shared/services/entities/user.service';
-import { UserDoc } from '../../../shared/models/db/user-doc.model';
-import { ConfigService } from '../../../shared/services/config.service';
+import { UserDoc } from '@shared/models/user-doc.model';
+import { appConfig } from '../../../app-config';
+import { AuthUser } from '../../../shared/models/auth-user.model';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly configService: ConfigService,
-              private userService: UserService) {
+  constructor(private userService: UserService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.getAuthJwt().accessTokenSecretKey
+      secretOrKey: appConfig.auth.jwt.accessTokenSecretKey
     });
   }
 
   async validate(payload: any) {
-    let user;
+    let user: AuthUser;
     try {
       const userDoc: UserDoc = await this.userService.findById(payload.sub.userId);
       if (userDoc && userDoc.status === UserStatus.Active) {
-        user = { userId: payload.sub.userId, role: userDoc.role, status: userDoc.status };
+        user = { id: userDoc._id, role: userDoc.role, status: userDoc.status };
       }
     } catch(e) {
       // user = {};
