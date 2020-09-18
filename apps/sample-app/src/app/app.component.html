@@ -32,6 +32,6 @@
     </mat-toolbar>
     <router-outlet></router-outlet>
   </mat-sidenav-content>
-</mat-sidenav-container>
 
-<ngx-ui-loader></ngx-ui-loader>
+  <ngx-loading [show]="isSpinner"></ngx-loading>
+</mat-sidenav-container>

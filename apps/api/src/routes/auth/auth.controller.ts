@@ -5,7 +5,7 @@ import { BaseEntityController } from '../../shared/controllers/base-entity.contr
 import { AuthService } from './services/auth.service';
 import { UserService } from '../../shared/services/entities/user.service';
 import { LoginDto } from './dtos/login.dto';
-import { LocalStrategyResponse } from '../../../../../libs/shared/src/lib/models/local-strategy-response.model';
+import { LocalStrategyResponse } from '@shared/models/local-strategy-response.model';
 
 @Controller('/v1/auth')
 export class AuthController extends BaseEntityController {

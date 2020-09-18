@@ -19,7 +19,9 @@
     "paths": {
       "@nx-angular-nest/api-interfaces": ["libs/api-interfaces/src/index.ts"],
       "@nx-angular-nest/shared": ["libs/shared/src/index.ts"],
-      "@shared/*": ["libs/shared/src/lib/*"]
+      "@shared/*": ["libs/shared/src/lib/*"],
+      "@api-app/*": ["apps/api/src/*"],
+      "@sample-app/*": ["apps/sample-app/src/app/*"]
     }
   },
   "angularCompilerOptions": {

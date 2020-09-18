@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { ActivationEnd } from '@angular/router';
 import { finalize } from 'rxjs/operators';
-import { BaseComponent } from './shared/classes/base.component';
+import { BaseComponent } from './shared/base-classes/base.component';
 import { AuthService } from './core/services/auth.service';
 
 @Component({
@@ -16,6 +16,7 @@ export class AppComponent extends BaseComponent {
   isFullPage;
   isInitialized = false;
   userProfile = null;
+  isSpinner = true;
 
   constructor(private authService: AuthService) {
     super();
@@ -32,8 +33,6 @@ export class AppComponent extends BaseComponent {
         () => {},
         err => this.router.navigate(['/login'], { state: { isLogout: true }})
       ));
-
-    // this.spinnerService.start();
   }
 
   onClickSidenavItem(path = '') {

@@ -26,7 +26,6 @@ export class AuthService extends BaseService {
   /*************************************/
 
   async permissions(user: AuthUser) {
-    // console.log('permissions, authTokenPayload:', user);
     return new Promise(async (resolve, reject) => {
       try {
         const userDoc = user ? await this.userService.findById(user.id) : null;
