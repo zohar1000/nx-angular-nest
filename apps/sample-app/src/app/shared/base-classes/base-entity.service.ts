@@ -1,21 +1,33 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
-import { LocalStorageService } from '../../core/services/local-storage.service';
-import { SortDirToOrder } from '../enums/sort.enum';
-import { Injectable } from '@angular/core';
+import { BehaviorSubject, ReplaySubject } from 'rxjs';
+import { Inject, Injectable } from '@angular/core';
+import { PageType } from '@sample-app/shared/enums/page-type.enum';
+import { ApiService } from '@sample-app/core/services/api.service';
+import { EntityKeyToken } from '@sample-app/shared/consts/entity-key-token.const';
+import { ServerResponse } from '@shared/models/server-response.model';
+import { BaseService } from '@sample-app/shared/base-classes/base.service';
+import { finalize, tap } from 'rxjs/operators';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Injectable()
-export class BaseEntityService {
+export class BaseEntityService extends BaseService {
   // private localStorageService: LocalStorageService;
   // public readonly PAGE_SIZE_OPTIONS = [5, 10, 20];
   // public localStorageTableKey;
-  public items$ = new ReplaySubject(1);
-  public currItem$ = new ReplaySubject(1);
+  public items$ = new BehaviorSubject(null);
+  public currItem$ = new BehaviorSubject(null);
   public paging$ = new BehaviorSubject({ pageIndex: 0, pageSize: 0, length: 0 });
   public filter$ = new BehaviorSubject(null);
   public sort$ = new BehaviorSubject(null);
+  activatedRoute: ActivatedRoute;
 
-  constructor() {
+  config = {
+    isLoadItemsOnInit: true,
+  }
+
+  constructor(@Inject(EntityKeyToken) private entityKey: string,
+              private router: Router,
+              private apiService: ApiService) {
+    super();
     // super(entityKey);
     // this.localStorageTableKey = `table_${this.entityKey}`;
     // this.localStorageService = appInjector.get(LocalStorageService);
@@ -23,7 +35,125 @@ export class BaseEntityService {
     // this.regSub(this.store.select(selectPaging).subscribe((state: PagingState) => {
     //   this.setPagingPageSize(state.pageSize);
     // }));
+    console.log(this.constructor.name, 'con');
   }
+
+  init(activatedRoute: ActivatedRoute) {
+    this.activatedRoute = activatedRoute;
+    this.items$.next(null);
+    if (this.config.isLoadItemsOnInit) {
+
+    }
+  }
+
+  onRoute(pageType: PageType, id?) {
+    console.log('onRoute:', pageType);
+    switch (pageType) {
+      case PageType.List:
+        if (!this.items$.value) this.getItems().subscribe(() => {});
+        break;
+      case PageType.EditItem:
+        this.currItem$.next(null);
+        this.getItem(id).subscribe(data => this.currItem$.next(data));
+        break;
+    }
+  }
+
+  onAddItem() {
+    console.log('onAddItem');
+    this.currItem$.next(null);
+    this.navigateTo(['add']);
+  }
+
+  onSelectItem(id) {
+    console.log('onSelectItem', id);
+    this.currItem$.next(null);
+    this.navigateTo(['edit', id]);
+  }
+
+  onCancelItem() {
+    this.navigateTo(['.']);
+  }
+
+  onSubmitAddItem(data) {
+    this.submitAddItem(data).subscribe(() => {
+      this.items$.next(null);
+      this.navigateTo('.');
+    })
+  }
+
+  onSubmitEditItem(id, data) {
+    this.submitEditItem(id, data).subscribe(() => {
+      this.items$.next(null);
+      this.navigateTo('.');
+    })
+  }
+
+  navigateTo(segments: string[] | string) {
+    if (!Array.isArray(segments)) segments = [segments];
+    this.router.navigate(segments, { relativeTo: this.activatedRoute });
+  }
+
+  getItems() {
+    console.log('get items');
+    this.showAppSpinner();
+    return this.apiService.get(this.getUrlPrefix()).pipe(
+      finalize(() => this.hideAppSpinner()),
+      tap((response: ServerResponse) => {
+        if (response.isSuccess) {
+          this.items$.next(response.data);
+        } else {
+          this.logError(`Error getting items, entity: ${this.entityKey}, message: ${response.error.message}`);
+          this.showErrorToastr('Error getting items');
+        }
+      }));
+  }
+
+  getItem(id) {
+    console.log('get item');
+    this.showAppSpinner();
+    return this.apiService.get(`${this.getUrlPrefix()}/${id}`).pipe(
+      finalize(() => this.hideAppSpinner()),
+      tap((response: ServerResponse) => {
+        if (response.isSuccess) {
+          this.currItem$.next(response.data);
+        } else {
+          this.logError(`Error getting item ${id}, entity: ${this.entityKey}, message: ${response.error.message}`);
+          this.showErrorToastr('Error getting item');
+        }
+      }));
+  }
+
+  submitAddItem(data) {
+    console.log('submit add item');
+    this.showAppSpinner();
+    return this.apiService.post(`${this.getUrlPrefix()}`, data).pipe(
+      finalize(() => this.hideAppSpinner()),
+      tap((response: ServerResponse) => {
+        if (response.isSuccess) {
+          // this.currItem$.next(response.data);
+        } else {
+          this.logError(`Error adding item, entity: ${this.entityKey}, message: ${response.error.message}`);
+          this.showErrorToastr('Error adding item');
+        }
+      }));
+  }
+
+  submitEditItem(id, data) {
+    console.log('submit edit item');
+    this.showAppSpinner();
+    return this.apiService.put(`${this.getUrlPrefix()}/${id}`, data).pipe(
+      finalize(() => this.hideAppSpinner()),
+      tap((response: ServerResponse) => {
+        if (response.isSuccess) {
+          // this.currItem$.next(response.data);
+        } else {
+          this.logError(`Error saving item ${id}, entity: ${this.entityKey}, message: ${response.error.message}`);
+          this.showErrorToastr('Error saving item');
+        }
+      }));
+  }
+
 
   /************************/
   /*     I T E M S        */
@@ -132,4 +262,8 @@ export class BaseEntityService {
     this.isComingFromItem = false;
     this.isRefreshLength = false;
   }*/
+
+  getUrlPrefix() {
+    return `v1/${this.entityKey}`;
+  }
 }

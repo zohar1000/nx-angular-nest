@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActivationEnd } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { BaseComponent } from './shared/base-classes/base.component';
 import { AuthService } from './core/services/auth.service';
+import { AppEventType } from '@sample-app/shared/enums/app-event-type.enum';
 
 @Component({
   selector: 'app-root',
@@ -16,16 +17,15 @@ export class AppComponent extends BaseComponent {
   isFullPage;
   isInitialized = false;
   userProfile = null;
-  isSpinner = true;
 
   constructor(private authService: AuthService) {
     super();
 
-    this.router.events.subscribe(e => {
+    this.regSub(this.router.events.subscribe(e => {
       if (e instanceof ActivationEnd) {
         this.isFullPage = e.snapshot && e.snapshot.data ? e.snapshot.data.isFullPage : false;
       }
-    });
+    }));
 
     this.regSub(this.authService.getPermissions()
       .pipe(finalize(() => this.isInitialized = true))
@@ -33,6 +33,10 @@ export class AppComponent extends BaseComponent {
         () => {},
         err => this.router.navigate(['/login'], { state: { isLogout: true }})
       ));
+
+    this.regSub(this.appEventsService.getObsaervable(AppEventType.ShowAppSpinner).subscribe(() => setTimeout(() => this.isSpinner = true)));
+    // this.regSub(this.appEventsService.getObsaervable(AppEventType.ShowAppSpinner).subscribe(() => setTimeout(() => console.log('spinner true'))));
+    this.regSub(this.appEventsService.getObsaervable(AppEventType.HideAppSpinner).subscribe(() => setTimeout(() => this.isSpinner = false)));
   }
 
   onClickSidenavItem(path = '') {
@@ -44,7 +48,6 @@ export class AppComponent extends BaseComponent {
     // your logic here
     if (data.type === 'LoginSuccess') {
       this.userProfile = data.user;
-console.log('this:', this);
       this.router.navigate(['/user']);
     }
   }

@@ -6,11 +6,17 @@ import { UserContainerComponent } from './user-container/user-container.componen
 import { BaseEntityService } from '../../shared/base-classes/base-entity.service';
 import { UserListComponent } from './user-list/user-list.component';
 import { SharedModule } from '../../shared/shared.module';
+import { EntityKeyToken } from '../../shared/consts/entity-key-token.const';
+import { EntityServiceToken } from '../../shared/consts/entity-service-token.const';
+import { AddUserComponent } from './add-user/add-user.component';
+import { EditUserComponent } from './edit-user/edit-user.component';
 
 @NgModule({
   declarations: [
     UserContainerComponent,
-    UserListComponent
+    UserListComponent,
+    AddUserComponent,
+    EditUserComponent
   ],
   imports: [
     CommonModule,
@@ -18,8 +24,9 @@ import { SharedModule } from '../../shared/shared.module';
     UserRoutingModule
   ],
   providers: [
-    { provide: 'ENTITY_KEY', useValue: 'user'},
-    { provide: 'ENTITY_SERVICE', useClass: BaseEntityService}
+    { provide: EntityKeyToken, useValue: 'user'},
+    { provide: EntityServiceToken, useClass: BaseEntityService}
+
   ]
 })
 export class UserModule { }

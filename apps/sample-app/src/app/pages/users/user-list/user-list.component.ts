@@ -1,4 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, Inject } from '@angular/core';
+import { EntityServiceToken } from '@sample-app/shared/consts/entity-service-token.const';
+import { BaseEntityService } from '@sample-app/shared/base-classes/base-entity.service';
 
 @Component({
   selector: 'app-user-list',
@@ -6,12 +8,14 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
   styleUrls: ['./user-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserListComponent implements OnInit {
-  isSpinner = true;
+export class UserListComponent {
+  constructor(@Inject(EntityServiceToken) public entityService: BaseEntityService) {}
 
-  constructor() { }
-
-  ngOnInit(): void {
+  onClickAdd() {
+    this.entityService.onAddItem();
   }
 
+  onClickSelect() {
+    this.entityService.onSelectItem(102);
+  }
 }

@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { BaseEntityContainerComponent } from '../../../shared/base-classes/base-entity-container.component';
+import { EntityServiceToken } from '@sample-app/shared/consts/entity-service-token.const';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-user-container',
@@ -7,20 +9,8 @@ import { BaseEntityContainerComponent } from '../../../shared/base-classes/base-
   styleUrls: ['./user-container.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserContainerComponent extends BaseEntityContainerComponent implements OnInit {
-  config = {
-    isLoadItemsOnInit: true,
+export class UserContainerComponent extends BaseEntityContainerComponent {
+  constructor(@Inject(EntityServiceToken) entityService, activatedRoute: ActivatedRoute) {
+    super(entityService, activatedRoute);
   }
-
-  constructor(@Inject('ENTITY_KEY') entityKey: string,
-              @Inject('ENTITY_SERVICE') entityService) {
-    super(entityKey, entityService);
-  }
-
-  ngOnInit(): void {
-    if (this.config.isLoadItemsOnInit) {
-
-    }
-  }
-
 }

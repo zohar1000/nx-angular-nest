@@ -4,6 +4,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialDesignModule } from './material-design.module';
 import { NgRouterOutletCommModule } from 'ng-router-outlet-comm';
 import { ngxLoadingAnimationTypes, NgxLoadingModule } from 'ngx-loading';
+import { NgRouteChangeModule } from 'ng-route-change';
+
+const declarations = [
+]
 
 const modules = [
   // angular
@@ -13,6 +17,7 @@ const modules = [
 
   // app
   MaterialDesignModule,
+  NgRouteChangeModule,
   NgRouterOutletCommModule
 ]
 
@@ -24,9 +29,9 @@ const spinnerOptions = {
 }
 
 @NgModule({
-  declarations: [],
+  declarations,
   imports: [...modules, NgxLoadingModule.forRoot(spinnerOptions)],
-  exports: [...modules, NgxLoadingModule],
+  exports: [...modules, NgxLoadingModule, ...declarations],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class SharedModule { }
