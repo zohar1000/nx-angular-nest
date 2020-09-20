@@ -9,38 +9,51 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Tokens } from '@sample-app/shared/enums/tokens.enum';
 import { Paging } from '@sample-app/shared/models/paging.model';
 import { SortState } from '@sample-app/shared/models/sort-state.model';
+import { HttpErrorResponse } from '@angular/common/http';
+import { GetPageRequest } from '@shared/models/get-page-request.model';
+import { LocalStorageService } from '@sample-app/core/services/local-storage.service';
+import { appInjector } from '@sample-app/app.injector';
 
 // TODO:
 // regSub to all subscribers
+// implement total count
+// implement onServerResponseError
+// change toastr error messages to include entity
 
 @Injectable()
 export class BaseEntityService extends BaseService {
   // private localStorageService: LocalStorageService;
   public readonly PAGE_SIZE_OPTIONS = [5, 10, 20];
+  readonly DEFAULT_CONFIG = {
+    isLoadItemsOnInit: true,
+  }
+  readonly INITIAL_PAGING: Paging = {
+    pageIndex: 0,
+    pageSize: 0
+  }
   // public localStorageTableKey;
   public items$ = new BehaviorSubject(null);
   public currItem$ = new BehaviorSubject(null);
-  public paging$ = new BehaviorSubject({ pageIndex: 0, pageSize: 0, length: 0 });
-  public filter$ = new BehaviorSubject(null);
-  public sort$ = new BehaviorSubject(null);
-  public sort: SortState;
-  // public totalCount$: Observable<number>;
+  // public paging$ = new BehaviorSubject({ pageIndex: 0, pageSize: 0, length: 0 });
+  // public filter$ = new BehaviorSubject(null);
+  // public sort$ = new BehaviorSubject(null);
+  public totalCount$ = new BehaviorSubject(0);
   public paging: Paging;
   public filter;
+  public sort: SortState;
+  protected activatedRoute: ActivatedRoute;
+  protected localStorageTableKey;
+  protected apiService: ApiService;
+  protected localStorageService: LocalStorageService;
+  protected router: Router;
 
-  activatedRoute: ActivatedRoute;
-
-  config = {
-    isLoadItemsOnInit: true,
-  }
-
-  constructor(@Inject(Tokens.EntityKey) private entityKey: string,
-              private router: Router,
-              private apiService: ApiService) {
+  constructor(@Inject(Tokens.EntityKey) private entityKey: string) {
     super();
-    // super(entityKey);
-    // this.localStorageTableKey = `table_${this.entityKey}`;
-    // this.localStorageService = appInjector.get(LocalStorageService);
+    this.localStorageTableKey = `table_${this.entityKey}`;
+    this.router = appInjector.get(Router);
+    this.apiService = appInjector.get(ApiService);
+    this.localStorageService = appInjector.get(LocalStorageService);
+    this.paging = Object.assign({}, this.INITIAL_PAGING);
     // this.store = appInjector.get(Store);
     // this.regSub(this.store.select(selectPaging).subscribe((state: PagingState) => {
     //   this.setPagingPageSize(state.pageSize);
@@ -51,9 +64,9 @@ export class BaseEntityService extends BaseService {
   init(activatedRoute: ActivatedRoute) {
     this.activatedRoute = activatedRoute;
     this.items$.next(null);
-    if (this.config.isLoadItemsOnInit) {
-
-    }
+    // if (this.config.isLoadItemsOnInit) {
+    //
+    // }
   }
 
   onRoute(pageType: PageType, id?) {
@@ -99,24 +112,37 @@ export class BaseEntityService extends BaseService {
       }));
   }
 
-/*  getPage(pageNum) {
+  getPage(req: GetPageRequest) {
     // check refreshes
     // const isResetPageIndex = ObjUtils.getKey(opts, 'isResetPageIndex', false);
-    // const isRefreshLength = ObjUtils.getKey(opts, 'isRefreshLength', false);
+    const isTotalCount = true; // ObjUtils.getKey(opts, 'isRefreshLength', false);
     // if (isResetPageIndex) this.tableService.resetPageIndex();
 
-    const data: any = { paging: this.paging, filter: this.filter, sort: this.sort, isTotalCount: isRefreshLength };
-    this.isLoading = true;
-    this.regSub(this.getPageItems(data)
-      .pipe(finalize(() => this.onFetchPageComplete()))
-      .subscribe(() => {},
+    // const data: any = { paging: this.paging, filter: this.filter, sort: this.sort, isTotalCount: isTotalCount };
+    this.showAppSpinner();
+    this.regSub(this.apiService.post(`${this.getUrlPrefix()}/page`, req)  // this.getPageItems(data)
+      .pipe(
+        finalize(() => this.onFetchPageComplete()),
+        tap((response: ServerResponse) => {
+          this.paging.pageIndex = req.paging.pageIndex;
+          this.items$.next(response.data.items);
+          if (isTotalCount) this.totalCount$.next(response.data.totalCount);
+        })
+      )
+      .subscribe(
+        () => {},
         (err: HttpErrorResponse) => {
-          console.log('error:', err);
-          if (err.status !== 401) this.onServerResponseError(err);
+          console.log('HttpErrorResponse:', err);
+          // if (err.status !== 401) this.onServerResponseError(err);
         }
-      ));
+      )
+    );
+  }
 
-  }*/
+  onFetchPageComplete() {
+    this.hideAppSpinner();
+    // this.cdr.markForCheck();
+  }
 
   /*********************************************************/
   /*      S U B M I T   A D D / E D I T / D E L E T E      */

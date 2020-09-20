@@ -1,17 +1,39 @@
-// import { GlobalService}      from './global.service';
-import { ErrorService }      from './error.service';
-// import { MailService }       from './mail.service';
-import { SanitationService } from './sanitation.service';
-import { FileService }       from './file.service';
 import { EventEmitter } from 'events';
-// import { Role } from '../enums/role.enum';
+import { Injector } from '@nestjs/core/injector/injector';
 const mongodb = require('mongodb');
+import { ErrorService } from '../services/error.service';
+import { GlobalService } from '@api-app/shared/services/global.service';
+import { FileService } from '@api-app/shared/services/file.service';
+import { SanitationService } from '@api-app/shared/services/sanitation.service';
+import { filter } from 'rxjs/operators';
+// import { GlobalService}      from './global.service';
+// import { MailService }       from './mail.service';
+// import { SanitationService } from './sanitation.service';
+// import { FileService }       from './file.service';
+// import { Role } from '../enums/role.enum';
 
 export abstract class BaseService extends EventEmitter {
   protected errorService: ErrorService;
-  // protected mailService: MailService;
-  protected sanitationService: SanitationService;
   protected fileService: FileService;
+  protected sanitationService: SanitationService;
+  // protected mailService: MailService;
+
+
+  protected constructor() {
+    super();
+    setTimeout(() => {
+      const subscription = GlobalService.globalService$.subscribe((globalServices: any) => {
+        this.errorService = globalServices.errorService;
+        this.fileService = globalServices.fileService;
+        this.sanitationService = globalServices.sanitationService;
+        // this.appEventsService = globalServices.appEventsService;
+        // this.mailService = globalServices.mailService;
+        setTimeout(() => {
+          subscription.unsubscribe();
+        });
+      });
+    });
+  }
 
   logeAndThrow(...params) {
     const errorEvent = this.errorService.loge(...params);

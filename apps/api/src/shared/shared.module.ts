@@ -7,9 +7,32 @@ import { UserService } from './services/entities/user.service';
 import { ZMongoService } from 'zshared-server';
 // import { environment } from '../environments/environment';
 import { UserModule } from '../routes/user/user.module';
+import { GlobalService } from '@api-app/shared/services/global.service';
 // import { APP_INTERCEPTOR } from '@nestjs/core';
 // import { TransformInterceptor } from './interceptors/transform.interceptor';
 
+const globalServicesFactory = {
+  provide: 'GLOBAL_SERVICES',
+  useFactory: (globalService: GlobalService,
+               errorService: ErrorService,
+               fileService: FileService,
+               sanitationService: SanitationService,
+               // appEventsService: AppEventsService,
+               // mailService: MailService,
+               // requestLogsService: RequestLogsService
+  ) => {
+    GlobalService.errorService = errorService;
+    GlobalService.fileService = fileService;
+    GlobalService.sanitationService = sanitationService;
+    // GlobalService.appEventsService = appEventsService;
+    // GlobalService.mailService = mailService;
+    // GlobalService.requestLogsService = requestLogsService;
+    const globalServices = { errorService, sanitationService, fileService };
+    GlobalService.globalService$.next(globalServices);
+    return;
+  },
+  inject: [GlobalService, ErrorService, FileService, SanitationService]
+};
 const services = [
   // { provide: APP_INTERCEPTOR, useClass: TransformInterceptor },
 
@@ -21,7 +44,8 @@ const services = [
   // RolesGuard,
   // ObjUtils,
   // AppEventsService,
-  // globalServicesFactory,
+  GlobalService,
+  globalServicesFactory,
 
   // db
   UserService,

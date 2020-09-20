@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as jwt from 'jsonwebtoken';
-import { BaseService } from '../../../shared/services/base.service';
+import { BaseService } from '../../../shared/base-classes/base.service';
 import { EncryptionService } from '../../../shared/services/encryption.service';
 import { UserService } from '../../../shared/services/entities/user.service';
 import { LoginDto } from '../dtos/login.dto';

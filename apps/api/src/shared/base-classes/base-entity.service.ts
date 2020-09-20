@@ -1,16 +1,16 @@
 import { ZObj } from 'zshared';
 import { ZMongoService, ZMongoReadOpts, ZMongoInsertOpts } from 'zshared-server';
 // import { Role } from '../enums/role.enum';
-import { BaseService } from '../base.service';
-import { AuthUser } from '../../models/auth-user.model';
-import { PageResponse } from '../../models/page-response.model';
+import { BaseService } from './base.service';
+import { AuthUser } from '../models/auth-user.model';
+import { GetPageResponse } from '@shared/models/get-page-response.model';
 
 export abstract class BaseEntityService extends BaseService {
   protected constructor(protected entityName,
                         protected mongoService: ZMongoService,
                         protected collectionName,
                         protected profileKeys,
-                        protected externalIdKey = '') {
+                        protected externalIdKey = 'id') {
     super();
   }
 
@@ -86,28 +86,18 @@ console.log('query:', query);
   /*    P A G I N G     */
   /**********************/
 
-  async getPage(user: AuthUser, body): Promise<PageResponse> {
+  async getPage(user: AuthUser, body): Promise<GetPageResponse> {
     return new Promise(async (resolve, reject) => {
       try {
         let totalCount;
         const query: any = await this.getPageFilterQuery(body.filter);
-        // const sort = { [body.sort.key || this.externalIdKey]: body.sort.direction };
-        // const skip = body.paging.pageIndex * body.paging.pageSize;
-
         const opts: ZMongoReadOpts = {
           skip: body.paging.pageIndex * body.paging.pageSize,
           limit: body.paging.pageSize,
-          sort: { [this.externalIdKey && body.sort.key === this.externalIdKey ? '_id' : body.sort.key]: body.sort.direction }
+          sort: { [this.externalIdKey && this.getDbIdKey(body.sort.key)]: body.sort.order }
         }
-
-
-        // const reqs = [this.model.find(filter).sort(sort).skip(skip).limit(body.paging.pageSize).exec()];
-        // if (body.isTotalCount) reqs.push(this.model.find(filter).count().exec());
-
         const reqs: Promise<any>[] = [this.mongoService.findMany(this.collectionName, query, {}, opts)];
         if (body.isTotalCount) reqs.push(this.mongoService.count(this.collectionName, query));
-
-
         const responses = await Promise.all(reqs);
         const items = responses[0].map(doc => this.getProfileFromDoc(doc));
         if (body.isTotalCount) totalCount = responses[1];
@@ -124,17 +114,17 @@ console.log('query:', query);
     for (const key in reqFilter) {
       if (reqFilter[key] !== '') {
         if (Array.isArray(reqFilter[key])) {
-          query[key] = { $in: reqFilter[key] };
+          query[this.getDbIdKey(key)] = { $in: reqFilter[key] };
         } else {
-          query[key] = reqFilter[key];
+          query[this.getDbIdKey(key)] = reqFilter[key];
         }
       }
     }
-    if (this.externalIdKey && query[this.externalIdKey]) {
-      query['_id'] = query[this.externalIdKey];
-      delete query[this.externalIdKey];
-    }
     return query;
+  }
+
+  getDbIdKey(key) {
+    return key === this.externalIdKey ? '_id' : key;
   }
 
   // aggregate(query) {

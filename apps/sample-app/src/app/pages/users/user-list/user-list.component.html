@@ -1,27 +1,21 @@
 <div>
   User list!!<br/><br/>
 
+  total count: {{entityService.totalCount$ | async}}<br/>
   items: {{entityService.items$ | async | json}}
 
 <!--  <ngx-loading [show]="isSpinner"></ngx-loading>-->
 </div>
 
 <br/><br/>
-<div> paging:
-  <button (click)="onClickGetPage(1)">Get Page 1</button>
-</div>
+<div> page index:<input #pageIndex /></div>
+<div> sort key:<input #sortKey /></div>
+<div> sort Order:<input #sortOrder /></div>
+<button (click)="onClickGetPage(pageIndex.value, sortKey.value, sortOrder.value)">Get Page</button>
 
 <br/><br/>
 <div>
   <button (click)="onClickAdd()">Add Item</button>
-</div>
-
-<br/><br/>
-<div>
   <button (click)="onClickEdit()">Edit Item</button>
-</div>
-
-<br/><br/>
-<div>
   <button (click)="onClickDelete()">Delete Item</button>
 </div>

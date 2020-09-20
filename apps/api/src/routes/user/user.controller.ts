@@ -14,15 +14,27 @@ export class UserController extends BaseEntityController {
     super('user', userService, errorService);
   }
 
-/*  @Get('/')
-  async getAllUsers() {
+  @Get('/temp1')
+  async temp1() {
     try {
-      const response = {  message: 'ok!' };
+      const response = await this.entityService.temp1();
       return this.successResponse(response);
     } catch(e) {
+      this.errorService.loge(`${this.constructor.name}: error getting page for ${this.entityName}`, e);
       return this.errorResponse(e.message);
     }
-  }*/
+  }
+
+
+  /*  @Get('/')
+    async getAllUsers() {
+      try {
+        const response = {  message: 'ok!' };
+        return this.successResponse(response);
+      } catch(e) {
+        return this.errorResponse(e.message);
+      }
+    }*/
 
 
   @Post('/page')

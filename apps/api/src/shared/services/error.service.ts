@@ -1,4 +1,4 @@
-import { Injectable }   from '@nestjs/common';
+import { Global, Injectable } from '@nestjs/common';
 import { LogSeverity }  from '../enums/log-severity.enum';
 import { ZTime, logt }    from 'zshared';
 

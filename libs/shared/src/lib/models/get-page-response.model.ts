@@ -1,4 +1,4 @@
-export interface PageResponse {
+export interface GetPageResponse {
   items: any[];
   totalCount?: number;
 }
