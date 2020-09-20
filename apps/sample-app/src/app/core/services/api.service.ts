@@ -15,20 +15,21 @@ export class ApiService {
 
   post(url, data) {
     // return this.http.post(this.getFUllUrl(url), data);
-    return of({ isSuccess: true, data: { a: 1 }}).pipe(delay(500));
+    return of({ isSuccess: true, data: { isSuccess: true, a: 1 }}).pipe(delay(500));
   }
 
   put(url, data) {
     // return this.http.put(this.getFUllUrl(url), data);
-    return of({ isSuccess: true, data: { a: 1 }}).pipe(delay(500));
+    return of({ isSuccess: true, data: { isSuccess: true, a: 1 }}).pipe(delay(500));
   }
 
   patch(url, data) {
     return this.http.patch(this.getFUllUrl(url), data);
   }
 
-  delete(url, data) {
-    return this.http.delete(this.getFUllUrl(url));
+  delete(url) {
+    // return this.http.delete(this.getFUllUrl(url));
+    return of({ isSuccess: true, data: { isSuccess: true, a: 1 }}).pipe(delay(500));
   }
 
   getFUllUrl(url) {

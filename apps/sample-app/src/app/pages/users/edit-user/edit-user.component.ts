@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, Inject } from '@angular/core';
-import { EntityServiceToken } from '@sample-app/shared/consts/entity-service-token.const';
 import { BaseEntityService } from '@sample-app/shared/base-classes/base-entity.service';
+import { Tokens } from '@sample-app/shared/enums/tokens.enum';
 
 @Component({
   selector: 'app-edit-user',
@@ -9,7 +9,7 @@ import { BaseEntityService } from '@sample-app/shared/base-classes/base-entity.s
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditUserComponent {
-  constructor(@Inject(EntityServiceToken) public entityService: BaseEntityService) {
+  constructor(@Inject(Tokens.EntityService) public entityService: BaseEntityService) {
     console.log(`${this.constructor.name} con, currItem$:`, this.entityService.currItem$.value);
   }
 
@@ -18,6 +18,6 @@ export class EditUserComponent {
   }
 
   onClickSubmit() {
-    this.entityService.onSubmitEditItem(102, { id: 102});
+    this.entityService.submitEditItem(102, { id: 102});
   }
 }

@@ -6,10 +6,9 @@ import { UserContainerComponent } from './user-container/user-container.componen
 import { BaseEntityService } from '../../shared/base-classes/base-entity.service';
 import { UserListComponent } from './user-list/user-list.component';
 import { SharedModule } from '../../shared/shared.module';
-import { EntityKeyToken } from '../../shared/consts/entity-key-token.const';
-import { EntityServiceToken } from '../../shared/consts/entity-service-token.const';
 import { AddUserComponent } from './add-user/add-user.component';
 import { EditUserComponent } from './edit-user/edit-user.component';
+import { Tokens } from '../../shared/enums/tokens.enum';
 
 @NgModule({
   declarations: [
@@ -24,8 +23,8 @@ import { EditUserComponent } from './edit-user/edit-user.component';
     UserRoutingModule
   ],
   providers: [
-    { provide: EntityKeyToken, useValue: 'user'},
-    { provide: EntityServiceToken, useClass: BaseEntityService}
+    { provide: Tokens.EntityKey, useValue: 'user'},
+    { provide: Tokens.EntityService, useClass: BaseEntityService}
 
   ]
 })

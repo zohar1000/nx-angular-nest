@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { BaseEntityContainerComponent } from '../../../shared/base-classes/base-entity-container.component';
-import { EntityServiceToken } from '@sample-app/shared/consts/entity-service-token.const';
 import { ActivatedRoute } from '@angular/router';
+import { Tokens } from '@sample-app/shared/enums/tokens.enum';
 
 @Component({
   selector: 'app-user-container',
@@ -10,7 +10,7 @@ import { ActivatedRoute } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserContainerComponent extends BaseEntityContainerComponent {
-  constructor(@Inject(EntityServiceToken) entityService, activatedRoute: ActivatedRoute) {
+  constructor(@Inject(Tokens.EntityService) entityService, activatedRoute: ActivatedRoute) {
     super(entityService, activatedRoute);
   }
 }

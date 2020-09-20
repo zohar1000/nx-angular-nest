@@ -1,9 +1,10 @@
-import { Component, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { ActivationEnd } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { BaseComponent } from './shared/base-classes/base.component';
 import { AuthService } from './core/services/auth.service';
 import { AppEventType } from '@sample-app/shared/enums/app-event-type.enum';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +19,7 @@ export class AppComponent extends BaseComponent {
   isInitialized = false;
   userProfile = null;
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, private cdr: ChangeDetectorRef) {
     super();
 
     this.regSub(this.router.events.subscribe(e => {
@@ -31,11 +32,10 @@ export class AppComponent extends BaseComponent {
       .pipe(finalize(() => this.isInitialized = true))
       .subscribe(
         () => {},
-        err => this.router.navigate(['/login'], { state: { isLogout: true }})
+        () => this.router.navigate(['/login'], { state: { isLogout: true }})
       ));
 
     this.regSub(this.appEventsService.getObsaervable(AppEventType.ShowAppSpinner).subscribe(() => setTimeout(() => this.isSpinner = true)));
-    // this.regSub(this.appEventsService.getObsaervable(AppEventType.ShowAppSpinner).subscribe(() => setTimeout(() => console.log('spinner true'))));
     this.regSub(this.appEventsService.getObsaervable(AppEventType.HideAppSpinner).subscribe(() => setTimeout(() => this.isSpinner = false)));
   }
 

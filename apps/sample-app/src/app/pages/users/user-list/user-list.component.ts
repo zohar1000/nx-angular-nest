@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, Inject } from '@angular/core';
-import { EntityServiceToken } from '@sample-app/shared/consts/entity-service-token.const';
 import { BaseEntityService } from '@sample-app/shared/base-classes/base-entity.service';
+import { Tokens } from '@sample-app/shared/enums/tokens.enum';
+import { BaseEntityListComponent } from '@sample-app/shared/base-classes/base-entity-list.component';
 
 @Component({
   selector: 'app-user-list',
@@ -8,14 +9,24 @@ import { BaseEntityService } from '@sample-app/shared/base-classes/base-entity.s
   styleUrls: ['./user-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserListComponent {
-  constructor(@Inject(EntityServiceToken) public entityService: BaseEntityService) {}
-
-  onClickAdd() {
-    this.entityService.onAddItem();
+export class UserListComponent extends BaseEntityListComponent {
+  constructor(@Inject(Tokens.EntityService) entityService) {
+    super(entityService);
   }
 
-  onClickSelect() {
-    this.entityService.onSelectItem(102);
+  onClickAdd() {
+    this.entityService.navigateToAddPage();
+  }
+
+  onClickEdit() {
+    this.entityService.navigateToEditPage(102);
+  }
+
+  onClickDelete() {
+    this.entityService.submitDeleteItem(102);
+  }
+
+  onClickGetPage(pageNum) {
+
   }
 }
