@@ -1,3 +1,32 @@
 <ng-container [NgRouteChange]="{ handler: onRouteChange.bind(this) }"></ng-container>
 
 <router-outlet></router-outlet>
+
+<hr/>
+
+<ng-container [ngSwitch]="pageType">
+  <app-add-user
+    *ngSwitchCase="PageType.AddItem"
+    (cancel)="onCancelItem()"
+    (submit)="submitAddItem($event)"
+  ></app-add-user>
+  <app-edit-user
+    *ngSwitchCase="PageType.EditItem"
+    [currItem$]="currItem$"
+    (cancel)="onCancelItem()"
+    (submit)="submitEditItem($event)"
+  ></app-edit-user>
+  <app-user-list
+    *ngSwitchCase="PageType.List"
+    [items$]="items$"
+    [totalCount$]="totalCount$"
+    (navigateToAddPage)="navigateToAddPage()"
+    (navigateToEditPage)="navigateToEditPage($event)"
+    (submitDeleteItem)="submitDeleteItem($event)"
+    (pageIndex)="getPageByPageIndex($event)"
+    (sort)="getPageBySort($event)"
+  ></app-user-list>
+</ng-container>
+
+
+

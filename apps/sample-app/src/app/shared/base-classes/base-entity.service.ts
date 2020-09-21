@@ -43,7 +43,7 @@ export class BaseEntityService extends BaseService {
   public sort: SortState;
   protected activatedRoute: ActivatedRoute;
   protected localStorageTableKey;
-  protected apiService: ApiService;
+  // protected apiService: ApiService;
   protected localStorageService: LocalStorageService;
   protected router: Router;
 
@@ -51,7 +51,7 @@ export class BaseEntityService extends BaseService {
     super();
     this.localStorageTableKey = `table_${this.entityKey}`;
     this.router = appInjector.get(Router);
-    this.apiService = appInjector.get(ApiService);
+    // this.apiService = appInjector.get(ApiService);
     this.localStorageService = appInjector.get(LocalStorageService);
     this.paging = Object.assign({}, this.INITIAL_PAGING);
     // this.store = appInjector.get(Store);
@@ -122,7 +122,7 @@ export class BaseEntityService extends BaseService {
     this.showAppSpinner();
     this.regSub(this.apiService.post(`${this.getUrlPrefix()}/page`, req)  // this.getPageItems(data)
       .pipe(
-        finalize(() => this.onFetchPageComplete()),
+        finalize(() => this.hideAppSpinner()),
         tap((response: ServerResponse) => {
           this.paging.pageIndex = req.paging.pageIndex;
           this.items$.next(response.data.items);
@@ -216,6 +216,7 @@ export class BaseEntityService extends BaseService {
   onCancelItem() {
     this.navigateTo(['.']);
   }
+
   navigateTo(segments: string[] | string) {
     if (!Array.isArray(segments)) segments = [segments];
     this.router.navigate(segments, { relativeTo: this.activatedRoute });

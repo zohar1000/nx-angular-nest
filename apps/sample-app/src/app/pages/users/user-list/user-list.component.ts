@@ -1,5 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, Inject } from '@angular/core';
-import { Tokens } from '@sample-app/shared/enums/tokens.enum';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { BaseEntityListComponent } from '@sample-app/shared/base-classes/base-entity-list.component';
 
 @Component({
@@ -8,8 +7,4 @@ import { BaseEntityListComponent } from '@sample-app/shared/base-classes/base-en
   styleUrls: ['./user-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserListComponent extends BaseEntityListComponent {
-  constructor(@Inject(Tokens.EntityService) entityService) {
-    super(entityService);
-  }
-}
+export class UserListComponent extends BaseEntityListComponent {}

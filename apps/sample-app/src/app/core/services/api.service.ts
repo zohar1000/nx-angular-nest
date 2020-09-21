@@ -14,8 +14,8 @@ export class ApiService {
   }
 
   post(url, data) {
-    return this.http.post(this.getFUllUrl(url), data);
-    // return of({ isSuccess: true, data: { isSuccess: true, a: 1 }}).pipe(delay(500));
+    if (url.includes('page')) return this.http.post(this.getFUllUrl(url), data);
+    return of({ isSuccess: true, data: { isSuccess: true, a: 1 }}).pipe(delay(500));
   }
 
   put(url, data) {

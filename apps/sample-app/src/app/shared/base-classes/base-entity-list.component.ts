@@ -1,35 +1,54 @@
+import { Directive, EventEmitter, Input, Output } from '@angular/core';
 import { BaseComponent } from './base.component';
-import { BaseEntityService } from '@sample-app/shared/base-classes/base-entity.service';
 import { GetPageRequest } from '@shared/models/get-page-request.model';
 
 // TODO:
 // save in local storage: sort key, sort direction
 
+@Directive()
 export abstract class BaseEntityListComponent extends BaseComponent {
-  constructor(public entityService: BaseEntityService) {
-    super();
-  }
+  @Input() items$;
+  @Input() totalCount$;
+  @Output() navigateToAddPage = new EventEmitter();
+  @Output() navigateToEditPage = new EventEmitter();
+  @Output() submitDeleteItem = new EventEmitter();
+  @Output() pageIndex = new EventEmitter();
+  @Output() sort = new EventEmitter();
 
   onClickAdd() {
-    this.entityService.navigateToAddPage();
+    this.navigateToAddPage.emit();
   }
 
   onClickEdit() {
-    this.entityService.navigateToEditPage(102);
+    this.navigateToEditPage.emit(102);
   }
 
   onClickDelete() {
-    this.entityService.submitDeleteItem(102);
+    this.submitDeleteItem.emit(102);
   }
 
+  onClickPageIndex(pageIndex) {
+    pageIndex = !pageIndex ? 0 : Number(pageIndex);
+    this.pageIndex.emit(pageIndex);
+  }
+
+  onClickSort(key = 'id', order) {
+    key = !key ? 'id' : key;
+    order = !order ? 1 : Number(order);
+    this.sort.emit({ key, order });
+  }
+
+/*
   onClickGetPage(pageIndex, key = 'id', order) {
     const req = this.getDefaultPageRequest();
     req.paging.pageIndex = !pageIndex ? 0 : Number(pageIndex);
     req.sort.key = !key ? 'id' : key;
     req.sort.order = !order ? 1 : Number(order);
-    this.entityService.getPage(req);
+    this.getPage.emit(req);
   }
+*/
 
+/*
   getDefaultPageRequest(): GetPageRequest {
     return {
       paging: {
@@ -44,5 +63,6 @@ export abstract class BaseEntityListComponent extends BaseComponent {
       isTotalCount: true
     }
   }
+*/
 
 }

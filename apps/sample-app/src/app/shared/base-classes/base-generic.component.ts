@@ -4,16 +4,19 @@ import { AppEventsService } from '@sample-app/core/services/app-events.service';
 import { AppEventType } from '@sample-app/shared/enums/app-event-type.enum';
 import { Subscription } from 'rxjs';
 import { Directive, OnDestroy } from '@angular/core';
+import { ApiService } from '@sample-app/core/services/api.service';
 
 @Directive()
 export abstract class BaseGeneric implements OnDestroy {
-  protected toastrService: ToastrService;
+  protected apiService: ApiService;
   protected appEventsService: AppEventsService;
+  protected toastrService: ToastrService;
   private subs: Subscription[] = [];
 
   constructor() {
-    this.toastrService = appInjector.get(ToastrService);
+    this.apiService = appInjector.get(ApiService);
     this.appEventsService = appInjector.get(AppEventsService);
+    this.toastrService = appInjector.get(ToastrService);
   }
 
   ngOnDestroy() {
