@@ -4,7 +4,6 @@ import { finalize } from 'rxjs/operators';
 import { BaseComponent } from './shared/base-classes/base.component';
 import { AuthService } from './core/services/auth.service';
 import { AppEventType } from '@sample-app/shared/enums/app-event-type.enum';
-import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-root',

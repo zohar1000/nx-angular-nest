@@ -7,8 +7,9 @@ Angular version 10.0.11 and nest version 7.4.2.
 <br/>
 
 #### Angular optimization:
-running without zone.js
+running without zone.js cannot be done because the themes needs it (material, bootstrap, etc).
 using ngZoneEventCoalescing to reduce change detection cycles
+OnPush strategy is used except in components having <router-outlet>, from some reason the navigation does not happen with OnPush.
 
 #### Server:
 configuration is made by using json5 file which enables comments

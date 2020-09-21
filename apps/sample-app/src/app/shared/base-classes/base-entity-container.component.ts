@@ -8,69 +8,73 @@ import { finalize, switchMap, tap } from 'rxjs/operators';
 import { ServerResponse } from '@shared/models/server-response.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, ReplaySubject } from 'rxjs';
-import { Paging } from '@sample-app/shared/models/paging.model';
-import { SortState } from '@sample-app/shared/models/sort-state.model';
+import { PagingSettings } from '@sample-app/shared/models/paging-settings.model';
+import { SortSettings } from '@sample-app/shared/models/sort-settings.model';
 import { LocalStorageService } from '@sample-app/core/services/local-storage.service';
 import { appInjector } from '@sample-app/app.injector';
 
 // TODO:
-// regSub to all subscribers
-// implement total count
 // implement onServerResponseError
-// change toastr error messages to include entity
-// save in local storage: sort key, sort direction
 
 @Directive()
 export abstract class BaseEntityContainerComponent extends BaseComponent implements OnInit {
-  readonly INITIAL_PAGING: Paging = { pageIndex: 0, pageSize: 10 }
-  readonly INITIAL_SORT: SortState = { key: 'id', order: 1 }
+  readonly INITIAL_PAGING: PagingSettings = { pageIndex: 0, pageSize: 10 };
+  readonly INITIAL_SORT: SortSettings = { key: 'id', order: 1 };
+  readonly DEFAULT_CONFIG = { isLoadItemsOnInit: true, isRefreshTotalCountOnEdit: false };
   pageType = '';
   PageType = PageType;
   items$ = new BehaviorSubject(null);
   currItem$ = new BehaviorSubject(null);
-  public totalCount$ = new BehaviorSubject(0);
-  public paging: Paging = {...this.INITIAL_PAGING}
-  public filter = {};
-  public sort: SortState = {...this.INITIAL_SORT};
-  paging$ = new ReplaySubject(1);
-  protected localStorageTableKey;
-  protected localStorageService: LocalStorageService;
+  totalCount$ = new BehaviorSubject(0);
+  paging: PagingSettings;
+  filter;
+  sort: SortSettings;
+  pageSettings$ = new ReplaySubject(1);
+  localStorageTableKey;
+  localStorageService: LocalStorageService;
+  isRefreshTotalCount = true;
+  config;
+  isUpdateLocalStorage = false;
 
   constructor(protected entityKey: string,
               protected entityService: BaseEntityService,
               private activatedRoute: ActivatedRoute) {
     super();
-    console.log(`${this.constructor.name} con`);
   }
 
   ngOnInit(): void {
     this.localStorageService = appInjector.get(LocalStorageService);
-    this.entityService.init(this.activatedRoute);
     this.localStorageTableKey = `table_${this.entityKey}`;
-    this.paging$.pipe(switchMap(paging => this.fetchFromServer(paging))).subscribe(
+    this.initConfig();
+    this.initPageSettingsFromLocalStorage();
+    this.currItem$ = this.entityService.items$;  //   new BehaviorSubject(null);
+    this.totalCount$ = this.entityService.totalCount$;  //  = new BehaviorSubject(0);
+    if (this.config.isLoadItemsOnInit) this.items$.next(null);
+    this.regSub(this.pageSettings$.pipe(switchMap(paging => this.sendPageReqToServer(paging))).subscribe(
       () => {},
-      (err: HttpErrorResponse) => {
-        console.log('HttpErrorResponse:', err);
-        // if (err.status !== 401) this.onServerResponseError(err);
+      (e: HttpErrorResponse) => {
+        if (e.status === 401) return;
+        this.logError(`Error getting items, entity: ${this.entityKey}`, e);
+        this.showErrorToastr(`Error getting ${this.entityKey}`);
       }
-    );
+    ));
+  }
+
+  initConfig() {
+    this.config = { ...this.DEFAULT_CONFIG };
   }
 
   onRouteChange(data: RouteChangeData) {
     const pageType = data.state.data ? data.state.data.pageType : '';
-console.log('onRouteChange, pageType:', pageType);
     if (!pageType) return;
     this.pageType = pageType;
-    // if (pageType) this.entityService.onRoute(pageType, data.state.params.id);
-
     switch (pageType) {
       case PageType.List:
-        // if (!this.items$.value) this.getPage();
-        if (!this.items$.value) this.getPageByNewPaging();
+        if (!this.items$.value) this.getPage();
         break;
       case PageType.EditItem:
         this.currItem$.next(null);
-        this.getItem(data.state.params.id).subscribe(response => this.currItem$.next(response));
+        this.regSub(this.getItem(data.state.params.id).subscribe(response => this.currItem$.next(response)));
         break;
     }
   }
@@ -89,8 +93,8 @@ console.log('onRouteChange, pageType:', pageType);
         if (response.isSuccess) {
           this.currItem$.next(response.data);
         } else {
-          this.logError(`Error getting item ${id}, entity: ${this.entityKey}, message: ${response.error.message}`);
-          this.showErrorToastr('Error getting item');
+          this.logError(`Error getting ${this.entityKey} ${id}, message: ${response.error.message}`);
+          this.showErrorToastr(`Error getting ${this.entityKey}`);
         }
       }));
   }
@@ -105,36 +109,50 @@ console.log('onRouteChange, pageType:', pageType);
           this.items$.next(response.data);
         } else {
           this.logError(`Error getting items, entity: ${this.entityKey}, message: ${response.error.message}`);
-          this.showErrorToastr('Error getting items');
+          this.showErrorToastr(`Error getting ${this.entityKey} records`);
         }
       }));
   }
 
   getPageByPageIndex(pageIndex) {
     this.paging.pageIndex = pageIndex;
-    this.getPageByNewPaging();
+    this.getPage();
+  }
+
+  getPageByPageSize(pageSize) {
+    this.isUpdateLocalStorage = true;
+    this.paging.pageSize = pageSize;
+    this.getPage();
   }
 
   getPageBySort({key, order}) {
+    this.isUpdateLocalStorage = true;
     this.sort.key = key;
     this.sort.order = order;
-    this.getPageByNewPaging();
+    this.getPage();
   }
 
-  getPageByNewPaging() {
-    const paging = { paging: this.paging, filter: this.filter, sort: this.sort, isTotalCount: true }
-    this.paging$.next(paging);
+  getPage() {
+    const isRefreshTotalCount = this.isRefreshTotalCount;
+    this.isRefreshTotalCount = true;
+    const paging = { paging: this.paging, filter: this.filter, sort: this.sort, isTotalCount: isRefreshTotalCount }
+    this.pageSettings$.next(paging);
   }
 
-  fetchFromServer(paging) {
-console.log('fetchFromServer, paging:', JSON.stringify(paging));
+  sendPageReqToServer(paging) {
+console.log('get page settings:', JSON.stringify(paging));
     this.showAppSpinner();
     return this.apiService.post(`${this.getUrlPrefix()}/page`, paging).pipe(
-      finalize(() => this.hideAppSpinner()),
+      finalize(() => { this.hideAppSpinner(); this.isUpdateLocalStorage = false; }),
       tap((response: ServerResponse) => {
-        this.paging.pageIndex = paging.paging.pageIndex;  // save for next pages
-        this.items$.next(response.data.items);
-        if (paging.isTotalCount) this.totalCount$.next(response.data.totalCount);
+        if (response.isSuccess) {
+          this.items$.next(response.data.items);
+          if (paging.isTotalCount) this.totalCount$.next(response.data.totalCount);
+          if (this.isUpdateLocalStorage) this.updateLocalStorage();
+        } else {
+          this.logError(`Error getting items, entity: ${this.entityKey}, message: ${response.error.message}`);
+          this.showErrorToastr(`Error getting ${this.entityKey} records`);
+        }
       })
     )
   }
@@ -147,7 +165,7 @@ console.log('fetchFromServer, paging:', JSON.stringify(paging));
   submitAddItem(data) {
     console.log('submit add item');
     this.showAppSpinner();
-    this.apiService.post(`${this.getUrlPrefix()}`, data)
+    this.regSub(this.apiService.post(`${this.getUrlPrefix()}`, data)
       .pipe(
         tap((response: ServerResponse) => {
           if (response.isSuccess) {
@@ -156,44 +174,45 @@ console.log('fetchFromServer, paging:', JSON.stringify(paging));
           } else {
             this.hideAppSpinner();
             this.logError(`Error adding item, entity: ${this.entityKey}, message: ${response.error.message}`);
-            this.showErrorToastr('Error adding item');
+            this.showErrorToastr(`Error adding ${this.entityKey}`);
           }
         })
-      ).subscribe(() => {});
+      ).subscribe(() => {}));
   }
 
   submitEditItem({id, data}) {
     console.log('submit edit item');
     this.showAppSpinner();
-    this.apiService.put(`${this.getUrlPrefix()}/${id}`, data)
+    this.regSub(this.apiService.put(`${this.getUrlPrefix()}/${id}`, data)
       .pipe(
         tap((response: ServerResponse) => {
           if (response.isSuccess) {
             this.items$.next(null);
+            if (!this.config.isRefreshTotalCountOnEdit) this.isRefreshTotalCount = false;
             this.navigateTo(['.']);
           } else {
             this.hideAppSpinner();
             this.logError(`Error saving item ${id}, entity: ${this.entityKey}, message: ${response.error.message}`);
-            this.showErrorToastr('Error saving item');
+            this.showErrorToastr(`Error saving ${this.entityKey}`);
           }
         })
-      ).subscribe(() => {});
+      ).subscribe(() => {}));
   }
 
   submitDeleteItem(id) {
     this.showAppSpinner();
-    this.apiService.delete(`${this.getUrlPrefix()}/${id}`)
+    this.regSub(this.apiService.delete(`${this.getUrlPrefix()}/${id}`)
       .pipe(
         tap((response: ServerResponse) => {
           if (response.isSuccess) {
-            this.getPageByNewPaging()
+            this.getPage()
           } else {
+            this.hideAppSpinner();
             this.logError(`Error deleting item ${id}, entity: ${this.entityKey}, message: ${response.error.message}`);
-            this.showErrorToastr('Error deleting item');
+            this.showErrorToastr(`Error deleting ${this.entityKey}`);
           }
         })
-      )
-      .subscribe(() => {});
+      ).subscribe(() => {}));
   }
 
   /*****************************/
@@ -210,7 +229,6 @@ console.log('fetchFromServer, paging:', JSON.stringify(paging));
   }
 
   onCancelItem() {
-console.log('onCancelItem !!!!');
     this.navigateTo(['.']);
   }
 
@@ -218,7 +236,35 @@ console.log('onCancelItem !!!!');
     this.router.navigate(segments, { relativeTo: this.activatedRoute });
   }
 
+  /***************************************/
+  /*      L O C A L   S T O R A G E      */
+  /***************************************/
 
+  initPageSettingsFromLocalStorage() {
+    const item = this.localStorageService.getJsonItem(this.localStorageTableKey);
+    this.sort = item && item.sortSettings ? item.sortSettings : { ...this.INITIAL_SORT };
+    this.paging = { ...this.INITIAL_PAGING };
+    const pageSize = this.localStorageService.getItem(LocalStorageService.PAGE_SIZE);
+    if (pageSize) this.paging.pageSize = Number(pageSize);
+    this.filter = {};
+  }
+
+  storePageSizeInLocalStorage() {
+    this.localStorageService.setItem(LocalStorageService.PAGE_SIZE, this.paging.pageSize);
+  }
+
+  storeSortSettingsInLocalStorage() {
+    let item = this.localStorageService.getJsonItem(this.localStorageTableKey);
+    if (!item) item = {};
+    item.sortSettings = this.sort;
+    this.localStorageService.setJsonItem(this.localStorageTableKey, item);
+  }
+
+  updateLocalStorage() {
+    this.storePageSizeInLocalStorage();
+    this.storeSortSettingsInLocalStorage();
+
+  }
 
   getUrlPrefix() {
     return `v1/${this.entityKey}`;

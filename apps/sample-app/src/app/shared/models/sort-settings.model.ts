@@ -1,4 +1,4 @@
-export interface SortState {
+export interface SortSettings {
   key: string;
   order: number;
 }

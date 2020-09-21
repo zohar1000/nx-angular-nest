@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { UserContainerComponent } from './user-container/user-container.component';
 import { PageType } from '../../shared/enums/page-type.enum';
 

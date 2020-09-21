@@ -1,6 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, Inject, Input, EventEmitter, Output } from '@angular/core';
-import { BaseEntityService } from '@sample-app/shared/base-classes/base-entity.service';
-import { Tokens } from '@sample-app/shared/enums/tokens.enum';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-edit-user',

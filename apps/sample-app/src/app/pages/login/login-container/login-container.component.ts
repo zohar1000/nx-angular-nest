@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter } from '@angular/core';
 import { BaseContainerComponent } from '../../../shared/base-classes/base-container.component';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';

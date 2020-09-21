@@ -1,10 +1,6 @@
-import { Paging } from '@sample-app/shared/models/paging.model';
-import { SortState } from '@sample-app/shared/models/sort-state.model';
+import { PageSettings } from '@shared/models/page-settings.model';
 
-export interface GetPageRequest {
-  paging: Paging;
-  filter: any;
-  sort: SortState;
+export interface GetPageRequest extends PageSettings {
   isTotalCount: boolean;
 }
 

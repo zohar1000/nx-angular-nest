@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class LocalStorageService {
-  static readonly PAGING_KEY = 'paging';
+  static readonly PAGE_SIZE = 'page_size';
 
   getItem(name) {
     const item = localStorage.getItem(name);
