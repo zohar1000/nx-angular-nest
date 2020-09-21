@@ -57,7 +57,7 @@
     "mkdir-recursive": "^0.4.0",
     "mongodb": "^3.6.0",
     "morgan": "^1.10.0",
-    "ng-route-change": "^1.0.24",
+    "ng-route-change": "^1.0.27",
     "ng-router-outlet-comm": "^1.0.13",
     "ngx-loading": "^8.0.0",
     "ngx-toastr": "^13.0.0",

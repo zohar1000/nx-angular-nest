@@ -1,3 +1,3 @@
-<ng-container [NgRouteChange]="{ handler: onRouteChange, host: this }"></ng-container>
+<ng-container [NgRouteChange]="{ handler: onRouteChange.bind(this) }"></ng-container>
 
 <router-outlet></router-outlet>
