@@ -86,7 +86,7 @@ console.log('query:', query);
   /*    P A G I N G     */
   /**********************/
 
-  async getPage(user: AuthUser, body): Promise<GetItemsResponse> {
+  async getItemsPage(user: AuthUser, body): Promise<GetItemsResponse> {
     return new Promise(async (resolve, reject) => {
       try {
         let totalCount;

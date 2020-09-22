@@ -5,7 +5,7 @@ import { PagingSettings } from '@sample-app/shared/models/paging-settings.model'
 import { SortSettings } from '@sample-app/shared/models/sort-settings.model';
 import { LocalStorageService } from '@sample-app/core/services/local-storage.service';
 import { appInjector } from '@sample-app/app.injector';
-import { ListPageSettings } from '@shared/models/list-page-settings.model';
+import { ItemsPageSettings } from '@shared/models/items-page-settings.model';
 
 @Injectable()
 export class BaseEntityStore extends BaseService {
@@ -23,10 +23,10 @@ export class BaseEntityStore extends BaseService {
   init(entityKey) {
     this.localStorageTableKey = `table_${entityKey}`;
     this.localStorageService = appInjector.get(LocalStorageService);
-    this.initListPageSettingsFromLocalStorage();
+    this.initItemsPageSettingsFromLocalStorage();
   }
 
-  getListPageSettings(): ListPageSettings {
+  getItemsPageSettings(): ItemsPageSettings {
     return {paging: this.paging, filter: this.filter, sort: this.sort };
   }
 
@@ -34,7 +34,7 @@ export class BaseEntityStore extends BaseService {
   /*      L O C A L   S T O R A G E      */
   /***************************************/
 
-  initListPageSettingsFromLocalStorage() {
+  initItemsPageSettingsFromLocalStorage() {
     const item = this.localStorageService.getJsonItem(this.localStorageTableKey);
     this.sort = item && item.sortSettings ? item.sortSettings : { ...this.INITIAL_SORT };
     this.paging = { ...this.INITIAL_PAGING };

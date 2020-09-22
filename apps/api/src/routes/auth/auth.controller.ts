@@ -1,7 +1,7 @@
 import { Controller, Post, Body, UseGuards, Request, Get } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ErrorService } from '../../shared/services/error.service';
-import { BaseEntityController } from '../../shared/controllers/base-entity.controller';
+import { BaseEntityController } from '../../shared/base-classes/base-entity.controller';
 import { AuthService } from './services/auth.service';
 import { UserService } from '../../shared/services/entities/user.service';
 import { LoginDto } from './dtos/login.dto';

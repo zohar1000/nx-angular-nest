@@ -6,18 +6,21 @@ import { RouteChangeData } from 'ng-route-change';
 import { PageType } from '@sample-app/shared/enums/page-type.enum';
 import { finalize, switchMap, tap } from 'rxjs/operators';
 import { ServerResponse } from '@shared/models/server-response.model';
-import { HttpErrorResponse } from '@angular/common/http';
 import { ReplaySubject } from 'rxjs';
 import { GetItemsRequest } from '@shared/models/get-items-request.model';
 import { GetItemsResponse } from '@shared/models/get-items-response.model';
-import { ListPageSettings } from '@shared/models/list-page-settings.model';
+import { ItemsPageSettings } from '@shared/models/items-page-settings.model';
 
 // TODO:
 // implement onServerResponseError
 
 @Directive()
 export abstract class BaseEntityContainerComponent extends BaseComponent implements OnInit {
-  readonly DEFAULT_CONFIG = { isLoadItemsOnInit: true, isRefreshTotalCountOnEdit: false };
+  readonly DEFAULT_CONFIG = {
+    isLoadItemsOnInit: true,
+    isRefreshTotalCountOnEdit: false,
+    isReturnItemsPageOnItemRequest: true
+  };
   getItemsRequest$ = new ReplaySubject<GetItemsRequest>(1);
   config;
   PageType = PageType;
@@ -95,7 +98,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
 
   getItems() {
     const isRefreshTotalCount = this.isRefreshTotalCount;
-    const settings: ListPageSettings = this.entityStore.getListPageSettings();
+    const settings: ItemsPageSettings = this.entityStore.getItemsPageSettings();
     const getItemsRequest: GetItemsRequest = { ...settings, isTotalCount: isRefreshTotalCount };
     this.isRefreshTotalCount = true;
     this.getItemsRequest$.next(getItemsRequest);
@@ -103,7 +106,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
 
   sendItemsReqToServer(paging) {
     this.showAppSpinner();
-    return this.apiService.post(`${this.getUrlPrefix()}/page`, paging).pipe(
+    return this.apiService.post(`${this.getUrlPrefix()}/items-page`, paging).pipe(
       finalize(() => { this.hideAppSpinner(); this.isUpdateLocalStorage = false; }),
       tap((response: ServerResponse) => {
         if (response.isSuccess) {
@@ -127,7 +130,14 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   submitAddItem(data) {
     console.log('submit add item');
     this.showAppSpinner();
-    this.regSub(this.apiService.post(`${this.getUrlPrefix()}`, data)
+    if (this.config.isReturnItemsPageOnItemRequest) {
+      data = {
+        doc: data,
+        getItemsRequest: { ...this.entityStore.getItemsPageSettings(), isTotalCount: true }
+      }
+    }
+    const urlSuffix = this.config.isReturnItemsPageOnItemRequest ? '/add-page' : '';
+    this.regSub(this.apiService.post(`${this.getUrlPrefix()}${urlSuffix}`, data)
       .pipe(
         tap((response: ServerResponse) => {
           if (response.isSuccess) {

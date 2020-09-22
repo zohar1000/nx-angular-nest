@@ -1,9 +1,12 @@
 import { Controller, Get, Post, Request, Body, Param, Put, Delete, UseGuards } from '@nestjs/common';
 import { ErrorService } from '../../shared/services/error.service';
-import { BaseEntityController } from '../../shared/controllers/base-entity.controller';
+import { BaseEntityController } from '../../shared/base-classes/base-entity.controller';
 import { UserService } from '../../shared/services/entities/user.service';
 import { AddUserDto } from './dtos/add-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { ItemGetPageDto } from '@api-app/routes/user/dtos/item-get-page.dto';
+import { GetItemsRequest } from '@shared/models/get-items-request.model';
+import { AuthUser } from '@api-app/shared/models/auth-user.model';
 
 
 @Controller('/v1/user')
@@ -37,9 +40,9 @@ export class UserController extends BaseEntityController {
     }*/
 
 
-  @Post('/page')
+  @Post('/items-page')
   async getUsersPage(@Request() req, @Body() body) {
-    return await this.getPage(req.user, body);
+    return await this.getItemsPage(req.user, body);
   }
 
   @Get('/')
@@ -86,6 +89,18 @@ export class UserController extends BaseEntityController {
     }
   }
 
+  @Post('/add-page')
+  async addUserGetPage(@Request() req, @Body() dto: ItemGetPageDto) {
+    let response;
+    try {
+      response = { isSuccess: true }; // await this.userService.addUser(dto.doc);
+      return await this.getItemsPageAfterItemRequest(response, req.user, dto.getItemsRequest);
+    } catch(e) {
+      this.errorService.loge('error adding user', e, req, dto);
+      return this.exceptionResponse(e.message);
+    }
+  }
+
   @Put(':id')
   async updateUser(@Request() req, @Param('id') id, @Body() dto: UpdateUserDto) {
     try {
@@ -97,6 +112,18 @@ export class UserController extends BaseEntityController {
     }
   }
 
+  @Post(':id/edit-page')
+  async editUserGetPage(@Request() req, @Param('id') id, @Body() dto: ItemGetPageDto) {
+    let response;
+    try {
+      response = { isSuccess: true };  // await this.userService.updateUser(Number(id), dto.doc);
+      return await this.getItemsPageAfterItemRequest(response, req.user, dto.getItemsRequest);
+    } catch(e) {
+      this.errorService.loge('error adding user', e, req, dto);
+      return this.exceptionResponse(e.message);
+    }
+  }
+
   @Delete(':id')
   async deleteUser(@Request() req, @Param('id') id) {
     try {
@@ -105,6 +132,26 @@ export class UserController extends BaseEntityController {
     } catch(e) {
       this.errorService.loge('error deleting user', e, req, id);
       return this.errorResponse(e.message);
+    }
+  }
+
+  @Post(':id/delete-page')
+  async deleteUserGetPage(@Request() req, @Param('id') id, @Body() dto: ItemGetPageDto) {
+    let response;
+    try {
+      response = { isSuccess: true };  // await await this.userService.deleteById(Number(id));
+      return await this.getItemsPageAfterItemRequest(response, req.user, dto.getItemsRequest);
+    } catch(e) {
+      this.errorService.loge('error adding user', e, req, dto);
+      return this.exceptionResponse(e.message);
+    }
+  }
+
+  async getItemsPageAfterItemRequest(response, user: AuthUser, getItemsRequest: GetItemsRequest) {
+    if (response.isSuccess) {
+      return await this.getItemsPage(user, getItemsRequest);
+    } else {
+      return this.errorResponse(response.message);
     }
   }
 }

@@ -1,11 +1,9 @@
 import { EventEmitter } from 'events';
-import { Injector } from '@nestjs/core/injector/injector';
 const mongodb = require('mongodb');
 import { ErrorService } from '../services/error.service';
 import { GlobalService } from '@api-app/shared/services/global.service';
 import { FileService } from '@api-app/shared/services/file.service';
 import { SanitationService } from '@api-app/shared/services/sanitation.service';
-import { filter } from 'rxjs/operators';
 // import { GlobalService}      from './global.service';
 // import { MailService }       from './mail.service';
 // import { SanitationService } from './sanitation.service';
@@ -21,16 +19,18 @@ export abstract class BaseService extends EventEmitter {
 
   protected constructor() {
     super();
-    setTimeout(() => {
-      const subscription = GlobalService.globalService$.subscribe((globalServices: any) => {
-        this.errorService = globalServices.errorService;
-        this.fileService = globalServices.fileService;
-        this.sanitationService = globalServices.sanitationService;
-        // this.appEventsService = globalServices.appEventsService;
-        // this.mailService = globalServices.mailService;
-        setTimeout(() => {
-          subscription.unsubscribe();
-        });
+    this.init();
+  }
+
+  init() {
+    const subscription = GlobalService.globalService$.subscribe((globalServices: any) => {
+      this.errorService = globalServices.errorService;
+      this.fileService = globalServices.fileService;
+      this.sanitationService = globalServices.sanitationService;
+      // this.appEventsService = globalServices.appEventsService;
+      // this.mailService = globalServices.mailService;
+      setTimeout(() => {
+        subscription.unsubscribe();
       });
     });
   }

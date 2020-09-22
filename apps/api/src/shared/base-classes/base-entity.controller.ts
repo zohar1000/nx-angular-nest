@@ -11,9 +11,9 @@ export abstract class BaseEntityController extends BaseController {
     super(errorService);
   }
 
-  async getPage(user: AuthUser, body) {
+  async getItemsPage(user: AuthUser, body) {
     try {
-      const response = await this.entityService.getPage(user, body);
+      const response = await this.entityService.getItemsPage(user, body);
       return this.successResponse(response);
     } catch(e) {
       this.errorService.loge(`${this.constructor.name}: error getting page for ${this.entityName}`, e, user, body);
@@ -33,7 +33,7 @@ export abstract class BaseEntityController extends BaseController {
 
   async getDownloadFile(user: AuthUser, body) {
     try {
-      const response = await this.entityService.getPage(user, body);
+      const response = await this.entityService.getItemsPage(user, body);
       return this.successResponse(response);
     } catch(e) {
       this.errorService.loge(`${this.constructor.name}: error getting download file for ${this.entityName}`, e, user, body);
