@@ -3,7 +3,7 @@ import { ZMongoService, ZMongoReadOpts, ZMongoInsertOpts } from 'zshared-server'
 // import { Role } from '../enums/role.enum';
 import { BaseService } from './base.service';
 import { AuthUser } from '../models/auth-user.model';
-import { GetPageResponse } from '@shared/models/get-page-response.model';
+import { GetItemsResponse } from '@shared/models/get-items-response.model';
 
 export abstract class BaseEntityService extends BaseService {
   protected constructor(protected entityName,
@@ -86,7 +86,7 @@ console.log('query:', query);
   /*    P A G I N G     */
   /**********************/
 
-  async getPage(user: AuthUser, body): Promise<GetPageResponse> {
+  async getPage(user: AuthUser, body): Promise<GetItemsResponse> {
     return new Promise(async (resolve, reject) => {
       try {
         let totalCount;
