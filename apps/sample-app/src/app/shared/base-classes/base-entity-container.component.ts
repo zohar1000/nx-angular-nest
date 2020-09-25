@@ -11,15 +11,12 @@ import { GetItemsRequest } from '@shared/models/get-items-request.model';
 import { GetItemsResponse } from '@shared/models/get-items-response.model';
 import { ItemsPageSettings } from '@shared/models/items-page-settings.model';
 
-// TODO:
-// implement onServerResponseError
-
 @Directive()
 export abstract class BaseEntityContainerComponent extends BaseComponent implements OnInit {
   readonly DEFAULT_CONFIG = {
     isLoadItemsOnInit: true,
     isRefreshTotalCountOnEdit: false,
-    isReturnItemsPageOnItemRequest: true
+    isReturnItemsPageOnItemRequest: false
   };
   getItemsRequest$ = new ReplaySubject<GetItemsRequest>(1);
   config;
@@ -130,18 +127,18 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   submitAddItem(data) {
     console.log('submit add item');
     this.showAppSpinner();
-    if (this.config.isReturnItemsPageOnItemRequest) {
-      data = {
-        doc: data,
-        getItemsRequest: { ...this.entityStore.getItemsPageSettings(), isTotalCount: true }
-      }
-    }
-    const urlSuffix = this.config.isReturnItemsPageOnItemRequest ? '/add-page' : '';
-    this.regSub(this.apiService.post(`${this.getUrlPrefix()}${urlSuffix}`, data)
+    const { method, urlSuffix, params } = this.getRequestUrlAndParams('add', 'post', data);
+    this.regSub(this.apiService[method](`${this.getUrlPrefix()}${urlSuffix}`, params)
       .pipe(
         tap((response: ServerResponse) => {
           if (response.isSuccess) {
-            this.entityStore.items$.next(null);
+            if (this.config.isReturnItemsPageOnItemRequest) {
+              this.hideAppSpinner();
+              this.entityStore.items$.next(response.data.items);
+              this.entityStore.totalCount$.next(response.data.totalCount);
+            } else {
+              this.entityStore.items$.next(null);
+            }
             this.navigateTo(['.']);
           } else {
             this.hideAppSpinner();
@@ -155,12 +152,19 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   submitEditItem({id, data}) {
     console.log('submit edit item');
     this.showAppSpinner();
-    this.regSub(this.apiService.put(`${this.getUrlPrefix()}/${id}`, data)
+    const { urlSuffix, method, params } = this.getRequestUrlAndParams('edit', 'put', data);
+    this.regSub(this.apiService[method](`${this.getUrlPrefix()}/${id}${urlSuffix}`, params)
       .pipe(
         tap((response: ServerResponse) => {
           if (response.isSuccess) {
-            this.entityStore.items$.next(null);
-            if (!this.config.isRefreshTotalCountOnEdit) this.isRefreshTotalCount = false;
+            if (this.config.isReturnItemsPageOnItemRequest) {
+              this.hideAppSpinner();
+              this.entityStore.items$.next(response.data.items);
+              this.entityStore.totalCount$.next(response.data.totalCount);
+            } else {
+              this.entityStore.items$.next(null);
+              if (!this.config.isRefreshTotalCountOnEdit) this.isRefreshTotalCount = false;
+            }
             this.navigateTo(['.']);
           } else {
             this.hideAppSpinner();
@@ -173,11 +177,18 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
 
   submitDeleteItem(id) {
     this.showAppSpinner();
-    this.regSub(this.apiService.delete(`${this.getUrlPrefix()}/${id}`)
+    const { urlSuffix, method, params } = this.getRequestUrlAndParams('delete', 'delete');
+    this.regSub(this.apiService[method](`${this.getUrlPrefix()}/${id}${urlSuffix}`, params)
       .pipe(
         tap((response: ServerResponse) => {
           if (response.isSuccess) {
-            this.getItems()
+            if (this.config.isReturnItemsPageOnItemRequest) {
+              this.hideAppSpinner();
+              this.entityStore.items$.next(response.data.items);
+              this.entityStore.totalCount$.next(response.data.totalCount);
+            } else {
+              this.getItems()
+            }
           } else {
             this.hideAppSpinner();
             this.logError(`Error deleting item ${id}, entity: ${this.entityKey}`, response);
@@ -186,6 +197,26 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
         })
       ).subscribe());
   }
+
+  getRequestUrlAndParams(type: string, method, data?): { method: string, urlSuffix: string, params: any } {
+    if (this.config.isReturnItemsPageOnItemRequest) {
+      return {
+        method: 'post',
+        urlSuffix: `/${type}-page`,
+        params: {
+          doc: data,
+          getItemsRequest: { ...this.entityStore.getItemsPageSettings(), isTotalCount: true }
+        }
+      }
+    } else {
+      return {
+        method,
+        urlSuffix: '',
+        params: data
+      }
+    }
+  }
+
 
   /*****************************/
   /*      N A V I G A T E      */

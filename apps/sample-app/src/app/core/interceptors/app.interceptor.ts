@@ -5,13 +5,17 @@ import { catchError, filter, switchMap, take } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { RefreshTokenResponse } from '@shared/models/refresh-token-response.model';
 import { AuthService } from '../services/auth.service';
+import { AppEventType } from '@sample-app/shared/enums/app-event-type.enum';
+import { BaseService } from '@sample-app/shared/base-classes/base.service';
 
 @Injectable({ providedIn: 'root' })
-export class AppInterceptor implements HttpInterceptor {
+export class AppInterceptor extends BaseService implements HttpInterceptor {
   private isRefreshing = false;
   private refreshToken$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, private authService: AuthService) {
+    super();
+  }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 // console.log('req:', req.method, req.url);
@@ -20,13 +24,13 @@ export class AppInterceptor implements HttpInterceptor {
 
     return next.handle(req).pipe(
       catchError(error => {
-          if (error instanceof HttpErrorResponse && error.status === 401) {
-            return this.handle401Error(error, req, next);
-          } else {
-            return throwError(error);
-          }
-        },
-      )
+        this.appEventsService.sendAppEvent(AppEventType.HideAppSpinner);
+        if (error instanceof HttpErrorResponse && error.status === 401) {
+          return this.handle401Error(error, req, next);
+        } else {
+          return this.showToastrAndReturnError(error);
+        }
+      })
     );
   }
 
@@ -53,7 +57,7 @@ export class AppInterceptor implements HttpInterceptor {
         take(1),
         switchMap((response: RefreshTokenResponse) => {
           if (!response.isSuccess) {
-            return throwError(org401Error);
+            return this.showToastrAndReturnError(org401Error);
           } else {
             return next.handle(this.addToken(req, response.accessToken));
           }
@@ -63,5 +67,10 @@ export class AppInterceptor implements HttpInterceptor {
 
   private addToken(req: HttpRequest<any>, accessToken: string) {
     return req.clone({ setHeaders: { Authorization: `Bearer ${accessToken}` } });
+  }
+
+  showToastrAndReturnError(error) {
+    this.toastrService.error(`Error ${error.status} - ${error.statusText}`);
+    return throwError(error);
   }
 }

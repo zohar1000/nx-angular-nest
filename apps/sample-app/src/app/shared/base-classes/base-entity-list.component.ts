@@ -1,9 +1,6 @@
 import { Directive, EventEmitter, Input, Output } from '@angular/core';
 import { BaseComponent } from './base.component';
 
-// TODO:
-// save in local storage: sort key, sort direction
-
 @Directive()
 export abstract class BaseEntityListComponent extends BaseComponent {
   @Input() items$;
