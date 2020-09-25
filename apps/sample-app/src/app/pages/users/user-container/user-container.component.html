@@ -20,12 +20,13 @@
     *ngSwitchCase="PageType.List"
     [items$]="entityStore.items$"
     [totalCount$]="entityStore.totalCount$"
+    [pageSettings$]="entityStore.pageSettings$"
     (navigateToAddPage)="navigateToAddPage()"
     (navigateToEditPage)="navigateToEditPage($event)"
     (submitDeleteItem)="submitDeleteItem($event)"
-    (pageIndex)="getItemsByPageIndex($event)"
-    (pageSize)="getItemsByPageSize($event)"
-    (sort)="getItemsBySort($event)"
+    (onChangePageIndex)="onChangePageIndex($event)"
+    (onChangePageSize)="onChangePageSize($event)"
+    (sort)="onChangeSort($event)"
   ></app-user-list>
 </ng-container>
 

@@ -43,13 +43,13 @@
   font-size: 1.8rem !important;
 }
 
-.mat-dialog-container {
+/*.mat-dialog-container {
   background: #e0e0e0 !important;
 
   .mat-dialog-content {
     color: black !important;
   }
-}
+}*/
 
 .mat-menu-item {
   display: flex !important;
@@ -67,15 +67,17 @@
 }
 
 .mat-paginator {
-  background: #333333 !important;
-  font-size: 1rem !important;
+  font-size: 0.9rem !important;
 
   .mat-paginator-container {
+    .mat-paginator-page-size-label{
+      margin: 0 0.6rem !important;
+    }
     .mat-paginator-page-size-select {
       width: 4rem !important;
 
       .mat-select-trigger {
-        font-size: 1rem !important;
+         font-size: 0.9rem !important;
       }
     }
     .mat-form-field-wrapper {

@@ -5,7 +5,6 @@ import { ZTime, logt }    from 'zshared';
 @Injectable()
 export class ErrorService {
   constructor() {
-console.log('error service con');
     Error.stackTraceLimit = 30;
 
     process.on('uncaughtException', err =>  {

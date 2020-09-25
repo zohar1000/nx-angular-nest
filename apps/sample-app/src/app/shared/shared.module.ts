@@ -5,8 +5,13 @@ import { MaterialDesignModule } from './material-design.module';
 import { NgRouterOutletCommModule } from 'ng-router-outlet-comm';
 import { ngxLoadingAnimationTypes, NgxLoadingModule } from 'ngx-loading';
 import { NgRouteChangeModule } from 'ng-route-change';
+import { UserStatusLabelPipe } from '@sample-app/shared/pipes/user-status-label.pipe';
+import { RoleLabelPipe } from '@sample-app/shared/pipes/role-label.pipe';
 
 const declarations = [
+  // pipes
+  UserStatusLabelPipe,
+  RoleLabelPipe
 ]
 
 const modules = [

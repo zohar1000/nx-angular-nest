@@ -16,9 +16,7 @@ export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> 
   isLogResponses = appConfig.console.isLogClientResponses;
   excludedLogResponses = !appConfig.console.excludedLogResponses || appConfig.console.excludedLogResponses.length === 0 ? null : appConfig.console.excludedLogResponses;
 
-  constructor(private errorService: ErrorService) {
-console.log('intercepor con, errorService:', this.errorService);
-  }
+  constructor(private errorService: ErrorService) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<Response<T>> {
     const ctx = context.switchToHttp();

@@ -10,6 +10,8 @@ import { ReplaySubject } from 'rxjs';
 import { GetItemsRequest } from '@shared/models/get-items-request.model';
 import { GetItemsResponse } from '@shared/models/get-items-response.model';
 import { ItemsPageSettings } from '@shared/models/items-page-settings.model';
+import { GetItemsOptions } from '@shared/models/get-items-options.model';
+import { GetItems } from '@shared/models/get-items.model';
 
 @Directive()
 export abstract class BaseEntityContainerComponent extends BaseComponent implements OnInit {
@@ -18,12 +20,11 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
     isRefreshTotalCountOnEdit: false,
     isReturnItemsPageOnItemRequest: false
   };
-  getItemsRequest$ = new ReplaySubject<GetItemsRequest>(1);
+  getItems$ = new ReplaySubject<GetItems>(1);
   config;
   PageType = PageType;
   pageType = '';
   isRefreshTotalCount = true;
-  isUpdateLocalStorage = false;
 
   constructor(protected entityKey: string,
               public entityStore: BaseEntityStore,
@@ -35,7 +36,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
     this.entityStore.init(this.entityKey);
     this.initConfig();
     if (this.config.isLoadItemsOnInit) this.entityStore.items$.next(null);
-    this.regSub(this.getItemsRequest$.pipe(switchMap(settings => this.sendItemsReqToServer(settings))).subscribe());
+    this.regSub(this.getItems$.pipe(switchMap((getItems: GetItems) => this.sendItemsReqToServer(getItems))).subscribe());
   }
 
   initConfig() {
@@ -75,42 +76,39 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
       }));
   }
 
-  getItemsByPageIndex(pageIndex) {
-    this.entityStore.paging.pageIndex = pageIndex;
+  onChangePageIndex(pageIndex) {
+    this.entityStore.onChangePageIndex(pageIndex);
     this.getItems();
   }
 
-  getItemsByPageSize(pageSize) {
-    this.isUpdateLocalStorage = true;
-    this.entityStore.paging.pageSize = pageSize;
-    this.getItems();
+  onChangePageSize(pageSize) {
+    this.entityStore.onChangePageSize(pageSize)
+    this.getItems({ isUpdateLocalStorage: true });
   }
 
-  getItemsBySort({key, order}) {
-    this.isUpdateLocalStorage = true;
-    this.entityStore.sort.key = key;
-    this.entityStore.sort.order = order;
-    this.getItems();
+  onChangeSort({key, order}) {
+    this.entityStore.onChangeSort(key, order);
+    this.getItems({ isUpdateLocalStorage: true });
   }
 
-  getItems() {
-    const isRefreshTotalCount = this.isRefreshTotalCount;
+  getItems(options: GetItemsOptions = {}) {
+    options.isUpdateLocalStorage = Boolean(options.isUpdateLocalStorage);
     const settings: ItemsPageSettings = this.entityStore.getItemsPageSettings();
-    const getItemsRequest: GetItemsRequest = { ...settings, isTotalCount: isRefreshTotalCount };
+    const request: GetItemsRequest = { ...settings, isTotalCount: this.isRefreshTotalCount };
     this.isRefreshTotalCount = true;
-    this.getItemsRequest$.next(getItemsRequest);
+    this.getItems$.next({ request: request, options });
   }
 
-  sendItemsReqToServer(paging) {
+  sendItemsReqToServer(getItems: GetItems) {
     this.showAppSpinner();
-    return this.apiService.post(`${this.getUrlPrefix()}/items-page`, paging).pipe(
-      finalize(() => { this.hideAppSpinner(); this.isUpdateLocalStorage = false; }),
+    return this.apiService.post(`${this.getUrlPrefix()}/items-page`, getItems.request).pipe(
+      finalize(() => this.hideAppSpinner()),
       tap((response: ServerResponse) => {
         if (response.isSuccess) {
           const data: GetItemsResponse = response.data as GetItemsResponse;
           this.entityStore.items$.next(data.items);
-          if (paging.isTotalCount) this.entityStore.totalCount$.next(data.totalCount);
-          if (this.isUpdateLocalStorage) this.entityStore.updateLocalStorage();
+          if (getItems.request.isTotalCount) this.entityStore.totalCount$.next(data.totalCount);
+          this.entityStore.updatePageSettingSubject(getItems.options.isUpdateLocalStorage);
         } else {
           this.logError(`Error getting items, entity: ${this.entityKey}`, response);
           this.showErrorToastr(`Error getting ${this.entityKey} records`);

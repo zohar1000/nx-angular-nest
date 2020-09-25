@@ -10,6 +10,8 @@ import { AddUserComponent } from './add-user/add-user.component';
 import { EditUserComponent } from './edit-user/edit-user.component';
 import { Tokens } from '../../shared/enums/tokens.enum';
 
+const tableColumns = ['id', 'firstName', 'lastName', 'status', 'email', 'role', 'lastLoginTime'];
+
 @NgModule({
   declarations: [
     UserContainerComponent,
@@ -23,8 +25,9 @@ import { Tokens } from '../../shared/enums/tokens.enum';
     UserRoutingModule
   ],
   providers: [
-    { provide: Tokens.EntityKey, useValue: 'user'},
-    { provide: Tokens.EntityService, useClass: BaseEntityStore}
+    { provide: Tokens.EntityKey, useValue: 'user' },
+    { provide: Tokens.EntityService, useClass: BaseEntityStore },
+    { provide: Tokens.EntityTableColumns, useValue: tableColumns }
 
   ]
 })

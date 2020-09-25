@@ -14,6 +14,7 @@ export class BaseEntityStore extends BaseService {
   items$ = new BehaviorSubject<any[]>(null);
   totalCount$ = new BehaviorSubject<number>(0);
   currItem$ = new BehaviorSubject(null);
+  pageSettings$: BehaviorSubject<ItemsPageSettings>;
   paging: PagingSettings;
   filter;
   sort: SortSettings;
@@ -24,10 +25,33 @@ export class BaseEntityStore extends BaseService {
     this.localStorageTableKey = `table_${entityKey}`;
     this.localStorageService = appInjector.get(LocalStorageService);
     this.initItemsPageSettingsFromLocalStorage();
+    this.pageSettings$ = new BehaviorSubject<ItemsPageSettings>(this.getItemsPageSettings());
+  }
+
+  /***************************************/
+  /*      P A G E   S E T T I N G S      */
+  /***************************************/
+
+  onChangePageIndex(pageIndex) {
+    this.paging.pageIndex = pageIndex;
+  }
+
+  onChangePageSize(pageSize) {
+    this.paging.pageSize = pageSize;
+  }
+
+  onChangeSort(key, order) {
+    this.sort.key = key;
+    this.sort.order = order;
   }
 
   getItemsPageSettings(): ItemsPageSettings {
-    return {paging: this.paging, filter: this.filter, sort: this.sort };
+    return { paging: this.paging, filter: this.filter, sort: this.sort };
+  }
+
+  updatePageSettingSubject(isUpdateLocalStorage: boolean) {
+    if (isUpdateLocalStorage) this.updateLocalStorage();
+    this.pageSettings$.next(this.getItemsPageSettings());
   }
 
   /***************************************/
