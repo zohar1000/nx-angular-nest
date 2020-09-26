@@ -64,4 +64,11 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
       this.onChangePageSize.emit(e.pageSize);
     }
   }
+
+  onChangeFilterLine(filter) {
+    console.log('onChangeFilterLine:', filter);
+    // this.tableService.setFilter(filter);
+    // this.fetchPage({ isResetPageIndex: true, isRefreshLength: true });
+  }
+
 }

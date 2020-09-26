@@ -9,6 +9,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { AddUserComponent } from './add-user/add-user.component';
 import { EditUserComponent } from './edit-user/edit-user.component';
 import { Tokens } from '../../shared/enums/tokens.enum';
+import { UserFilterLineComponent } from './user-filter-line/user-filter-line.component';
 
 const tableColumns = ['id', 'firstName', 'lastName', 'status', 'email', 'role', 'lastLoginTime', 'edit', 'delete'];
 
@@ -17,7 +18,8 @@ const tableColumns = ['id', 'firstName', 'lastName', 'status', 'email', 'role', 
     UserContainerComponent,
     UserListComponent,
     AddUserComponent,
-    EditUserComponent
+    EditUserComponent,
+    UserFilterLineComponent
   ],
   imports: [
     CommonModule,
