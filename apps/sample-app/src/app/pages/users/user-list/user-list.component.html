@@ -1,3 +1,11 @@
+<div class="table-preface">
+  <div>Users</div>
+  <div>
+<!--    <app-download-csv (downloadCsv)="onClickDownloadCsv()"></app-download-csv>-->
+    <span class="items-count">total: {{(totalCount$ | async)}}</span>
+  </div>
+</div>
+
 <div class="mat-elevation-z8">
   <table mat-table matSort aria-label="Elements"
          [dataSource]="dataSource"
@@ -61,13 +69,16 @@
     <tr mat-row *matRowDef="let row; columns: tableColumns;"></tr>
   </table>
 
+  <div class="table-no-items" *ngIf="!isLoading && (totalCount$ | async) ===  0">
+    There are no items
+  </div>
 
-  <mat-paginator #paginator *ngIf="(totalCount$ | async) >  0 && (pageSettings$ | async)"
+  <mat-paginator #paginator *ngIf="(pageSettings$ | async)"
                  showFirstLastButtons
                  [length]="totalCount$ | async"
                  [pageIndex]="(pageSettings$ | async).paging.pageIndex"
                  [pageSize]="(pageSettings$ | async).paging.pageSize"
-                 [pageSizeOptions]="pageSizeOptions"
+                 [pageSizeOptions]="PAGE_SIZE_OPTIONS"
                  (page)="onChangePaging($event)"
   >
   </mat-paginator>

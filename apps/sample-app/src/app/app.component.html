@@ -4,7 +4,7 @@
   <mat-sidenav #sidenav class="sidenav" mode="side" [(opened)]="isSideNavOpened">
     <mat-toolbar class="toolbar">
       <div class="logo" (click)="onClickSidenavItem()">Logo</div>
-      <mat-icon (click)="sidenav.close()">close</mat-icon>
+      <i class="material-icons" (click)="sidenav.close()">close</i>
     </mat-toolbar>
     <div class="content">
       <button mat-menu-item (click)="onClickSidenavItem('login')"><i class="material-icons">exit_to_app</i>Login</button>
@@ -15,13 +15,11 @@
   <mat-sidenav-content class="main">
     <mat-toolbar class="header">
       <div class="header-menu">
-        <mat-icon *ngIf="!sidenav.opened" (click)="sidenav.open()">menu</mat-icon>
+        <i *ngIf="!sidenav.opened" class="material-icons" (click)="sidenav.open()">menu</i>
         <div class="title">Header</div>
       </div>
-      <div>
-        <div>
-          <mat-icon *ngIf="!sidenav.opened"  [matMenuTriggerFor]="userAccount">account_circle</mat-icon>
-        </div>
+      <div class="account">
+        <i *ngIf="!sidenav.opened" class="material-icons" [matMenuTriggerFor]="userAccount">account_circle</i>
         <mat-menu #userAccount="matMenu">
           <button mat-menu-item (click)="logout()">
             <i class="material-icons">exit_to_app</i>

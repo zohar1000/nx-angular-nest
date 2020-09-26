@@ -10,9 +10,11 @@ import { ItemsPageSettings } from '@shared/models/items-page-settings.model';
 
 @Directive()
 export abstract class BaseEntityListComponent extends BaseComponent implements OnInit, AfterViewInit {
+  readonly PAGE_SIZE_OPTIONS = [5, 10, 20, 50, 100, 250];
   @Input() items$;
   @Input() totalCount$: BehaviorSubject<number>;
   @Input() pageSettings$: BehaviorSubject<ItemsPageSettings>;
+  @Input() isLoading: boolean;
   @Output() navigateToAddPage = new EventEmitter();
   @Output() navigateToEditPage = new EventEmitter();
   @Output() submitDeleteItem = new EventEmitter();
@@ -23,7 +25,6 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
   @ViewChild(MatPaginator) tablePaginator: MatPaginator;
   @ViewChild(MatSort) tableSort: MatSort;
   dataSource: BaseTableDataSource;
-  readonly pageSizeOptions = [5, 10, 20, 50, 100, 250];
 
   constructor(@Inject(Tokens.EntityTableColumns) public tableColumns: string[]) {
     super();

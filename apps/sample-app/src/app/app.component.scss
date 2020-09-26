@@ -29,8 +29,19 @@
       .header-menu {
         display: inline-flex;
         align-items: center;
+        i {
+          font-size: 1.5rem !important;
+        }
         .title {
           margin-left: 1rem;
+        }
+      }
+      .account {
+        margin-right: 1rem;
+        display: inline-flex;
+        align-items: center;
+        i {
+          font-size: 1.8rem !important;
         }
       }
     }

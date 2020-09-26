@@ -5,3 +5,32 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.table-no-items {
+  width: 100%;
+  text-align: center;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: #dddddd;
+}
+
+.table-preface {
+  background: #cccccc !important;
+  display: flex !important;
+  padding: 1.5rem 1rem !important;
+  font-size: 1.5rem !important;
+  font-weight: 400 !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+
+  .items-count {
+    font-size: 0.9rem !important;
+    margin-right: 1rem !important;
+  }
+
+  .add-button {
+    background: #1f7149 !important;
+  }
+}
+

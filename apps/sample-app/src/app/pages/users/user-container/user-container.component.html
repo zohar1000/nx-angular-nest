@@ -19,6 +19,7 @@
     [items$]="entityStore.items$"
     [totalCount$]="entityStore.totalCount$"
     [pageSettings$]="entityStore.pageSettings$"
+    [isLoading]="isLoading"
     (navigateToAddPage)="navigateToAddPage()"
     (navigateToEditPage)="navigateToEditPage($event)"
     (submitDeleteItem)="submitDeleteItem($event)"

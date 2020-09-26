@@ -23,10 +23,10 @@
 //}
 
 
-mat-icon {
-  cursor: pointer;
+i {
+  font-size: 1.2rem !important;
+  cursor: pointer !important;
 }
-
 
 .mat-form-field.ng-dirty.ng-invalid .mat-form-field-label,
 .mat-form-field.ng-dirty.ng-invalid .mat-form-field-ripple {
@@ -44,10 +44,6 @@ mat-icon {
 //.mat-form-field-infix {
 //  font-size: 1.1rem !important;
 //}
-
-.material-icons {
-  font-size: 1.8rem !important;
-}
 
 /*.mat-dialog-container {
   background: #e0e0e0 !important;

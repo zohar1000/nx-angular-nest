@@ -25,6 +25,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   PageType = PageType;
   pageType = '';
   isRefreshTotalCount = true;
+  isLoading = false;
 
   constructor(protected entityKey: string,
               public entityStore: BaseEntityStore,
@@ -242,4 +243,17 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
     return `v1/${this.entityKey}`;
   }
 
+  /*******************************************/
+  /*      L O A D I N G   S P I N N E R      */
+  /*******************************************/
+
+  showAppSpinner() {
+    this.isLoading = true;
+    super.showAppSpinner();
+  }
+
+  hideAppSpinner() {
+    this.isLoading = false;
+    super.hideAppSpinner();
+  }
 }
