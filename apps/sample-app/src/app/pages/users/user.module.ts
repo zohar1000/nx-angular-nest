@@ -10,7 +10,7 @@ import { AddUserComponent } from './add-user/add-user.component';
 import { EditUserComponent } from './edit-user/edit-user.component';
 import { Tokens } from '../../shared/enums/tokens.enum';
 
-const tableColumns = ['id', 'firstName', 'lastName', 'status', 'email', 'role', 'lastLoginTime'];
+const tableColumns = ['id', 'firstName', 'lastName', 'status', 'email', 'role', 'lastLoginTime', 'edit', 'delete'];
 
 @NgModule({
   declarations: [

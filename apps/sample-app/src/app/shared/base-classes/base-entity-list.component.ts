@@ -36,19 +36,19 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
   ngAfterViewInit() {
     // this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.tablePaginator;
-    this.table.dataSource = this.dataSource;
+    // this.table.dataSource = this.dataSource;
   }
 
   onClickAdd() {
     this.navigateToAddPage.emit();
   }
 
-  onClickEdit() {
-    this.navigateToEditPage.emit(102);
+  onClickEdit(id) {
+    this.navigateToEditPage.emit(id);
   }
 
-  onClickDelete() {
-    this.submitDeleteItem.emit(102);
+  onClickDelete(id) {
+    this.submitDeleteItem.emit(id);
   }
 
   onChangePaging(e: PageEvent) {

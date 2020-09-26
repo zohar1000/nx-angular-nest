@@ -106,8 +106,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
       tap((response: ServerResponse) => {
         if (response.isSuccess) {
           const data: GetItemsResponse = response.data as GetItemsResponse;
-          this.entityStore.items$.next(data.items);
-          if (getItems.request.isTotalCount) this.entityStore.totalCount$.next(data.totalCount);
+          this.nextPage(data.items, getItems.request.isTotalCount ? data.totalCount : -1);
           this.entityStore.updatePageSettingSubject(getItems.options.isUpdateLocalStorage);
         } else {
           this.logError(`Error getting items, entity: ${this.entityKey}`, response);
@@ -132,8 +131,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
           if (response.isSuccess) {
             if (this.config.isReturnItemsPageOnItemRequest) {
               this.hideAppSpinner();
-              this.entityStore.items$.next(response.data.items);
-              this.entityStore.totalCount$.next(response.data.totalCount);
+              this.nextPage(response.data.items, response.data.totalCount);
             } else {
               this.entityStore.items$.next(null);
             }
@@ -157,8 +155,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
           if (response.isSuccess) {
             if (this.config.isReturnItemsPageOnItemRequest) {
               this.hideAppSpinner();
-              this.entityStore.items$.next(response.data.items);
-              this.entityStore.totalCount$.next(response.data.totalCount);
+              this.nextPage(response.data.items, response.data.totalCount);
             } else {
               this.entityStore.items$.next(null);
               if (!this.config.isRefreshTotalCountOnEdit) this.isRefreshTotalCount = false;
@@ -182,8 +179,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
           if (response.isSuccess) {
             if (this.config.isReturnItemsPageOnItemRequest) {
               this.hideAppSpinner();
-              this.entityStore.items$.next(response.data.items);
-              this.entityStore.totalCount$.next(response.data.totalCount);
+              this.nextPage(response.data.items, response.data.totalCount);
             } else {
               this.getItems()
             }
@@ -213,6 +209,11 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
         params: data
       }
     }
+  }
+
+  nextPage(items, totalCount = -1) {
+    this.entityStore.items$.next(items);
+    if (totalCount !== -1) this.entityStore.totalCount$.next(totalCount);
   }
 
 
