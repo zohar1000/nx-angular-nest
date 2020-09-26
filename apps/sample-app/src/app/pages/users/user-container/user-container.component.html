@@ -2,8 +2,6 @@
 
 <router-outlet></router-outlet>
 
-<hr/>
-
 <ng-container [ngSwitch]="pageType">
   <app-add-user
     *ngSwitchCase="PageType.AddItem"
@@ -26,7 +24,7 @@
     (submitDeleteItem)="submitDeleteItem($event)"
     (onChangePageIndex)="onChangePageIndex($event)"
     (onChangePageSize)="onChangePageSize($event)"
-    (sort)="onChangeSort($event)"
+    (onChangeSort)="onChangeSort($event)"
   ></app-user-list>
 </ng-container>
 

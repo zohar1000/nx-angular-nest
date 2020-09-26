@@ -1,27 +1,10 @@
-<div>
-  User list!!<br/><br/>
-
-  total count: {{totalCount$ | async}}<br/>
-  items: {{items$ | async | json}}
-
-<!--  <ngx-loading [show]="isSpinner"></ngx-loading>-->
-</div>
-
-<br/><br/>
-<div> page index:<input #pageIndex/><button (click)="onClickPageIndex(pageIndex.value)">Get Page Index</button></div>
-<div> page size:<input #pageSize/><button (click)="onClickPageSize(pageSize.value)">Get Page Size</button></div>
-<div> sort key:<input #sortKey/>&nbsp;&nbsp;&nbsp;sort Order:<input #sortOrder/><button (click)="onClickSort(sortKey.value, sortOrder.value)">Get Sort</button></div>
-<!--<button (click)="onClickGetPage(pageIndex.value, sortKey.value, sortOrder.value)">Get Page</button>-->
-
-<br/><br/>
-<div>
-  <button (click)="onClickAdd()">Add Item</button>
-  <button (click)="onClickEdit(102)">Edit Item</button>
-  <button (click)="onClickDelete(102)">Delete Item</button>
-</div>
-
 <div class="mat-elevation-z8">
-  <table mat-table matSort [dataSource]="dataSource" aria-label="Elements">
+  <table mat-table matSort aria-label="Elements"
+         [dataSource]="dataSource"
+         [matSortActive]="(pageSettings$ | async).sort.key"
+         [matSortDirection]="(pageSettings$ | async).sort.order === 1 ? 'asc' : 'desc'"
+         (matSortChange)="onClickSort($event)"
+  >
     <!-- Id Column -->
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>

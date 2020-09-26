@@ -22,6 +22,12 @@
 //  background-color: #666 !important;  // black !important; // change black with your color
 //}
 
+
+mat-icon {
+  cursor: pointer;
+}
+
+
 .mat-form-field.ng-dirty.ng-invalid .mat-form-field-label,
 .mat-form-field.ng-dirty.ng-invalid .mat-form-field-ripple {
   color: red !important;

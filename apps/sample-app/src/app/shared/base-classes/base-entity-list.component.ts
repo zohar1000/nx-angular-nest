@@ -4,7 +4,7 @@ import { BaseTableDataSource } from '@sample-app/shared/base-classes/base-table.
 import { MatTable } from '@angular/material/table';
 import { Tokens } from '@sample-app/shared/enums/tokens.enum';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, Sort } from '@angular/material/sort';
 import { BehaviorSubject } from 'rxjs';
 import { ItemsPageSettings } from '@shared/models/items-page-settings.model';
 
@@ -34,9 +34,13 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
   }
 
   ngAfterViewInit() {
-    // this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.tablePaginator;
-    // this.table.dataSource = this.dataSource;
+  }
+
+  onClickSort(sort: Sort) {
+    console.log('sort:', sort);
+    const order = sort.direction === 'asc' ? 1 : -1;
+    this.onChangeSort.emit({ key: sort.active, order });
   }
 
   onClickAdd() {
@@ -58,21 +62,5 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
     } else if (e.pageSize !== this.pageSettings$.value.paging.pageSize) {
       this.onChangePageSize.emit(e.pageSize);
     }
-  }
-
-  onClickPageIndex(pageIndex) {
-    pageIndex = !pageIndex ? 0 : Number(pageIndex);
-    this.onChangePageIndex.emit(pageIndex);
-  }
-
-  onClickPageSize(pageSize) {
-    pageSize = !pageSize ? 10 : Number(pageSize);
-    this.onChangePageSize.emit(pageSize);
-  }
-
-  onClickSort(key = 'id', order) {
-    key = !key ? '' : key;
-    order = !order ? 1 : Number(order);
-    this.onChangeSort.emit({ key, order });
   }
 }
