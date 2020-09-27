@@ -1,4 +1,14 @@
-import { AfterViewInit, Directive, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Directive,
+  EventEmitter,
+  Inject,
+  Input,
+  OnInit,
+  Output,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
 import { BaseComponent } from './base.component';
 import { BaseTableDataSource } from '@sample-app/shared/base-classes/base-table.data-source';
 import { MatTable } from '@angular/material/table';
@@ -6,22 +16,26 @@ import { Tokens } from '@sample-app/shared/enums/tokens.enum';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { BehaviorSubject } from 'rxjs';
-import { ItemsPageSettings } from '@shared/models/items-page-settings.model';
 import { LocalStorageService } from '@sample-app/core/services/local-storage.service';
-import { PagingSettings } from '@sample-app/shared/models/paging-settings.model';
-import { SortSettings } from '@sample-app/shared/models/sort-settings.model';
+import { PagingMetrics } from '@sample-app/shared/models/paging-metrics.model';
+import { SortMetrics } from '@sample-app/shared/models/sort-metrics.model';
 import { appInjector } from '@sample-app/app.injector';
+import { LocalStorageTable } from '@shared/models/local-storage-table.mode';
+import { MatDialog } from '@angular/material/dialog';
+import { take } from 'rxjs/operators';
 
 @Directive()
 export abstract class BaseEntityListComponent extends BaseComponent implements OnInit, AfterViewInit {
   readonly PAGE_SIZE_OPTIONS = [5, 10, 20, 50, 100, 250];
-  readonly INITIAL_PAGING: PagingSettings = { pageIndex: 0, pageSize: 10 };
-  readonly INITIAL_SORT: SortSettings = { key: 'id', order: 1 };
+  readonly DEFAULT_PAGE_SIZE = 10;
+  readonly INITIAL_PAGING_METRICS: PagingMetrics = { pageIndex: 0, pageSize: this.DEFAULT_PAGE_SIZE };
+  readonly INITIAL_SORT_METRICS: SortMetrics = { key: 'id', order: 1 };
   @Input() entityKey: string;
   @Input() items$;
   @Input() totalCount$: BehaviorSubject<number>;
   @Input() isLoading$: BehaviorSubject<boolean>;
-  @Input() isFirstTime: BehaviorSubject<boolean>;
+  @Input() isFirstTime: boolean;
+  @Input() numberTypeColumns: string[];
   @Output() navigateToAddPage = new EventEmitter();
   @Output() navigateToEditPage = new EventEmitter();
   @Output() submitDeleteItem = new EventEmitter();
@@ -29,24 +43,27 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
   @ViewChild(MatTable) table: MatTable<any>;
   @ViewChild(MatPaginator) tablePaginator: MatPaginator;
   @ViewChild(MatSort) tableSort: MatSort;
+  @ViewChild('deleteDialog') deleteDialogTemplateRef: TemplateRef<any>;
   items;
   dataSource: BaseTableDataSource;
-  paging: PagingSettings;
+  pagingMetrics: PagingMetrics;
   filter;
-  sort: SortSettings;
+  sortMetrics: SortMetrics;
   localStorageTableKey;
   localStorageService: LocalStorageService;
 
-  constructor(@Inject(Tokens.EntityTableColumns) public tableColumns: string[]) {
+  constructor(@Inject(Tokens.EntityTableColumns) public tableColumns: string[],
+              public dialog: MatDialog) {
     super();
   }
 
   ngOnInit() {
     this.localStorageTableKey = `table_${this.entityKey}`;
     this.localStorageService = appInjector.get(LocalStorageService);
-    this.initItemsPageSettingsFromLocalStorage();
+    this.initListPageMetricsFromLocalStorage();
     this.dataSource = new BaseTableDataSource(this.items$);
-    this.getItems.emit(this.getItemsPageSettings());
+    this.emitGetItems(false);
+
   }
 
   ngAfterViewInit() {
@@ -62,50 +79,57 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
   }
 
   onClickDelete(id) {
-    this.submitDeleteItem.emit(id);
+    // this.submitDeleteItem.emit(id);
+
+    const dialogRef = this.dialog.open(this.deleteDialogTemplateRef, {
+      width: '30vw',
+      data: { id }
+    });
+    this.regSub(dialogRef.afterClosed().pipe(take(1)).subscribe(result => {
+      if (result) this.submitDeleteItem.emit(id);
+    }));
   }
 
   onChangeSort(sort: Sort) {
-    this.sort = { key: sort.active, order: sort.direction === 'asc' ? 1 : -1 }
-    this.storeSortSettingsInLocalStorage();
-    this.getItems.emit(this.getItemsPageSettings());
+    this.sortMetrics = { key: sort.active, order: sort.direction === 'asc' ? 1 : -1 }
+    this.emitGetItems(true);
   }
 
   onChangePaging(e: PageEvent) {
     if (e.previousPageIndex !== e.pageIndex) {
-      this.paging = { ...this.paging, pageIndex: e.pageIndex };
-      this.storeSortSettingsInLocalStorage();
-    } else if (e.pageSize !== this.paging.pageSize) {
-      this.paging = { ...this.paging, pageSize: e.pageSize };
-      this.storePageSizeInLocalStorage();
+      this.pagingMetrics = { ...this.pagingMetrics, pageIndex: e.pageIndex };
+    } else if (e.pageSize !== this.pagingMetrics.pageSize) {
+      this.pagingMetrics = { ...this.pagingMetrics, pageSize: e.pageSize };
     }
-    this.getItems.emit(this.getItemsPageSettings());
+    this.emitGetItems(true);
   }
 
   onChangeFilterLine(filter) {
     this.filter = filter;
-    this.getItems.emit(this.getItemsPageSettings());
+    this.emitGetItems(false);
   }
 
-  /***************************************/
-  /*      P A G E   S E T T I N G S      */
-  /***************************************/
-
-  getItemsPageSettings(): ItemsPageSettings {
-    return { paging: this.paging, filter: this.filter, sort: this.sort };
+  emitGetItems(isUpdateLocalStorage) {
+    if (isUpdateLocalStorage) this.updateLocalStorage();
+    this.getItems.emit({ paging: this.pagingMetrics, filter: this.filter, sort: this.sortMetrics });
   }
 
   /***************************************/
   /*      L O C A L   S T O R A G E      */
   /***************************************/
 
-  initItemsPageSettingsFromLocalStorage() {
-    const item = this.localStorageService.getJsonItem(this.localStorageTableKey);
-    this.sort = item && item.sortSettings ? item.sortSettings : { ...this.INITIAL_SORT };
-    this.paging = { ...this.INITIAL_PAGING };
+  initListPageMetricsFromLocalStorage() {
+    const item: LocalStorageTable = this.localStorageService.getJsonItem(this.localStorageTableKey);
+    if (!item) {
+      this.sortMetrics = { ...this.INITIAL_SORT_METRICS };
+      this.pagingMetrics = { ...this.INITIAL_PAGING_METRICS };
+    } else {
+      this.sortMetrics = item.sortMetrics;
+      if (!this.pagingMetrics) this.pagingMetrics = { ...this.INITIAL_PAGING_METRICS };
+      this.pagingMetrics.pageIndex = (this.isFirstTime ? 0 : item.pageIndex);
+    }
     const pageSize = this.localStorageService.getItem(LocalStorageService.PAGE_SIZE);
-    if (pageSize) this.paging.pageSize = Number(pageSize);
-    if (!this.isFirstTime && item.paging) this.paging.pageIndex = item.paging.pageIndex;
+    this.pagingMetrics.pageSize = pageSize ? Number(pageSize) : this.DEFAULT_PAGE_SIZE;
     this.filter = this.getInitialFilter();
   }
 
@@ -113,20 +137,11 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
     return {};
   }
 
-  storePageSizeInLocalStorage() {
-    this.localStorageService.setItem(LocalStorageService.PAGE_SIZE, this.paging.pageSize);
-  }
-
-  storeSortSettingsInLocalStorage() {
-    let item = this.localStorageService.getJsonItem(this.localStorageTableKey);
-    if (!item) item = {};
-    item.sortSettings = this.sort;
-    item.paging = { pageIndex: this.paging.pageIndex };
-    this.localStorageService.setJsonItem(this.localStorageTableKey, item);
-  }
-
   updateLocalStorage() {
-    this.storePageSizeInLocalStorage();
-    this.storeSortSettingsInLocalStorage();
+    const item: LocalStorageTable = this.localStorageService.getJsonItem(this.localStorageTableKey) || {};
+    item.sortMetrics = this.sortMetrics;
+    item.pageIndex = this.pagingMetrics.pageIndex;
+    this.localStorageService.setJsonItem(this.localStorageTableKey, item);
+    this.localStorageService.setItem(LocalStorageService.PAGE_SIZE, this.pagingMetrics.pageSize);
   }
 }

@@ -12,6 +12,7 @@ import { Tokens } from '../../shared/enums/tokens.enum';
 import { UserFilterLineComponent } from './user-filter-line/user-filter-line.component';
 
 const tableColumns = ['id', 'firstName', 'lastName', 'status', 'email', 'role', 'lastLoginTime', 'edit', 'delete'];
+const numberTypeColumns = ['status'];
 
 @NgModule({
   declarations: [
@@ -28,8 +29,9 @@ const tableColumns = ['id', 'firstName', 'lastName', 'status', 'email', 'role', 
   ],
   providers: [
     { provide: Tokens.EntityKey, useValue: 'user' },
-    { provide: Tokens.EntityService, useClass: BaseEntityStore },
-    { provide: Tokens.EntityTableColumns, useValue: tableColumns }
+    { provide: Tokens.EntityStore, useClass: BaseEntityStore },
+    { provide: Tokens.EntityTableColumns, useValue: tableColumns },
+    { provide: Tokens.NumberTypeColumns, useValue: numberTypeColumns }
 
   ]
 })

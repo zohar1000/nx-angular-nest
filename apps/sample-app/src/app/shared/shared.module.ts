@@ -7,8 +7,12 @@ import { ngxLoadingAnimationTypes, NgxLoadingModule } from 'ngx-loading';
 import { NgRouteChangeModule } from 'ng-route-change';
 import { UserStatusLabelPipe } from '@sample-app/shared/pipes/user-status-label.pipe';
 import { RoleLabelPipe } from '@sample-app/shared/pipes/role-label.pipe';
+import { AppDialogComponent } from '@sample-app/shared/components/app-dialog/app-dialog.component';
 
 const declarations = [
+  // components
+  AppDialogComponent,
+
   // pipes
   UserStatusLabelPipe,
   RoleLabelPipe

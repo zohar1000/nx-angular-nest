@@ -2,62 +2,18 @@
 @import 'variables';
 @import 'material';
 @import 'toastr';
+@import 'form';
+@import 'table';
+@import 'dialog';
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-.table-no-items {
+.h-center {
+  //display: flex;
+  justify-content: center;
+}
+
+.w100 {
   width: 100%;
-  text-align: center;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-  font-size: 2rem;
-  color: #dddddd;
 }
-
-.table-preface {
-  background: #cccccc !important;
-  display: flex !important;
-  padding: 1.5rem 1rem !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-
-  .title-and-role {
-    display: inline-flex;
-    align-items: center;
-    font-size: 1rem;
-    .title {
-      font-size: 1.5rem !important;
-      font-weight: 400 !important;
-    }
-  }
-
-  .items-count {
-    font-size: 0.9rem !important;
-    margin-right: 1rem !important;
-  }
-
-  .add-button {
-    background: #1f7149 !important;
-  }
-}
-
-.filter-line {
-  margin-top: 0.2rem;
-  margin-bottom: 1rem;
-  margin-left: 2rem;
-
-  .filter-label {
-    font-size: 0.9rem;
-    //font-style: italic;
-    opacity: 0.5;
-    margin-right: 0.9rem;
-  }
-
-  mat-form-field {
-    width: 10rem !important;
-    margin-right: 3rem;
-  }
-}
-
-

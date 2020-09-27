@@ -1,0 +1,19 @@
+<div class="container">
+  <div class="header">
+    <ng-content select="[header]"></ng-content>
+  </div>
+
+  <div class="body">
+    <ng-content select="[body]"></ng-content>
+  </div>
+
+  <div class="footer">
+    <ng-content style="background: black; white: 100%; display: inline-flex" select="[footer]"></ng-content>
+  </div>
+
+<!--    <ng-content class="header" select="[header]"></ng-content>
+
+    <ng-content class="body" select="[body]"></ng-content>
+
+    <ng-content class="footer" select="[footer]"></ng-content>-->
+</div>

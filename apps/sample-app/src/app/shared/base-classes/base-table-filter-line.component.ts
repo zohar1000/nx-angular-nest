@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Directive, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Directive, EventEmitter, Input, Output } from '@angular/core';
 import { BaseComponent } from './base.component';
 // import { BaseTableService } from './base-table.service';
 
@@ -9,8 +9,8 @@ export abstract class BaseTableFilterLineComponent extends BaseComponent {
   set initialFilter(initialFilter) {
     if (!this.filter) this.filter = initialFilter;
   }
+  @Input() numberTypeColumns;
   @Output() onChangeFilterLine = new EventEmitter<any>();
-  protected numKeys = this.getNumKeys();
   protected dateKeys = this.getDateKeys();
   filter;
   data;
@@ -32,17 +32,13 @@ export abstract class BaseTableFilterLineComponent extends BaseComponent {
     return true;
   }
 
-  getNumKeys() {
-    return [];
-  }
-
   getDateKeys() {
     return { startDate: 0, endDate: BaseTableFilterLineComponent.oneDayInMs };
   }
 
   getFilterLineToEmit() {
     const filter = { ...this.filter };
-    this.numKeys.forEach(key => {
+    this.numberTypeColumns.forEach(key => {
       if (filter[key]) filter[key] = Number(filter[key]);
     });
     for (const key in this.dateKeys) {

@@ -1,6 +1,6 @@
-import { ItemsPageSettings } from '@shared/models/items-page-settings.model';
+import { ListPageMetrics } from '@shared/models/list-page-metrics.model';
 
-export interface GetItemsRequest extends ItemsPageSettings {
+export interface GetItemsRequest extends ListPageMetrics {
   isTotalCount: boolean;
 }
 

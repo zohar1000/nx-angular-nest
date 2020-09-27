@@ -1,4 +1,4 @@
-export interface PagingSettings {
+export interface PagingMetrics {
   pageIndex: number;
   pageSize: number;
 }

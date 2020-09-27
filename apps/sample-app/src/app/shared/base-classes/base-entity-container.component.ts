@@ -9,14 +9,16 @@ import { ServerResponse } from '@shared/models/server-response.model';
 import { BehaviorSubject, ReplaySubject } from 'rxjs';
 import { GetItemsRequest } from '@shared/models/get-items-request.model';
 import { GetItemsResponse } from '@shared/models/get-items-response.model';
-import { ItemsPageSettings } from '@shared/models/items-page-settings.model';
+import { ListPageMetrics } from '@shared/models/list-page-metrics.model';
+import { AppText } from '@sample-app/shared/consts/app-texts.const';
+import { ZString } from 'zshared';
 
 @Directive()
 export abstract class BaseEntityContainerComponent extends BaseComponent implements OnInit {
   readonly DEFAULT_CONFIG = {
     isLoadItemsOnInit: true,
     isRefreshTotalCountOnEdit: false,
-    isReturnItemsPageOnItemRequest: false
+    isReturnItemsPageOnItemRequest: true
   };
   getItems$ = new ReplaySubject<GetItemsRequest>(1);
   config;
@@ -24,12 +26,13 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   pageType = '';
   isRefreshTotalCount = true;
   isLoading$ = new BehaviorSubject<boolean>(false);
-  itemsPageSettings: ItemsPageSettings
+  listPageMetrics: ListPageMetrics
   listPageCount = 0;
   isFirstListPage = true;
 
   constructor(public entityKey: string,
               public entityStore: BaseEntityStore,
+              public numberTypeColumns: string[] = [],
               protected activatedRoute: ActivatedRoute) {
     super();
   }
@@ -45,7 +48,6 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   }
 
   onRouteChange(data: RouteChangeData) {
-console.log('route data:', data);
     this.pageType = data.state.data ? data.state.data.pageType : '';
     switch (this.pageType) {
       case PageType.List:
@@ -58,8 +60,8 @@ console.log('route data:', data);
     }
   }
 
-  onChangePaging(itemsPageSettings: ItemsPageSettings) {
-    this.itemsPageSettings = itemsPageSettings;
+  onChangePaging(listPageMetrics: ListPageMetrics) {
+    this.listPageMetrics = listPageMetrics;
     this.getItems();
   }
 
@@ -83,9 +85,7 @@ console.log('route data:', data);
   }
 
   getItems() {
-    // options.isUpdateLocalStorage = Boolean(options.isUpdateLocalStorage);
-    // const settings: ItemsPageSettings = this.entityStore.getItemsPageSettings();
-    const request: GetItemsRequest = { ...this.itemsPageSettings, isTotalCount: this.isRefreshTotalCount };
+    const request: GetItemsRequest = { ...this.listPageMetrics, isTotalCount: this.isRefreshTotalCount };
     this.isRefreshTotalCount = true;
     this.getItems$.next(request);
   }
@@ -126,6 +126,7 @@ console.log('route data:', data);
             } else {
               this.entityStore.items$.next(null);
             }
+            this.showSuccessToastr(ZString.replaceParams(AppText.success.itemWasAdded, this.entityKey));
             this.navigateTo(['.']);
           } else {
             this.hideAppSpinner();
@@ -145,12 +146,13 @@ console.log('route data:', data);
         tap((response: ServerResponse) => {
           if (response.isSuccess) {
             if (this.config.isReturnItemsPageOnItemRequest) {
-              this.hideAppSpinner();
               this.nextPage(response.data.items, response.data.totalCount);
+              this.hideAppSpinner();
             } else {
               this.entityStore.items$.next(null);
               if (!this.config.isRefreshTotalCountOnEdit) this.isRefreshTotalCount = false;
             }
+            this.showSuccessToastr(ZString.replaceParams(AppText.success.itemWasUpdated, this.entityKey, id));
             this.navigateTo(['.']);
           } else {
             this.hideAppSpinner();
@@ -174,6 +176,7 @@ console.log('route data:', data);
             } else {
               this.getItems()
             }
+            this.showSuccessToastr(ZString.replaceParams(AppText.success.itemWasDeleted, this.entityKey, id));
           } else {
             this.hideAppSpinner();
             this.logError(`Error deleting item ${id}, entity: ${this.entityKey}`, response);
@@ -190,7 +193,7 @@ console.log('route data:', data);
         urlSuffix: `/${type}-page`,
         params: {
           doc: data,
-          getItemsRequest: { ...this.itemsPageSettings, isTotalCount: true }
+          getItemsRequest: { ...this.listPageMetrics, isTotalCount: true }
         }
       }
     } else {

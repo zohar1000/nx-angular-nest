@@ -28,19 +28,6 @@ i {
   cursor: pointer !important;
 }
 
-.mat-form-field.ng-dirty.ng-invalid .mat-form-field-label,
-.mat-form-field.ng-dirty.ng-invalid .mat-form-field-ripple {
-  color: red !important;
-}
-
-.mat-checkbox {
-  font-size: 1rem !important;
-}
-
-.mat-dialog-content {
-  font-size: 1.2rem !important;
-}
-
 //.mat-form-field-infix {
 //  font-size: 1.1rem !important;
 //}
@@ -66,35 +53,4 @@ i {
     background: $menu-item-hover-bg-color !important;
     color: $primary-color;
   }*/
-}
-
-table {
-  width: 100%;
-}
-
-.mat-paginator {
-  font-size: 0.9rem !important;
-
-  .mat-paginator-container {
-    .mat-paginator-page-size-label{
-      margin: 0 0.6rem !important;
-    }
-    .mat-paginator-page-size-select {
-      width: 4rem !important;
-
-      .mat-select-trigger {
-         font-size: 0.9rem !important;
-      }
-    }
-    .mat-form-field-wrapper {
-      width: 4rem !important;
-    }
-    .mat-button-base {
-      width: 2.5rem !important;
-
-      .mat-paginator-icon {
-        height: 2rem;
-      }
-    }
-  }
 }

@@ -114,12 +114,11 @@ export class UserController extends BaseEntityController {
 
   @Post(':id/edit-page')
   async editUserGetPage(@Request() req, @Param('id') id, @Body() dto: ItemGetPageDto) {
-    let response;
     try {
-      response = { isSuccess: true };  // await this.userService.updateUser(Number(id), dto.doc);
-      return await this.getItemsPageAfterItemRequest(response, req.user, dto.getItemsRequest);
+      await this.userService.updateUser(Number(id), dto.doc);
+      return await this.getItemsPage(req.user, dto.getItemsRequest);
     } catch(e) {
-      this.errorService.loge('error adding user', e, req, dto);
+      this.errorService.loge('error updating user', e, req, dto);
       return this.exceptionResponse(e.message);
     }
   }
@@ -137,21 +136,16 @@ export class UserController extends BaseEntityController {
 
   @Post(':id/delete-page')
   async deleteUserGetPage(@Request() req, @Param('id') id, @Body() dto: ItemGetPageDto) {
-    let response;
     try {
-      response = { isSuccess: true };  // await await this.userService.deleteById(Number(id));
-      return await this.getItemsPageAfterItemRequest(response, req.user, dto.getItemsRequest);
+      await this.userService.deleteById(Number(id));
+      return await this.getItemsPage(req.user, dto.getItemsRequest);
     } catch(e) {
-      this.errorService.loge('error adding user', e, req, dto);
+      this.errorService.loge('error deleting user', e, req, dto);
       return this.exceptionResponse(e.message);
     }
   }
 
   async getItemsPageAfterItemRequest(response, user: AuthUser, getItemsRequest: GetItemsRequest) {
-    if (response.isSuccess) {
-      return await this.getItemsPage(user, getItemsRequest);
-    } else {
-      return this.errorResponse(response.message);
-    }
+    return await this.getItemsPage(user, getItemsRequest);
   }
 }

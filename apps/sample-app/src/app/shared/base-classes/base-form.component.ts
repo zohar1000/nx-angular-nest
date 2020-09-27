@@ -1,4 +1,4 @@
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserStatusLabels } from '../consts/user-status.const';
 import { BaseComponent } from './base.component';
 import { appInjector } from '../../app.injector';
@@ -7,10 +7,13 @@ import { RoleLabels } from '@shared/consts/role.const';
 import { Directive, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { filter, take } from 'rxjs/operators';
 import { EditItemRequestData } from '@shared/models/edit-item-request-data.model';
+import { ZObj } from 'zshared';
+import { AppText } from '@sample-app/shared/consts/app-texts.const';
 
 @Directive()
 export abstract class BaseFormComponent extends BaseComponent implements OnInit {
   @Input() currItem$;
+  @Input() numberTypeColumns: string[];
   @Output() onCancel = new EventEmitter();
   @Output() onSubmit = new EventEmitter();
   formGroup: FormGroup;
@@ -18,6 +21,8 @@ export abstract class BaseFormComponent extends BaseComponent implements OnInit 
   protected item;
   rolesLabels = RoleLabels;
   userStatusLabels = UserStatusLabels;
+  initialFormValue;
+  itemId: number | string;
 
   ngOnInit() {
     this.formBuilder = appInjector.get(FormBuilder);
@@ -29,27 +34,29 @@ export abstract class BaseFormComponent extends BaseComponent implements OnInit 
       .subscribe(item => {
       this.item = item;
       this.setFormGroup();
+      this.initialFormValue = this.formGroup.value;
     }));
   }
 
   abstract setFormGroup();
-  abstract getEditItemRequestData(): EditItemRequestData;
+  abstract getEditItemRequestData(formValue): EditItemRequestData;
 
   onClickCancel() {
     this.onCancel.emit();
   }
 
   onClickSubmit() {
-    const errorMessage = this.checkFormValidity();
+    const formValue = this.formGroup.value;
+    const errorMessage = this.checkFormValidity(formValue);
     if (errorMessage) {
       this.showErrorToastr(errorMessage);
     } else {
-      this.onSubmit.emit(this.getEditItemRequestData());
+      this.onSubmit.emit(this.getEditItemRequestData(formValue));
     }
   }
 
-  checkFormValidity() {
-    return 'Not valid';
+  checkFormValidity(formValue) {
+    return ZObj.areEquals(formValue, this.initialFormValue) ? AppText.errors.editFormNotChanged : '';
   }
 
   getEmailValidators() {

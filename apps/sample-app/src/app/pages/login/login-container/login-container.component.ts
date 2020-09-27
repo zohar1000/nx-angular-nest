@@ -18,12 +18,12 @@ export class LoginContainerComponent extends BaseContainerComponent {
   }
 
   onSubmit(formValue) {
-    this.authService.login(formValue).subscribe(user => {
+    this.regSub(this.authService.login(formValue).subscribe(user => {
       if (user === null) {
         this.errorMessage$.next('incorrect user/password');
       } else {
         this.sendToParentEmitter.emit({ type: 'LoginSuccess', user })
       }
-    })
+    }));
   }
 }

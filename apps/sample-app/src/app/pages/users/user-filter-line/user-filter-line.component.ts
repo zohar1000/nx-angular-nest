@@ -10,13 +10,6 @@ import { UserStatusFilter } from '@sample-app/shared/consts/user-status.const';
 })
 export class UserFilterLineComponent extends BaseTableFilterLineComponent implements OnInit {
   ngOnInit() {
-    this.data = {
-      roles: RoleLabelsFilter,
-      statuses: UserStatusFilter
-    };
-  }
-
-  getNumKeys() {
-    return ['status'];
+    this.data = { roles: RoleLabelsFilter, statuses: UserStatusFilter };
   }
 }

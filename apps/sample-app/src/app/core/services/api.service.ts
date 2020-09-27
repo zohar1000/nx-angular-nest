@@ -19,8 +19,8 @@ export class ApiService {
   }
 
   put(url, data) {
-    // return this.http.put(this.getFUllUrl(url), data);
-    return of({ isSuccess: true }).pipe(delay(500));
+    return this.http.put(this.getFUllUrl(url), data);
+    // return of({ isSuccess: true }).pipe(delay(500));
   }
 
   patch(url, data) {

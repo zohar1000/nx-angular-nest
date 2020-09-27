@@ -1,5 +1,6 @@
 export enum Tokens {
-  EntityService = 'EntityService',
+  EntityStore = 'EntityStore',
   EntityKey = 'EntityKey',
-  EntityTableColumns = 'EntityTableColumns'
+  EntityTableColumns = 'EntityTableColumns',
+  NumberTypeColumns = 'NumberTypeColumns'
 }

@@ -1,4 +1,4 @@
-export interface SortSettings {
+export interface SortMetrics {
   key: string;
   order: number;
 }

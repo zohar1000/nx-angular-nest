@@ -10,8 +10,9 @@ import { Tokens } from '@sample-app/shared/enums/tokens.enum';
 })
 export class UserContainerComponent extends BaseEntityContainerComponent {
   constructor(@Inject(Tokens.EntityKey) entityKey: string,
-              @Inject(Tokens.EntityService) entityService,
+              @Inject(Tokens.EntityStore) entityStore,
+              @Inject(Tokens.NumberTypeColumns) numberTypeColumns,
               activatedRoute: ActivatedRoute) {
-    super(entityKey, entityService, activatedRoute);
+    super(entityKey, entityStore, numberTypeColumns, activatedRoute);
   }
 }

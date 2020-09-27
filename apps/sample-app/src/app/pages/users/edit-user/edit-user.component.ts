@@ -11,27 +11,24 @@ import { EditItemRequestData } from '@shared/models/edit-item-request-data.model
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditUserComponent extends BaseFormComponent {
-  user: UserProfile = null;
+  // user: UserProfile = null;
 
   setFormGroup() {
-    this.user = this.item as UserProfile;
+    const user: UserProfile = this.item as UserProfile;
+    this.itemId = user.id;
     this.formGroup = this.formBuilder.group({
-      firstName: new FormControl(this.user.firstName, this.getNameValidators()),
-      lastName: new FormControl(this.user.lastName, this.getNameValidators()),
-      role: new FormControl(this.user.role, [Validators.required]),
-      status: new FormControl(String(this.user.status), Validators.required),
-      email: new FormControl(this.user.email, this.getEmailValidators()),
+      firstName: new FormControl(user.firstName, this.getNameValidators()),
+      lastName: new FormControl(user.lastName, this.getNameValidators()),
+      role: new FormControl(user.role, [Validators.required]),
+      status: new FormControl(String(user.status), Validators.required),
+      email: new FormControl(user.email, this.getEmailValidators()),
       password: new FormControl('', this.getPasswordValidators(false))
     });
   }
 
-  getEditItemRequestData(): EditItemRequestData {
-    return { id: this.user.id, data: {} }
+  getEditItemRequestData(formValue): EditItemRequestData {
+    const data = { ...formValue };
+    this.numberTypeColumns.forEach(key => data[key] = Number(data[key]));
+    return { id: this.itemId, data }
   }
-
-
-
-  // onClickSubmit() {
-  //   this.submit.emit({ id: 102, data: { id: 102}});
-  // }
 }

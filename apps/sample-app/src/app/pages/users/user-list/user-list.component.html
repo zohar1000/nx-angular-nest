@@ -8,16 +8,18 @@
   </div>
 </div>
 
-<app-user-filter-line class="filter-line"
-                      [initialFilter]="filter"
-                      (onChangeFilterLine)="onChangeFilterLine($event)">
+<app-user-filter-line
+  class="filter-line"
+  [initialFilter]="filter"
+  [numberTypeColumns]="numberTypeColumns"
+  (onChangeFilterLine)="onChangeFilterLine($event)">
 </app-user-filter-line>
 
 <div class="mat-elevation-z8">
   <table mat-table matSort aria-label="Elements"
          [dataSource]="dataSource"
-         [matSortActive]="sort.key"
-         [matSortDirection]="sort.order === 1 ? 'asc' : 'desc'"
+         [matSortActive]="sortMetrics.key"
+         [matSortDirection]="sortMetrics.order === 1 ? 'asc' : 'desc'"
          (matSortChange)="onChangeSort($event)"
   >
     <ng-container matColumnDef="id">
@@ -77,13 +79,26 @@
     There are no items
   </div>
 
-  <mat-paginator #paginator *ngIf="paging.pageSize > 0"
-                 showFirstLastButtons
-                 [length]="totalCount$ | async"
-                 [pageIndex]="paging.pageIndex"
-                 [pageSize]="paging.pageSize"
-                 [pageSizeOptions]="PAGE_SIZE_OPTIONS"
-                 (page)="onChangePaging($event)"
-  >
+  <mat-paginator *ngIf="pagingMetrics.pageSize > 0"
+     showFirstLastButtons
+     [length]="totalCount$ | async"
+     [pageIndex]="pagingMetrics.pageIndex"
+     [pageSize]="pagingMetrics.pageSize"
+     [pageSizeOptions]="PAGE_SIZE_OPTIONS"
+     (page)="onChangePaging($event)">
   </mat-paginator>
 </div>
+
+<ng-template #deleteDialog let-data>
+  <app-dialog>
+    <div body>
+      <div>Are you sure you want to delete user {{data.id}}?</div>
+    </div>
+    <div footer class="w100">
+      <div class="buttons-bar h-center w100">
+        <button mat-flat-button [mat-dialog-close]="false" color="warn">CANCEL</button>
+        <button mat-flat-button [mat-dialog-close]="true" color="primary">DELETE</button>
+      </div>
+    </div>
+  </app-dialog>
+</ng-template>

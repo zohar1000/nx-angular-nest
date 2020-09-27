@@ -4,6 +4,7 @@ import { ErrorService } from '../services/error.service';
 import { GlobalService } from '@api-app/shared/services/global.service';
 import { FileService } from '@api-app/shared/services/file.service';
 import { SanitationService } from '@api-app/shared/services/sanitation.service';
+import { take } from 'rxjs/operators';
 // import { GlobalService}      from './global.service';
 // import { MailService }       from './mail.service';
 // import { SanitationService } from './sanitation.service';
@@ -23,7 +24,7 @@ export abstract class BaseService extends EventEmitter {
   }
 
   init() {
-    const subscription = GlobalService.globalService$.subscribe((globalServices: any) => {
+    const subscription = GlobalService.globalService$.pipe(take(1)).subscribe((globalServices: any) => {
       this.errorService = globalServices.errorService;
       this.fileService = globalServices.fileService;
       this.sanitationService = globalServices.sanitationService;
