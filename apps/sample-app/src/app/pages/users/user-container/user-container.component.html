@@ -16,17 +16,16 @@
   ></app-edit-user>
   <app-user-list
     *ngSwitchCase="PageType.List"
+    [entityKey]="entityKey"
     [items$]="entityStore.items$"
     [totalCount$]="entityStore.totalCount$"
-    [pageSettings$]="entityStore.pageSettings$"
-    [isLoading]="isLoading"
+    [isLoading$]="isLoading$"
     (navigateToAddPage)="navigateToAddPage()"
     (navigateToEditPage)="navigateToEditPage($event)"
     (submitDeleteItem)="submitDeleteItem($event)"
-    (onChangePageIndex)="onChangePageIndex($event)"
-    (onChangePageSize)="onChangePageSize($event)"
-    (onChangeSort)="onChangeSort($event)"
+    (getItems)="onChangePaging($event)"
   ></app-user-list>
+<!--    [pageSettings$]="entityStore.pageSettings$"-->
 </ng-container>
 
 

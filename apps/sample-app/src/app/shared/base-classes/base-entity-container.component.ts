@@ -6,12 +6,13 @@ import { RouteChangeData } from 'ng-route-change';
 import { PageType } from '@sample-app/shared/enums/page-type.enum';
 import { finalize, switchMap, tap } from 'rxjs/operators';
 import { ServerResponse } from '@shared/models/server-response.model';
-import { ReplaySubject } from 'rxjs';
+import { BehaviorSubject, ReplaySubject } from 'rxjs';
 import { GetItemsRequest } from '@shared/models/get-items-request.model';
 import { GetItemsResponse } from '@shared/models/get-items-response.model';
 import { ItemsPageSettings } from '@shared/models/items-page-settings.model';
-import { GetItemsOptions } from '@shared/models/get-items-options.model';
-import { GetItems } from '@shared/models/get-items.model';
+// import { GetItemsOptions } from '@shared/models/get-items-options.model';
+// import { GetItems } from '@shared/models/get-items.model';
+// import { PagingSettings } from '@sample-app/shared/models/paging-settings.model';
 
 @Directive()
 export abstract class BaseEntityContainerComponent extends BaseComponent implements OnInit {
@@ -20,14 +21,15 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
     isRefreshTotalCountOnEdit: false,
     isReturnItemsPageOnItemRequest: false
   };
-  getItems$ = new ReplaySubject<GetItems>(1);
+  getItems$ = new ReplaySubject<GetItemsRequest>(1);
   config;
   PageType = PageType;
   pageType = '';
   isRefreshTotalCount = true;
-  isLoading = false;
+  isLoading$ = new BehaviorSubject<boolean>(false);
+  itemsPageSettings: ItemsPageSettings
 
-  constructor(protected entityKey: string,
+  constructor(public entityKey: string,
               public entityStore: BaseEntityStore,
               protected activatedRoute: ActivatedRoute) {
     super();
@@ -37,7 +39,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
     this.entityStore.init(this.entityKey);
     this.initConfig();
     if (this.config.isLoadItemsOnInit) this.entityStore.items$.next(null);
-    this.regSub(this.getItems$.pipe(switchMap((getItems: GetItems) => this.sendItemsReqToServer(getItems))).subscribe());
+    this.regSub(this.getItems$.pipe(switchMap((request: GetItemsRequest) => this.sendItemsReqToServer(request))).subscribe());
   }
 
   initConfig() {
@@ -47,9 +49,9 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   onRouteChange(data: RouteChangeData) {
     this.pageType = data.state.data ? data.state.data.pageType : '';
     switch (this.pageType) {
-      case PageType.List:
-        if (!this.entityStore.items$.value) this.getItems();
-        break;
+      // case PageType.List:
+      //   if (!this.entityStore.items$.value) this.getItems();
+      //   break;
       case PageType.EditItem:
         this.entityStore.currItem$.next(null);
         this.regSub(this.getItem(data.state.params.id).subscribe());
@@ -57,6 +59,10 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
     }
   }
 
+  onChangePaging(itemsPageSettings: ItemsPageSettings) {
+    this.itemsPageSettings = itemsPageSettings;
+    this.getItems();
+  }
 
   /*******************************/
   /*      G E T   I T E M S      */
@@ -77,38 +83,38 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
       }));
   }
 
-  onChangePageIndex(pageIndex) {
-    this.entityStore.onChangePageIndex(pageIndex);
-    this.getItems();
-  }
+  // onChangePageIndex(pageIndex) {
+  //   this.entityStore.onChangePageIndex(pageIndex);
+  //   this.getItems();
+  // }
 
-  onChangePageSize(pageSize) {
-    this.entityStore.onChangePageSize(pageSize)
-    this.getItems({ isUpdateLocalStorage: true });
-  }
+  // onChangePageSize(pageSize) {
+  //   this.entityStore.onChangePageSize(pageSize)
+  //   this.getItems({ isUpdateLocalStorage: true });
+  // }
 
-  onChangeSort({key, order}) {
-    this.entityStore.onChangeSort(key, order);
-    this.getItems({ isUpdateLocalStorage: true });
-  }
+  // onChangeSort({key, order}) {
+  //   this.entityStore.onChangeSort(key, order);
+  //   this.getItems({ isUpdateLocalStorage: true });
+  // }
 
-  getItems(options: GetItemsOptions = {}) {
-    options.isUpdateLocalStorage = Boolean(options.isUpdateLocalStorage);
-    const settings: ItemsPageSettings = this.entityStore.getItemsPageSettings();
-    const request: GetItemsRequest = { ...settings, isTotalCount: this.isRefreshTotalCount };
+  getItems() {
+    // options.isUpdateLocalStorage = Boolean(options.isUpdateLocalStorage);
+    // const settings: ItemsPageSettings = this.entityStore.getItemsPageSettings();
+    const request: GetItemsRequest = { ...this.itemsPageSettings, isTotalCount: this.isRefreshTotalCount };
     this.isRefreshTotalCount = true;
-    this.getItems$.next({ request: request, options });
+    this.getItems$.next(request);
   }
 
-  sendItemsReqToServer(getItems: GetItems) {
+  sendItemsReqToServer(request: GetItemsRequest) {
     this.showAppSpinner();
-    return this.apiService.post(`${this.getUrlPrefix()}/items-page`, getItems.request).pipe(
+    return this.apiService.post(`${this.getUrlPrefix()}/items-page`, request).pipe(
       finalize(() => this.hideAppSpinner()),
       tap((response: ServerResponse) => {
         if (response.isSuccess) {
           const data: GetItemsResponse = response.data as GetItemsResponse;
-          this.nextPage(data.items, getItems.request.isTotalCount ? data.totalCount : -1);
-          this.entityStore.updatePageSettingSubject(getItems.options.isUpdateLocalStorage);
+          this.nextPage(data.items, request.isTotalCount ? data.totalCount : -1);
+          // this.entityStore.updatePageSettingSubject(getItems.options.isUpdateLocalStorage);
         } else {
           this.logError(`Error getting items, entity: ${this.entityKey}`, response);
           this.showErrorToastr(`Error getting ${this.entityKey} records`);
@@ -200,7 +206,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
         urlSuffix: `/${type}-page`,
         params: {
           doc: data,
-          getItemsRequest: { ...this.entityStore.getItemsPageSettings(), isTotalCount: true }
+          getItemsRequest: { ...this.itemsPageSettings, isTotalCount: true }
         }
       }
     } else {
@@ -248,12 +254,12 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   /*******************************************/
 
   showAppSpinner() {
-    this.isLoading = true;
+    this.isLoading$.next(true);
     super.showAppSpinner();
   }
 
   hideAppSpinner() {
-    this.isLoading = false;
+    this.isLoading$.next(false);
     super.hideAppSpinner();
   }
 }
