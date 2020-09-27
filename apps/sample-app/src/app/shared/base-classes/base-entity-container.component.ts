@@ -10,9 +10,6 @@ import { BehaviorSubject, ReplaySubject } from 'rxjs';
 import { GetItemsRequest } from '@shared/models/get-items-request.model';
 import { GetItemsResponse } from '@shared/models/get-items-response.model';
 import { ItemsPageSettings } from '@shared/models/items-page-settings.model';
-// import { GetItemsOptions } from '@shared/models/get-items-options.model';
-// import { GetItems } from '@shared/models/get-items.model';
-// import { PagingSettings } from '@sample-app/shared/models/paging-settings.model';
 
 @Directive()
 export abstract class BaseEntityContainerComponent extends BaseComponent implements OnInit {
@@ -28,6 +25,8 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   isRefreshTotalCount = true;
   isLoading$ = new BehaviorSubject<boolean>(false);
   itemsPageSettings: ItemsPageSettings
+  listPageCount = 0;
+  isFirstListPage = true;
 
   constructor(public entityKey: string,
               public entityStore: BaseEntityStore,
@@ -36,7 +35,6 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   }
 
   ngOnInit(): void {
-    this.entityStore.init(this.entityKey);
     this.initConfig();
     if (this.config.isLoadItemsOnInit) this.entityStore.items$.next(null);
     this.regSub(this.getItems$.pipe(switchMap((request: GetItemsRequest) => this.sendItemsReqToServer(request))).subscribe());
@@ -47,11 +45,12 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   }
 
   onRouteChange(data: RouteChangeData) {
+console.log('route data:', data);
     this.pageType = data.state.data ? data.state.data.pageType : '';
     switch (this.pageType) {
-      // case PageType.List:
-      //   if (!this.entityStore.items$.value) this.getItems();
-      //   break;
+      case PageType.List:
+        this.isFirstListPage = (this.listPageCount++ === 0);
+        break;
       case PageType.EditItem:
         this.entityStore.currItem$.next(null);
         this.regSub(this.getItem(data.state.params.id).subscribe());
@@ -82,21 +81,6 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
         }
       }));
   }
-
-  // onChangePageIndex(pageIndex) {
-  //   this.entityStore.onChangePageIndex(pageIndex);
-  //   this.getItems();
-  // }
-
-  // onChangePageSize(pageSize) {
-  //   this.entityStore.onChangePageSize(pageSize)
-  //   this.getItems({ isUpdateLocalStorage: true });
-  // }
-
-  // onChangeSort({key, order}) {
-  //   this.entityStore.onChangeSort(key, order);
-  //   this.getItems({ isUpdateLocalStorage: true });
-  // }
 
   getItems() {
     // options.isUpdateLocalStorage = Boolean(options.isUpdateLocalStorage);

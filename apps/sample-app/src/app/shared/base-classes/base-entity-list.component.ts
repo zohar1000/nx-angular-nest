@@ -19,36 +19,23 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
   readonly INITIAL_SORT: SortSettings = { key: 'id', order: 1 };
   @Input() entityKey: string;
   @Input() items$;
-//   set setItems$(items) {
-// console.log('set items:', items);
-//     this.items = items;
-//   }
-//   get getItems$() {
-//     return this.items;
-//   }
   @Input() totalCount$: BehaviorSubject<number>;
-  // @Input() pageSettings$: BehaviorSubject<ItemsPageSettings>;
   @Input() isLoading$: BehaviorSubject<boolean>;
+  @Input() isFirstTime: BehaviorSubject<boolean>;
   @Output() navigateToAddPage = new EventEmitter();
   @Output() navigateToEditPage = new EventEmitter();
   @Output() submitDeleteItem = new EventEmitter();
-  @Output() onChangePageIndex = new EventEmitter();
-  @Output() onChangePageSize = new EventEmitter();
-  @Output() onChangeSort = new EventEmitter();
   @Output() getItems = new EventEmitter();
   @ViewChild(MatTable) table: MatTable<any>;
   @ViewChild(MatPaginator) tablePaginator: MatPaginator;
   @ViewChild(MatSort) tableSort: MatSort;
   items;
-  pageSettings$: BehaviorSubject<ItemsPageSettings>;
   dataSource: BaseTableDataSource;
   paging: PagingSettings;
   filter;
   sort: SortSettings;
   localStorageTableKey;
   localStorageService: LocalStorageService;
-  // updateLocalStorageTrigger;
-  isUpdateLocalStorage = false;
 
   constructor(@Inject(Tokens.EntityTableColumns) public tableColumns: string[]) {
     super();
@@ -58,14 +45,8 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
     this.localStorageTableKey = `table_${this.entityKey}`;
     this.localStorageService = appInjector.get(LocalStorageService);
     this.initItemsPageSettingsFromLocalStorage();
-    this.pageSettings$ = new BehaviorSubject<ItemsPageSettings>(this.getItemsPageSettings());
     this.dataSource = new BaseTableDataSource(this.items$);
     this.getItems.emit(this.getItemsPageSettings());
-    this.items$.subscribe(items => {
-      console.log('trigger:', items);
-      if (items !== null && this.isUpdateLocalStorage) this.updateLocalStorage();
-      this.isUpdateLocalStorage = false;
-    });
   }
 
   ngAfterViewInit() {
@@ -84,60 +65,34 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
     this.submitDeleteItem.emit(id);
   }
 
-  onClickSort(sort: Sort) {
-    // const order = sort.direction === 'asc' ? 1 : -1;
-    // this.onChangeSort.emit({ key: sort.active, order });
-    this.sort.key = sort.active;
-    this.sort.order = sort.direction === 'asc' ? 1 : -1;
-    // this.storeSortSettingsInLocalStorage();
-    this.isUpdateLocalStorage = true;
+  onChangeSort(sort: Sort) {
+    this.sort = { key: sort.active, order: sort.direction === 'asc' ? 1 : -1 }
+    this.storeSortSettingsInLocalStorage();
     this.getItems.emit(this.getItemsPageSettings());
   }
 
   onChangePaging(e: PageEvent) {
-    console.log('onChangePaging:', e);
     if (e.previousPageIndex !== e.pageIndex) {
-      // this.onChangePageIndex.emit(e.pageIndex);
-      this.paging.pageIndex = e.pageIndex;
-    } else if (e.pageSize !== this.pageSettings$.value.paging.pageSize) {
-      // this.onChangePageSize.emit(e.pageSize);
-      this.paging.pageSize = e.pageSize;
-      this.isUpdateLocalStorage = true;
-      // this.storePageSizeInLocalStorage();
+      this.paging = { ...this.paging, pageIndex: e.pageIndex };
+      this.storeSortSettingsInLocalStorage();
+    } else if (e.pageSize !== this.paging.pageSize) {
+      this.paging = { ...this.paging, pageSize: e.pageSize };
+      this.storePageSizeInLocalStorage();
     }
     this.getItems.emit(this.getItemsPageSettings());
   }
 
   onChangeFilterLine(filter) {
-    console.log('onChangeFilterLine:', filter);
-    // this.tableService.setFilter(filter);
-    // this.fetchPage({ isResetPageIndex: true, isRefreshLength: true });
+    this.filter = filter;
+    this.getItems.emit(this.getItemsPageSettings());
   }
 
   /***************************************/
   /*      P A G E   S E T T I N G S      */
   /***************************************/
 
-  // onChangePageIndex(pageIndex) {
-  //   this.paging.pageIndex = pageIndex;
-  // }
-
-  // onChangePageSize(pageSize) {
-  //   this.paging.pageSize = pageSize;
-  // }
-
-  // onChangeSort(key, order) {
-  //   this.sort.key = key;
-  //   this.sort.order = order;
-  // }
-
   getItemsPageSettings(): ItemsPageSettings {
     return { paging: this.paging, filter: this.filter, sort: this.sort };
-  }
-
-  updatePageSettingSubject(isUpdateLocalStorage: boolean) {
-    if (isUpdateLocalStorage) this.updateLocalStorage();
-    this.pageSettings$.next(this.getItemsPageSettings());
   }
 
   /***************************************/
@@ -150,6 +105,7 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
     this.paging = { ...this.INITIAL_PAGING };
     const pageSize = this.localStorageService.getItem(LocalStorageService.PAGE_SIZE);
     if (pageSize) this.paging.pageSize = Number(pageSize);
+    if (!this.isFirstTime && item.paging) this.paging.pageIndex = item.paging.pageIndex;
     this.filter = this.getInitialFilter();
   }
 
@@ -165,6 +121,7 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
     let item = this.localStorageService.getJsonItem(this.localStorageTableKey);
     if (!item) item = {};
     item.sortSettings = this.sort;
+    item.paging = { pageIndex: this.paging.pageIndex };
     this.localStorageService.setJsonItem(this.localStorageTableKey, item);
   }
 

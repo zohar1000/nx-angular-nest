@@ -3,29 +3,17 @@ import { BaseComponent } from './base.component';
 // import { BaseTableService } from './base-table.service';
 
 @Directive()
-export abstract class BaseTableFilterLineComponent extends BaseComponent implements OnInit {
+export abstract class BaseTableFilterLineComponent extends BaseComponent {
   static oneDayInMs = 86400000;  // 1 day - 24*60*60*1000
-  @Input('defaultFilter')
-  set defaultFilter(defaultFilter) {
-    if (!this.filter) this.filter = defaultFilter;
+  @Input('initialFilter')
+  set initialFilter(initialFilter) {
+    if (!this.filter) this.filter = initialFilter;
   }
   @Output() onChangeFilterLine = new EventEmitter<any>();
   protected numKeys = this.getNumKeys();
   protected dateKeys = this.getDateKeys();
-  filter: any; //  = this.getDefaultFilter();
+  filter;
   data;
-
-  protected constructor(// protected tableService: BaseTableService<any>,
-                        protected cdr: ChangeDetectorRef) {
-    super();
-  }
-
-  ngOnInit() {
-    // this.regSub(this.tableService.fetchFilterLineData().subscribe(data => {
-    //   this.onServerData(data);
-    //   this.cdr.markForCheck();
-    // }));
-  }
 
   onServerData(data) {
     this.data = data;
@@ -45,7 +33,7 @@ export abstract class BaseTableFilterLineComponent extends BaseComponent impleme
   }
 
   getNumKeys() {
-    return ['deviceId'];
+    return [];
   }
 
   getDateKeys() {

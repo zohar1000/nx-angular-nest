@@ -11,8 +11,8 @@
   <app-edit-user
     *ngSwitchCase="PageType.EditItem"
     [currItem$]="entityStore.currItem$"
-    (cancel)="onCancelItem()"
-    (submit)="submitEditItem($event)"
+    (onCancel)="onCancelItem()"
+    (onSubmit)="submitEditItem($event)"
   ></app-edit-user>
   <app-user-list
     *ngSwitchCase="PageType.List"
@@ -20,12 +20,12 @@
     [items$]="entityStore.items$"
     [totalCount$]="entityStore.totalCount$"
     [isLoading$]="isLoading$"
+    [isFirstTime]="isFirstListPage"
     (navigateToAddPage)="navigateToAddPage()"
     (navigateToEditPage)="navigateToEditPage($event)"
     (submitDeleteItem)="submitDeleteItem($event)"
     (getItems)="onChangePaging($event)"
   ></app-user-list>
-<!--    [pageSettings$]="entityStore.pageSettings$"-->
 </ng-container>
 
 

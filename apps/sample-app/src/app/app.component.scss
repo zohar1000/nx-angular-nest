@@ -1,3 +1,6 @@
+$header-height: 64px;
+$header-line-height: 32px;
+
 .container {
   display: flex;
   flex-direction: column;
@@ -26,6 +29,12 @@
       display: inline-flex;
       align-items: center;
       justify-content: space-between;
+      height: $header-height;
+      line-height: $header-line-height;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1;
       .header-menu {
         display: inline-flex;
         align-items: center;
@@ -46,6 +55,7 @@
       }
     }
     .page-container {
+      margin-top: $header-height;
       padding: 1rem;
     }
   }

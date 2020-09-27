@@ -9,16 +9,16 @@
 </div>
 
 <app-user-filter-line class="filter-line"
-                      [defaultFilter]="(pageSettings$ | async).filter"
+                      [initialFilter]="filter"
                       (onChangeFilterLine)="onChangeFilterLine($event)">
 </app-user-filter-line>
 
 <div class="mat-elevation-z8">
   <table mat-table matSort aria-label="Elements"
          [dataSource]="dataSource"
-         [matSortActive]="(pageSettings$ | async).sort.key"
-         [matSortDirection]="(pageSettings$ | async).sort.order === 1 ? 'asc' : 'desc'"
-         (matSortChange)="onClickSort($event)"
+         [matSortActive]="sort.key"
+         [matSortDirection]="sort.order === 1 ? 'asc' : 'desc'"
+         (matSortChange)="onChangeSort($event)"
   >
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
@@ -77,11 +77,11 @@
     There are no items
   </div>
 
-  <mat-paginator #paginator *ngIf="(pageSettings$ | async)"
+  <mat-paginator #paginator *ngIf="paging.pageSize > 0"
                  showFirstLastButtons
                  [length]="totalCount$ | async"
-                 [pageIndex]="(pageSettings$ | async).paging.pageIndex"
-                 [pageSize]="(pageSettings$ | async).paging.pageSize"
+                 [pageIndex]="paging.pageIndex"
+                 [pageSize]="paging.pageSize"
                  [pageSizeOptions]="PAGE_SIZE_OPTIONS"
                  (page)="onChangePaging($event)"
   >
