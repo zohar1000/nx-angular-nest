@@ -60,3 +60,33 @@ $header-line-height: 32px;
     }
   }
 }
+
+.account-container {
+  padding: 1rem !important;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+
+  .account-header {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: 1px solid #dddddd;
+    padding-bottom: 1rem;
+    margin-bottom: 0.5rem;
+
+    .name {
+      font-size: 1.1rem;
+    }
+
+    .email {
+
+    }
+  }
+  button {
+    padding: 0;
+  }
+}
+

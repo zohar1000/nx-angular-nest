@@ -4,6 +4,8 @@ import { BaseComponent } from './shared/base-classes/base.component';
 import { AuthService } from './core/services/auth.service';
 import { AppEventType } from '@sample-app/shared/enums/app-event-type.enum';
 import { RouteChangeData } from 'ng-route-change';
+import { UserProfile } from '@shared/models/user-profile.model';
+import { ServerResponse } from '@shared/models/server-response.model';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +18,7 @@ export class AppComponent extends BaseComponent {
   isSideNavOpened = false;
   isFullPage;
   isInitialized = false;
-  userProfile = null;
+  userProfile: UserProfile = null;
 
   constructor(private authService: AuthService) {
     super();
@@ -24,7 +26,7 @@ export class AppComponent extends BaseComponent {
     this.regSub(this.authService.getPermissions()
       .pipe(finalize(() => this.isInitialized = true))
       .subscribe(
-        () => {},
+        (response: ServerResponse) => this.userProfile = response.data,
         () => this.router.navigate(['/login'], { state: { isLogout: true }})
       ));
 

@@ -152,7 +152,7 @@ export class AuthService extends BaseService {
   }
 
   getAuthProfile(userDoc: UserDoc) {
-    const props = ['firstName', 'email', 'role'];
+    const props = ['firstName', 'lastName', 'email', 'role'];
     return ZObj.clone(userDoc, props);
   }
 

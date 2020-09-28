@@ -20,13 +20,19 @@
         <i *ngIf="!sidenav.opened" class="material-icons" (click)="sidenav.open()">menu</i>
         <div class="title">Header</div>
       </div>
-      <div class="account">
+      <div *ngIf="userProfile" class="account">
         <i *ngIf="!sidenav.opened" class="material-icons" [matMenuTriggerFor]="userAccount">account_circle</i>
         <mat-menu #userAccount="matMenu">
-          <button mat-menu-item (click)="logout()">
-            <i class="material-icons">exit_to_app</i>
-            Logout
-          </button>
+          <div class="account-container">
+            <div class="account-header">
+              <div class="name">{{userProfile.firstName}} {{userProfile.lastName}}</div>
+              <div class="email">{{userProfile.email}}</div>
+            </div>
+            <button mat-menu-item (click)="logout()">
+              <i class="material-icons">exit_to_app</i>
+              Logout
+            </button>
+          </div>
         </mat-menu>
       </div>
     </mat-toolbar>
