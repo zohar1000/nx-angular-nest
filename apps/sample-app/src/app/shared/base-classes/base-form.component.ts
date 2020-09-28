@@ -6,9 +6,7 @@ import { FormPatterns } from '@shared/enums/form-patterns.enum';
 import { RoleLabels } from '@shared/consts/role.const';
 import { Directive, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { filter, take } from 'rxjs/operators';
-import { EditItemRequestData } from '@shared/models/edit-item-request-data.model';
-import { ZObj } from 'zshared';
-import { AppText } from '@sample-app/shared/consts/app-texts.const';
+import { PageType } from '@sample-app/shared/enums/page-type.enum';
 
 @Directive()
 export abstract class BaseFormComponent extends BaseComponent implements OnInit {
@@ -17,29 +15,37 @@ export abstract class BaseFormComponent extends BaseComponent implements OnInit 
   @Output() onCancel = new EventEmitter();
   @Output() onSubmit = new EventEmitter();
   formGroup: FormGroup;
-  protected formBuilder: FormBuilder;
+  protected formBuilder: FormBuilder = appInjector.get(FormBuilder);
   protected item;
   rolesLabels = RoleLabels;
   userStatusLabels = UserStatusLabels;
   initialFormValue;
   itemId: number | string;
-
-  ngOnInit() {
-    this.formBuilder = appInjector.get(FormBuilder);
-    this.regSub(this.currItem$
-      .pipe(
-        filter(item => Boolean(item)),
-        take(1)
-      )
-      .subscribe(item => {
-      this.item = item;
-      this.setFormGroup();
-      this.initialFormValue = this.formGroup.value;
-    }));
-  }
+  pageType: PageType;
 
   abstract setFormGroup();
-  abstract getEditItemRequestData(formValue): EditItemRequestData;
+  abstract getSubmitItemRequestData(formValue);
+
+  ngOnInit() {
+    this.pageType = this.currItem$ ? PageType.EditItem : PageType.AddItem;
+    switch(this.pageType) {
+      case PageType.AddItem:
+        this.setFormGroup();
+        break;
+      case PageType.EditItem:
+        this.regSub(this.currItem$
+          .pipe(
+            filter(item => Boolean(item)),
+            take(1)
+          )
+          .subscribe(item => {
+            this.item = item;
+            this.setFormGroup();
+            this.initialFormValue = this.formGroup.value;
+          }));
+        break;
+    }
+  }
 
   onClickCancel() {
     this.onCancel.emit();
@@ -47,16 +53,24 @@ export abstract class BaseFormComponent extends BaseComponent implements OnInit 
 
   onClickSubmit() {
     const formValue = this.formGroup.value;
-    const errorMessage = this.checkFormValidity(formValue);
-    if (errorMessage) {
-      this.showErrorToastr(errorMessage);
-    } else {
-      this.onSubmit.emit(this.getEditItemRequestData(formValue));
+    if (this.pageType === PageType.EditItem) {
+      const errorMessage = this.checkFormValidity(formValue);
+      if (errorMessage) {
+        this.showErrorToastr(errorMessage);
+        return;
+      }
     }
+    this.onSubmit.emit(this.getSubmitItemRequestData(formValue));
   }
 
   checkFormValidity(formValue) {
-    return ZObj.areEquals(formValue, this.initialFormValue) ? AppText.errors.editFormNotChanged : '';
+    return 'PLEASE IMPLEMENT FORM VALIDATION';
+  }
+
+  getSubmitFormValue(formValue) {
+    const data = { ...formValue };
+    this.numberTypeColumns.forEach(key => data[key] = Number(data[key]));
+    return data;
   }
 
   getEmailValidators() {

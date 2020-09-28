@@ -1,1 +1,65 @@
 <div>add-user: <button (click)="onClickCancel()">Cancel</button>&nbsp;&nbsp;&nbsp;&nbsp;<button (click)="onClickSubmit()">Submit</button></div>
+
+<hr/>
+
+<div class="form-container">
+  <div class="title">Add User</div>
+
+  <form class="column-form" [formGroup]="formGroup">
+    <div>
+      <mat-form-field>
+        <mat-label>First Name</mat-label>
+        <input matInput formControlName="firstName">
+      </mat-form-field>
+    </div>
+
+    <div>
+      <mat-form-field>
+        <mat-label>Last Name</mat-label>
+        <input matInput formControlName="lastName">
+      </mat-form-field>
+    </div>
+
+    <div>
+      <mat-form-field>
+        <mat-label>Role</mat-label>
+        <mat-select matInput formControlName="role">
+          <mat-option *ngFor="let role of rolesLabels | keyvalue" [value]="role.key">
+            {{role.value}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div>
+      <mat-form-field>
+        <mat-label>Status</mat-label>
+        <mat-select matInput formControlName="status">
+          <mat-option *ngFor="let status of userStatusLabels | keyvalue" [value]="status.key">
+            {{status.value}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div>
+      <mat-form-field>
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email">
+      </mat-form-field>
+    </div>
+
+    <div>
+      <mat-form-field>
+        <mat-label>Password</mat-label>
+        <input matInput formControlName="password" type="password">
+      </mat-form-field>
+    </div>
+
+    <div class="buttons-bar">
+      <button mat-flat-button (click)="onClickCancel()" color="warn">CANCEL</button>
+      <button mat-flat-button (click)="onClickSubmit()" color="primary" type="submit" [disabled]="formGroup.invalid">ADD</button>
+    </div>
+  </form>
+</div>
+

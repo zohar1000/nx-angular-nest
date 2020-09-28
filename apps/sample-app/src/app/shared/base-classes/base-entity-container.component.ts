@@ -60,7 +60,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
     }
   }
 
-  onChangePaging(listPageMetrics: ListPageMetrics) {
+  onChangeListPageMetrics(listPageMetrics: ListPageMetrics) {
     this.listPageMetrics = listPageMetrics;
     this.getItems();
   }

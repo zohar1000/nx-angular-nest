@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { BaseFormComponent } from '@sample-app/shared/base-classes/base-form.component';
 import { FormControl, Validators } from '@angular/forms';
 import { UserProfile } from '@shared/models/user-profile.model';
-import { EditItemRequestData } from '@shared/models/edit-item-request-data.model';
+import { ZObj } from 'zshared';
+import { AppText } from '@sample-app/shared/consts/app-texts.const';
 
 @Component({
   selector: 'app-edit-user',
@@ -11,7 +12,9 @@ import { EditItemRequestData } from '@shared/models/edit-item-request-data.model
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditUserComponent extends BaseFormComponent {
-  // user: UserProfile = null;
+  checkFormValidity(formValue) {
+    return ZObj.areEquals(formValue, this.initialFormValue) ? AppText.errors.editFormNotChanged : '';
+  }
 
   setFormGroup() {
     const user: UserProfile = this.item as UserProfile;
@@ -26,9 +29,7 @@ export class EditUserComponent extends BaseFormComponent {
     });
   }
 
-  getEditItemRequestData(formValue): EditItemRequestData {
-    const data = { ...formValue };
-    this.numberTypeColumns.forEach(key => data[key] = Number(data[key]));
-    return { id: this.itemId, data }
+  getSubmitItemRequestData(formValue) {
+    return { id: this.itemId, data: this.getSubmitFormValue(formValue) }
   }
 }

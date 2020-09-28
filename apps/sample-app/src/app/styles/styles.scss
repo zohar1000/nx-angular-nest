@@ -17,3 +17,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .w100 {
   width: 100%;
 }
+
+.small-button {
+  padding: 6px 8px !important;
+  min-width: 0px !important;
+  line-height: 1rem !important;
+  font-size: 0.65rem !important;
+  font-weight: normal !important;
+  color: white !important;
+}

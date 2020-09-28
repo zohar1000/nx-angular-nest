@@ -39,7 +39,7 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
   @Output() navigateToAddPage = new EventEmitter();
   @Output() navigateToEditPage = new EventEmitter();
   @Output() submitDeleteItem = new EventEmitter();
-  @Output() getItems = new EventEmitter();
+  @Output() onChangeListPageMetrics = new EventEmitter();
   @ViewChild(MatTable) table: MatTable<any>;
   @ViewChild(MatPaginator) tablePaginator: MatPaginator;
   @ViewChild(MatSort) tableSort: MatSort;
@@ -62,8 +62,7 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
     this.localStorageService = appInjector.get(LocalStorageService);
     this.initListPageMetricsFromLocalStorage();
     this.dataSource = new BaseTableDataSource(this.items$);
-    this.emitGetItems(false);
-
+    this.emitPageMetrics(false);
   }
 
   ngAfterViewInit() {
@@ -92,7 +91,7 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
 
   onChangeSort(sort: Sort) {
     this.sortMetrics = { key: sort.active, order: sort.direction === 'asc' ? 1 : -1 }
-    this.emitGetItems(true);
+    this.emitPageMetrics(true);
   }
 
   onChangePaging(e: PageEvent) {
@@ -101,17 +100,17 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
     } else if (e.pageSize !== this.pagingMetrics.pageSize) {
       this.pagingMetrics = { ...this.pagingMetrics, pageSize: e.pageSize };
     }
-    this.emitGetItems(true);
+    this.emitPageMetrics(true);
   }
 
   onChangeFilterLine(filter) {
     this.filter = filter;
-    this.emitGetItems(false);
+    this.emitPageMetrics(false);
   }
 
-  emitGetItems(isUpdateLocalStorage) {
+  emitPageMetrics(isUpdateLocalStorage) {
     if (isUpdateLocalStorage) this.updateLocalStorage();
-    this.getItems.emit({ paging: this.pagingMetrics, filter: this.filter, sort: this.sortMetrics });
+    this.onChangeListPageMetrics.emit({ paging: this.pagingMetrics, filter: this.filter, sort: this.sortMetrics });
   }
 
   /***************************************/

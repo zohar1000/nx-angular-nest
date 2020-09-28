@@ -32,8 +32,8 @@ export class UserService extends BaseEntityService {
             password: this.encryptionService.getHashedPassword(dto.password),
             lastLoginTime: 0
           };
-          await this.mongoService.insertOneAutoIncrement(this.FIRST_USER_ID, this.collectionName, userDoc);
-          resolve({ isSuccess: true, data: this.getProfileFromDoc(userDoc) });
+          const response = await this.mongoService.insertOneAutoIncrement(this.FIRST_USER_ID, this.collectionName, userDoc);
+          resolve({ isSuccess: true, data: this.getProfileFromDoc(userDoc), insertedId: response['insertedId'] });
         }
       } catch (e) {
         this.logw('error adding user', e);

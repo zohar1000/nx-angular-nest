@@ -5,8 +5,9 @@
 <ng-container [ngSwitch]="pageType">
   <app-add-user
     *ngSwitchCase="PageType.AddItem"
-    (cancel)="onCancelItem()"
-    (submit)="submitAddItem($event)"
+    [numberTypeColumns]="numberTypeColumns"
+    (onCancel)="onCancelItem()"
+    (onSubmit)="submitAddItem($event)"
   ></app-add-user>
   <app-edit-user
     *ngSwitchCase="PageType.EditItem"
@@ -26,7 +27,7 @@
     (navigateToAddPage)="navigateToAddPage()"
     (navigateToEditPage)="navigateToEditPage($event)"
     (submitDeleteItem)="submitDeleteItem($event)"
-    (getItems)="onChangePaging($event)"
+    (onChangeListPageMetrics)="onChangeListPageMetrics($event)"
   ></app-user-list>
 </ng-container>
 

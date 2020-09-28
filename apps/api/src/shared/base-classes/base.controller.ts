@@ -1,6 +1,7 @@
 import { HttpException } from '@nestjs/common';
 import { HttpStatusCodes } from '../enums/http-status-codes.enum';
 import { EventEmitter } from 'events';
+import { ServerResponse } from '@shared/models/server-response.model';
 
 export abstract class BaseController extends EventEmitter {
   readonly DEFAULT_ERROR_CODE = HttpStatusCodes.DefaultError;
@@ -8,11 +9,11 @@ export abstract class BaseController extends EventEmitter {
     super();
   }
 
-  protected successResponse(data = {}) {
+  protected successResponse(data = {}): ServerResponse {
     return { isSuccess: true, data };
   }
 
-  protected errorResponse(message = 'server error occurred', code = this.DEFAULT_ERROR_CODE) {
+  protected errorResponse(message = 'server error occurred', code = this.DEFAULT_ERROR_CODE): ServerResponse {
     return { isSuccess: false, error: { code, message: message }};
   }
 

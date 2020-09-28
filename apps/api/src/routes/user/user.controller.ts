@@ -7,6 +7,7 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { ItemGetPageDto } from '@api-app/routes/user/dtos/item-get-page.dto';
 import { GetItemsRequest } from '@shared/models/get-items-request.model';
 import { AuthUser } from '@api-app/shared/models/auth-user.model';
+import { ServerResponse } from '@shared/models/server-response.model';
 
 
 @Controller('/v1/user')
@@ -91,10 +92,11 @@ export class UserController extends BaseEntityController {
 
   @Post('/add-page')
   async addUserGetPage(@Request() req, @Body() dto: ItemGetPageDto) {
-    let response;
     try {
-      response = { isSuccess: true }; // await this.userService.addUser(dto.doc);
-      return await this.getItemsPageAfterItemRequest(response, req.user, dto.getItemsRequest);
+      const result = await this.userService.addUser(dto.doc);
+      const response: ServerResponse = await this.getItemsPage(req.user, dto.getItemsRequest);
+      response.data.insertedId = result.insertedId;
+      return response;
     } catch(e) {
       this.errorService.loge('error adding user', e, req, dto);
       return this.exceptionResponse(e.message);
