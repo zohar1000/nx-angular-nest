@@ -1,21 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { delay } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   constructor(private http: HttpClient) {}
 
   get(url) {
-    return this.http.get(this.getFUllUrl(url)).pipe(delay(500));
-    // return this.http.get(this.getFUllUrl(url));
+    return this.http.get(this.getFUllUrl(url));
   }
 
   post(url, data) {
-    // if (url.includes('-page')) return this.http.post(this.getFUllUrl(url), data).pipe(delay(500));
-    // return of({ isSuccess: true }).pipe(delay(500));
-    return this.http.post(this.getFUllUrl(url), data).pipe(delay(500));
+    return this.http.post(this.getFUllUrl(url), data);
   }
 
   put(url, data) {
@@ -27,8 +23,7 @@ export class ApiService {
   }
 
   delete(url) {
-    return this.http.delete(this.getFUllUrl(url)).pipe(delay(500));
-    // return of({ isSuccess: true }).pipe(delay(500));
+    return this.http.delete(this.getFUllUrl(url));
   }
 
   getFUllUrl(url) {

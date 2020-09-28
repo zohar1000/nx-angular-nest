@@ -5,24 +5,24 @@
 <ng-container [ngSwitch]="pageType">
   <app-add-user
     *ngSwitchCase="PageType.AddItem"
-    [numberTypeColumns]="numberTypeColumns"
+    [numberTypeColumns]="entity.numberTypeColumns"
     (onCancel)="onCancelItem()"
     (onSubmit)="submitAddItem($event)"
   ></app-add-user>
   <app-edit-user
     *ngSwitchCase="PageType.EditItem"
-    [numberTypeColumns]="numberTypeColumns"
+    [numberTypeColumns]="entity.numberTypeColumns"
     [currItem$]="entityStore.currItem$"
     (onCancel)="onCancelItem()"
     (onSubmit)="submitEditItem($event)"
   ></app-edit-user>
   <app-user-list
     *ngSwitchCase="PageType.List"
+    [entity]="entity"
     [items$]="entityStore.items$"
     [totalCount$]="entityStore.totalCount$"
     [listPageMetrics$]="entityStore.listPageMetrics$"
     [isLoading$]="isLoading$"
-    [numberTypeColumns]="numberTypeColumns"
     [localStorageTableKey]="localStorageTableKey"
     (navigateToAddPage)="navigateToAddPage()"
     (navigateToEditPage)="navigateToEditPage($event)"

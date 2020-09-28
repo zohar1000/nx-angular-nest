@@ -12,6 +12,7 @@ import { GetItemsResponse } from '@shared/models/get-items-response.model';
 import { ListPageMetrics } from '@shared/models/list-page-metrics.model';
 import { AppText } from '@sample-app/shared/consts/app-texts.const';
 import { ZString } from 'zshared';
+import { Entity } from '@sample-app/shared/models/entity.model';
 
 @Directive()
 export abstract class BaseEntityContainerComponent extends BaseComponent implements OnInit {
@@ -26,21 +27,21 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   pageType = '';
   isRefreshTotalCount = true;
   isLoading$ = new BehaviorSubject<boolean>(false);
-  // listPageMetrics: ListPageMetrics
   localStorageTableKey;
+  entity: Entity;
 
+  abstract getEntity(): Entity;
 
-  constructor(public entityKey: string,
-              public entityStore: BaseEntityStore,
-              public numberTypeColumns: string[] = [],
+  constructor(public entityStore: BaseEntityStore,
               protected activatedRoute: ActivatedRoute) {
     super();
+    this.entity = this.getEntity();
   }
 
   ngOnInit(): void {
-    this.localStorageTableKey = `table_${this.entityKey}`;
+    this.localStorageTableKey = `table_${this.entity.key}`;
     this.initConfig();
-    this.entityStore.init(this.localStorageTableKey, this.getInitialFilter());
+    this.entityStore.init(this.localStorageTableKey, this.entity);
     if (this.config.isLoadItemsOnInit) this.entityStore.items$.next(null);
     this.regSub(this.getItems$.pipe(switchMap((request: GetItemsRequest) => this.sendItemsReqToServer(request))).subscribe());
   }
@@ -63,13 +64,8 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   }
 
   onChangeListPageMetrics(listPageMetrics: ListPageMetrics) {
-    // this.listPageMetrics = listPageMetrics;
     this.entityStore.listPageMetrics$.next(listPageMetrics);
     this.getItems();
-  }
-
-  getInitialFilter() {
-    return {};
   }
 
 
@@ -85,8 +81,8 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
         if (response.isSuccess) {
           this.entityStore.currItem$.next(response.data);
         } else {
-          this.logError(`Error getting ${this.entityKey} ${id}`, response);
-          this.showErrorToastr(`Error getting ${this.entityKey}`);
+          this.logError(`Error getting ${this.entity.key} ${id}`, response);
+          this.showErrorToastr(`Error getting ${this.entity.key}`);
         }
       }));
   }
@@ -98,7 +94,6 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   }
 
   sendItemsReqToServer(request: GetItemsRequest) {
-console.log('request isTotalCount:', request.isTotalCount);
     this.showAppSpinner();
     return this.apiService.post(`${this.getUrlPrefix()}/items-page`, request).pipe(
       finalize(() => this.hideAppSpinner()),
@@ -106,10 +101,9 @@ console.log('request isTotalCount:', request.isTotalCount);
         if (response.isSuccess) {
           const data: GetItemsResponse = response.data as GetItemsResponse;
           this.nextPage(data.items, request.isTotalCount ? data.totalCount : -1);
-          // this.entityStore.updatePageSettingSubject(getItems.options.isUpdateLocalStorage);
         } else {
-          this.logError(`Error getting items, entity: ${this.entityKey}`, response);
-          this.showErrorToastr(`Error getting ${this.entityKey} records`);
+          this.logError(`Error getting items, entity: ${this.entity.key}`, response);
+          this.showErrorToastr(`Error getting ${this.entity.key} records`);
         }
       })
     )
@@ -133,12 +127,12 @@ console.log('request isTotalCount:', request.isTotalCount);
             } else {
               this.entityStore.items$.next(null);
             }
-            this.showSuccessToastr(ZString.replaceParams(AppText.success.itemWasAdded, this.entityKey, response.data.insertedId));
+            this.showSuccessToastr(ZString.replaceParams(AppText.success.itemWasAdded, this.entity.label, response.data.insertedId));
             this.navigateTo(['.']);
           } else {
             this.hideAppSpinner();
-            this.logError(`Error adding item, entity: ${this.entityKey}`, response);
-            this.showErrorToastr(`Error adding ${this.entityKey}`);
+            this.logError(`Error adding item, entity: ${this.entity.key}`, response);
+            this.showErrorToastr(`Error adding ${this.entity.key}`);
           }
         })
       ).subscribe());
@@ -158,12 +152,12 @@ console.log('request isTotalCount:', request.isTotalCount);
               this.entityStore.items$.next(null);
               this.isRefreshTotalCount = this.config.isRefreshTotalCountOnEdit;
             }
-            this.showSuccessToastr(ZString.replaceParams(AppText.success.itemWasUpdated, this.entityKey, id));
+            this.showSuccessToastr(ZString.replaceParams(AppText.success.itemWasUpdated, this.entity.label, id));
             this.navigateTo(['.']);
           } else {
             this.hideAppSpinner();
-            this.logError(`Error saving item ${id}, entity: ${this.entityKey}`, response);
-            this.showErrorToastr(`Error saving ${this.entityKey}`);
+            this.logError(`Error saving item ${id}, entity: ${this.entity.key}`, response);
+            this.showErrorToastr(`Error saving ${this.entity.key}`);
           }
         })
       ).subscribe());
@@ -182,11 +176,11 @@ console.log('request isTotalCount:', request.isTotalCount);
             } else {
               this.getItems()
             }
-            this.showSuccessToastr(ZString.replaceParams(AppText.success.itemWasDeleted, this.entityKey, id));
+            this.showSuccessToastr(ZString.replaceParams(AppText.success.itemWasDeleted, this.entity.label, id));
           } else {
             this.hideAppSpinner();
-            this.logError(`Error deleting item ${id}, entity: ${this.entityKey}`, response);
-            this.showErrorToastr(`Error deleting ${this.entityKey}`);
+            this.logError(`Error deleting item ${id}, entity: ${this.entity.key}`, response);
+            this.showErrorToastr(`Error deleting ${this.entity.key}`);
           }
         })
       ).subscribe());
@@ -195,7 +189,6 @@ console.log('request isTotalCount:', request.isTotalCount);
   getRequestUrlAndParams(type: string, method, data?): { method: string, urlSuffix: string, params: any } {
     if (this.config.isReturnItemsPageOnItemRequest) {
       const isTotalCount = type !== 'edit' || this.config.isRefreshTotalCountOnEdit || this.entityStore.totalCount$.value === 0;
-console.log('send isTotalCount:', isTotalCount);
       return {
         method: 'post',
         urlSuffix: `/${type}-page`,
@@ -241,7 +234,7 @@ console.log('send isTotalCount:', isTotalCount);
   }
 
   getUrlPrefix() {
-    return `v1/${this.entityKey}`;
+    return `v1/${this.entity.key}`;
   }
 
   /*******************************************/

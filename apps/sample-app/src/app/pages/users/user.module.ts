@@ -11,9 +11,6 @@ import { EditUserComponent } from './edit-user/edit-user.component';
 import { Tokens } from '../../shared/enums/tokens.enum';
 import { UserFilterLineComponent } from './user-filter-line/user-filter-line.component';
 
-const tableColumns = ['id', 'firstName', 'lastName', 'status', 'email', 'role', 'lastLoginTime', 'edit', 'delete'];
-const numberTypeColumns = ['status'];
-
 @NgModule({
   declarations: [
     UserContainerComponent,
@@ -28,11 +25,7 @@ const numberTypeColumns = ['status'];
     UserRoutingModule
   ],
   providers: [
-    { provide: Tokens.EntityKey, useValue: 'user' },
-    { provide: Tokens.EntityStore, useClass: BaseEntityStore },
-    { provide: Tokens.EntityTableColumns, useValue: tableColumns },
-    { provide: Tokens.NumberTypeColumns, useValue: numberTypeColumns }
-
+    { provide: Tokens.EntityStore, useClass: BaseEntityStore }
   ]
 })
 export class UserModule { }

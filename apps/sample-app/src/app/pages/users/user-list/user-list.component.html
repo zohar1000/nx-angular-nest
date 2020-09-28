@@ -6,7 +6,7 @@
 <!--    <app-download-csv (downloadCsv)="onClickDownloadCsv()"></app-download-csv>-->
     <span class="items-count">total: {{(totalCount$ | async)}}</span>
     <span>
-        <button routerLink="add" mat-flat-button class="small-button add-button" color="accent">ADD USER</button>
+        <button (click)="onClickAdd()" mat-flat-button class="small-button add-button" color="accent">ADD USER</button>
       </span>
   </div>
 </div>
@@ -14,7 +14,7 @@
 <app-user-filter-line
   class="filter-line"
   [initialFilter]="(listPageMetrics$ | async).filter"
-  [numberTypeColumns]="numberTypeColumns"
+  [numberTypeColumns]="entity.numberTypeColumns"
   (onChangeFilterLine)="onChangeFilterLine($event)">
 </app-user-filter-line>
 
@@ -74,8 +74,8 @@
       </td>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: tableColumns;"></tr>
+    <tr mat-header-row *matHeaderRowDef="entity.tableColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: entity.tableColumns;"></tr>
   </table>
 
   <div class="table-no-items" *ngIf="!(isLoading$ | async) && (totalCount$ | async) ===  0">

@@ -2,6 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { BaseEntityContainerComponent } from '../../../shared/base-classes/base-entity-container.component';
 import { ActivatedRoute } from '@angular/router';
 import { Tokens } from '@sample-app/shared/enums/tokens.enum';
+import { Entity } from '@sample-app/shared/models/entity.model';
 
 @Component({
   selector: 'app-user-container',
@@ -9,14 +10,17 @@ import { Tokens } from '@sample-app/shared/enums/tokens.enum';
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserContainerComponent extends BaseEntityContainerComponent {
-  constructor(@Inject(Tokens.EntityKey) entityKey: string,
-              @Inject(Tokens.EntityStore) entityStore,
-              @Inject(Tokens.NumberTypeColumns) numberTypeColumns,
-              activatedRoute: ActivatedRoute) {
-    super(entityKey, entityStore, numberTypeColumns, activatedRoute);
+  constructor(@Inject(Tokens.EntityStore) entityStore, activatedRoute: ActivatedRoute) {
+    super(entityStore, activatedRoute);
   }
 
-  getInitialFilter() {
-    return { role: '', status: '' };
+  getEntity(): Entity {
+    return {
+      key: 'user',
+      label: 'User',
+      tableColumns: ['id', 'firstName', 'lastName', 'status', 'email', 'role', 'lastLoginTime', 'edit', 'delete'],
+      numberTypeColumns: ['status'],
+      initialFilter: { role: '', status: '' }
+    }
   }
 }

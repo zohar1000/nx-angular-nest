@@ -1,5 +1,5 @@
 import { BehaviorSubject } from 'rxjs';
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BaseService } from '@sample-app/shared/base-classes/base.service';
 import { ListPageMetrics } from '@shared/models/list-page-metrics.model';
 import { LocalStorageTable } from '@shared/models/local-storage-table.mode';
@@ -7,6 +7,7 @@ import { LocalStorageService } from '@sample-app/core/services/local-storage.ser
 import { appInjector } from '@sample-app/app.injector';
 import { SortMetrics } from '@sample-app/shared/models/sort-metrics.model';
 import { PagingMetrics } from '@sample-app/shared/models/paging-metrics.model';
+import { Entity } from '@sample-app/shared/models/entity.model';
 
 @Injectable()
 export class BaseEntityStore extends BaseService {
@@ -19,30 +20,21 @@ export class BaseEntityStore extends BaseService {
   listPageMetrics$ = new BehaviorSubject<ListPageMetrics>(null);
   localStorageService: LocalStorageService;
 
-  init(localStorageTableKey, filter) {
+  init(localStorageTableKey, entity: Entity) {
     this.localStorageService = appInjector.get(LocalStorageService);
-    this.initListPageMetricsFromLocalStorage(localStorageTableKey, filter);
+    this.initListPageMetricsFromLocalStorage(localStorageTableKey, entity);
   }
 
   /***************************************/
   /*      L O C A L   S T O R A G E      */
   /***************************************/
 
-  initListPageMetricsFromLocalStorage(localStorageTableKey, filter) {
+  initListPageMetricsFromLocalStorage(localStorageTableKey, entity: Entity) {
     const item: LocalStorageTable = this.localStorageService.getJsonItem(localStorageTableKey);
     const sort: SortMetrics = item && item.sortMetrics ? item.sortMetrics : { ...this.INITIAL_SORT_METRICS };
     const paging: PagingMetrics = { ...this.INITIAL_PAGING_METRICS };
     const pageSize = this.localStorageService.getItem(LocalStorageService.PAGE_SIZE);
     paging.pageSize = pageSize ? Number(pageSize) : this.DEFAULT_PAGE_SIZE;
-    this.listPageMetrics$.next({ filter, paging, sort });
+    this.listPageMetrics$.next({ filter: entity.initialFilter, paging, sort });
   }
-
-  // updateLocalStorage() {
-  //   const item: LocalStorageTable = this.localStorageService.getJsonItem(this.localStorageTableKey) || {};
-  //   item.sortMetrics = this.sortMetrics;
-  //   item.pageIndex = this.pagingMetrics.pageIndex;
-  //   this.localStorageService.setJsonItem(this.localStorageTableKey, item);
-  //   this.localStorageService.setItem(LocalStorageService.PAGE_SIZE, this.pagingMetrics.pageSize);
-  // }
-
 }

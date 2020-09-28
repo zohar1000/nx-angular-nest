@@ -1,29 +1,29 @@
-import { AfterViewInit, Directive, EventEmitter, Inject, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Directive, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { BaseComponent } from './base.component';
 import { BaseTableDataSource } from '@sample-app/shared/base-classes/base-table.data-source';
 import { MatTable } from '@angular/material/table';
-import { Tokens } from '@sample-app/shared/enums/tokens.enum';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { BehaviorSubject } from 'rxjs';
 import { LocalStorageService } from '@sample-app/core/services/local-storage.service';
-// import { PagingMetrics } from '@sample-app/shared/models/paging-metrics.model';
-// import { SortMetrics } from '@sample-app/shared/models/sort-metrics.model';
 import { appInjector } from '@sample-app/app.injector';
 import { LocalStorageTable } from '@shared/models/local-storage-table.mode';
 import { MatDialog } from '@angular/material/dialog';
 import { take } from 'rxjs/operators';
 import { ListPageMetrics } from '@shared/models/list-page-metrics.model';
 import { SortMetrics } from '@sample-app/shared/models/sort-metrics.model';
+import { Entity } from '@sample-app/shared/models/entity.model';
+
+// TODO: check delete dialog width on responsive
 
 @Directive()
 export abstract class BaseEntityListComponent extends BaseComponent implements OnInit, AfterViewInit {
   readonly PAGE_SIZE_OPTIONS = [5, 10, 20, 50, 100, 250];
+  @Input() entity: Entity;
   @Input() items$;
   @Input() totalCount$: BehaviorSubject<number>;
   @Input() listPageMetrics$: BehaviorSubject<ListPageMetrics>;
   @Input() isLoading$: BehaviorSubject<boolean>;
-  @Input() numberTypeColumns: string[];
   @Input() localStorageTableKey: string;
   @Output() navigateToAddPage = new EventEmitter();
   @Output() navigateToEditPage = new EventEmitter();
@@ -33,23 +33,16 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
   @ViewChild(MatPaginator) tablePaginator: MatPaginator;
   @ViewChild(MatSort) tableSort: MatSort;
   @ViewChild('deleteDialog') deleteDialogTemplateRef: TemplateRef<any>;
-  items;
   dataSource: BaseTableDataSource;
-  // pagingMetrics: PagingMetrics;
-  // filter;
-  // sortMetrics: SortMetrics;
   localStorageService: LocalStorageService;
 
-  constructor(@Inject(Tokens.EntityTableColumns) public tableColumns: string[],
-              public dialog: MatDialog) {
+  constructor(public dialog: MatDialog) {
     super();
   }
 
   ngOnInit() {
     this.localStorageService = appInjector.get(LocalStorageService);
-    // this.initListPageMetricsFromLocalStorage();
     this.dataSource = new BaseTableDataSource(this.items$);
-    // this.emitPageMetrics(false);
   }
 
   ngAfterViewInit() {
@@ -65,8 +58,6 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
   }
 
   onClickDelete(id) {
-    // this.submitDeleteItem.emit(id);
-
     const dialogRef = this.dialog.open(this.deleteDialogTemplateRef, {
       width: '30vw',
       data: { id }
@@ -109,26 +100,7 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
   /***************************************/
   /*      L O C A L   S T O R A G E      */
   /***************************************/
-/*
-  initListPageMetricsFromLocalStorage() {
-    const item: LocalStorageTable = this.localStorageService.getJsonItem(this.localStorageTableKey);
-    if (!item) {
-      this.sortMetrics = { ...this.INITIAL_SORT_METRICS };
-      this.pagingMetrics = { ...this.INITIAL_PAGING_METRICS };
-    } else {
-      this.sortMetrics = item.sortMetrics;
-      if (!this.pagingMetrics) this.pagingMetrics = { ...this.INITIAL_PAGING_METRICS };
-      this.pagingMetrics.pageIndex = (this.isFirstTime ? 0 : item.pageIndex);
-    }
-    const pageSize = this.localStorageService.getItem(LocalStorageService.PAGE_SIZE);
-    this.pagingMetrics.pageSize = pageSize ? Number(pageSize) : this.DEFAULT_PAGE_SIZE;
-    this.filter = this.getInitialFilter();
-  }
 
-  getInitialFilter() {
-    return {};
-  }
-*/
   updateLocalStorage(metrics: ListPageMetrics) {
     const item: LocalStorageTable = this.localStorageService.getJsonItem(this.localStorageTableKey) || {};
     item.sortMetrics = metrics.sort;
