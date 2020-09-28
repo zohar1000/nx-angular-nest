@@ -1,7 +1,7 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable, of }                                             from 'rxjs';
 import { map }                                                        from 'rxjs/operators';
-import { HttpStatusCodes }                                            from '../enums/http-status-codes.enum';
+import { HttpStatusCodes }                                            from '@shared/enums/http-status-codes.enum';
 import { logt } from 'zshared';
 import { SanitationService }                                          from '../services/sanitation.service';
 import { ErrorService } from '../services/error.service';

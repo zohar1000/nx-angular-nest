@@ -15,4 +15,8 @@ export class UserContainerComponent extends BaseEntityContainerComponent {
               activatedRoute: ActivatedRoute) {
     super(entityKey, entityStore, numberTypeColumns, activatedRoute);
   }
+
+  getInitialFilter() {
+    return { role: '', status: '' };
+  }
 }

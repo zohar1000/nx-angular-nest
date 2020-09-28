@@ -1,9 +1,9 @@
-import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
-import { ActivationEnd } from '@angular/router';
+import { Component, ViewChild } from '@angular/core';
 import { finalize } from 'rxjs/operators';
 import { BaseComponent } from './shared/base-classes/base.component';
 import { AuthService } from './core/services/auth.service';
 import { AppEventType } from '@sample-app/shared/enums/app-event-type.enum';
+import { RouteChangeData } from 'ng-route-change';
 
 @Component({
   selector: 'app-root',
@@ -18,14 +18,8 @@ export class AppComponent extends BaseComponent {
   isInitialized = false;
   userProfile = null;
 
-  constructor(private authService: AuthService, private cdr: ChangeDetectorRef) {
+  constructor(private authService: AuthService) {
     super();
-
-    this.regSub(this.router.events.subscribe(e => {
-      if (e instanceof ActivationEnd) {
-        this.isFullPage = e.snapshot && e.snapshot.data ? e.snapshot.data.isFullPage : false;
-      }
-    }));
 
     this.regSub(this.authService.getPermissions()
       .pipe(finalize(() => this.isInitialized = true))
@@ -38,6 +32,11 @@ export class AppComponent extends BaseComponent {
     this.regSub(this.appEventsService.getObsaervable(AppEventType.HideAppSpinner).subscribe(() => setTimeout(() => this.isSpinner = false)));
   }
 
+  onRouteChange(data: RouteChangeData) {
+    this.isFullPage = data.state.data ? Boolean(data.state.data.isFullPage) : false;
+    this.isSideNavOpened = false;
+  }
+
   onClickSidenavItem(path = '') {
     this.sidenav.close();
     this.router.navigate([path]).then();
@@ -47,7 +46,7 @@ export class AppComponent extends BaseComponent {
     // your logic here
     if (data.type === 'LoginSuccess') {
       this.userProfile = data.user;
-      this.router.navigate(['/user']);
+      this.router.navigate(['']);
     }
   }
 

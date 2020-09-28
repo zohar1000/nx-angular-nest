@@ -36,7 +36,7 @@ export class UserService extends BaseEntityService {
           resolve({ isSuccess: true, data: this.getProfileFromDoc(userDoc), insertedId: response['insertedId'] });
         }
       } catch (e) {
-        this.logw('error adding user', e);
+        this.logi('error adding user', e);
         reject(e);
       }
     });

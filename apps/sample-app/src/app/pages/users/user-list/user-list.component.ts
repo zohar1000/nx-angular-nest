@@ -9,8 +9,4 @@ import { Role } from '@shared/enums/role.enum';
   styleUrls: ['./user-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserListComponent extends BaseEntityListComponent {
-  getInitialFilter() {
-    return { role: '', status: '' };
-  }
-}
+export class UserListComponent extends BaseEntityListComponent {}

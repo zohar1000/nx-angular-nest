@@ -13,16 +13,16 @@
 
 <app-user-filter-line
   class="filter-line"
-  [initialFilter]="filter"
+  [initialFilter]="(listPageMetrics$ | async).filter"
   [numberTypeColumns]="numberTypeColumns"
   (onChangeFilterLine)="onChangeFilterLine($event)">
 </app-user-filter-line>
 
-<div class="mat-elevation-z8">
+<div *ngIf="(items$ | async) && (listPageMetrics$ | async) as metrics" class="mat-elevation-z8">
   <table mat-table matSort aria-label="Elements"
          [dataSource]="dataSource"
-         [matSortActive]="sortMetrics.key"
-         [matSortDirection]="sortMetrics.order === 1 ? 'asc' : 'desc'"
+         [matSortActive]="metrics.sort.key"
+         [matSortDirection]="metrics.sort.order === 1 ? 'asc' : 'desc'"
          (matSortChange)="onChangeSort($event)"
   >
     <ng-container matColumnDef="id">
@@ -82,11 +82,11 @@
     There are no items
   </div>
 
-  <mat-paginator *ngIf="pagingMetrics.pageSize > 0"
+  <mat-paginator *ngIf="metrics.paging.pageSize > 0"
      showFirstLastButtons
      [length]="totalCount$ | async"
-     [pageIndex]="pagingMetrics.pageIndex"
-     [pageSize]="pagingMetrics.pageSize"
+     [pageIndex]="metrics.paging.pageIndex"
+     [pageSize]="metrics.paging.pageSize"
      [pageSizeOptions]="PAGE_SIZE_OPTIONS"
      (page)="onChangePaging($event)">
   </mat-paginator>

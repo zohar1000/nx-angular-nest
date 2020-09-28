@@ -17,7 +17,7 @@ import { ZString } from 'zshared';
 export abstract class BaseEntityContainerComponent extends BaseComponent implements OnInit {
   readonly DEFAULT_CONFIG = {
     isLoadItemsOnInit: true,
-    isRefreshTotalCountOnEdit: false,
+    isRefreshTotalCountOnEdit: true,
     isReturnItemsPageOnItemRequest: true
   };
   getItems$ = new ReplaySubject<GetItemsRequest>(1);
@@ -26,9 +26,9 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   pageType = '';
   isRefreshTotalCount = true;
   isLoading$ = new BehaviorSubject<boolean>(false);
-  listPageMetrics: ListPageMetrics
-  listPageCount = 0;
-  isFirstListPage = true;
+  // listPageMetrics: ListPageMetrics
+  localStorageTableKey;
+
 
   constructor(public entityKey: string,
               public entityStore: BaseEntityStore,
@@ -38,7 +38,9 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   }
 
   ngOnInit(): void {
+    this.localStorageTableKey = `table_${this.entityKey}`;
     this.initConfig();
+    this.entityStore.init(this.localStorageTableKey, this.getInitialFilter());
     if (this.config.isLoadItemsOnInit) this.entityStore.items$.next(null);
     this.regSub(this.getItems$.pipe(switchMap((request: GetItemsRequest) => this.sendItemsReqToServer(request))).subscribe());
   }
@@ -51,7 +53,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
     this.pageType = data.state.data ? data.state.data.pageType : '';
     switch (this.pageType) {
       case PageType.List:
-        this.isFirstListPage = (this.listPageCount++ === 0);
+        if (!this.entityStore.items$.value) this.getItems();
         break;
       case PageType.EditItem:
         this.entityStore.currItem$.next(null);
@@ -61,16 +63,21 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   }
 
   onChangeListPageMetrics(listPageMetrics: ListPageMetrics) {
-    this.listPageMetrics = listPageMetrics;
+    // this.listPageMetrics = listPageMetrics;
+    this.entityStore.listPageMetrics$.next(listPageMetrics);
     this.getItems();
   }
+
+  getInitialFilter() {
+    return {};
+  }
+
 
   /*******************************/
   /*      G E T   I T E M S      */
   /*******************************/
 
   getItem(id) {
-    console.log('get item');
     this.showAppSpinner();
     return this.apiService.get(`${this.getUrlPrefix()}/${id}`).pipe(
       finalize(() => this.hideAppSpinner()),
@@ -85,12 +92,13 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   }
 
   getItems() {
-    const request: GetItemsRequest = { ...this.listPageMetrics, isTotalCount: this.isRefreshTotalCount };
+    const request: GetItemsRequest = { ...this.entityStore.listPageMetrics$.value, isTotalCount: this.isRefreshTotalCount || this.entityStore.totalCount$.value === 0 };
     this.isRefreshTotalCount = true;
     this.getItems$.next(request);
   }
 
   sendItemsReqToServer(request: GetItemsRequest) {
+console.log('request isTotalCount:', request.isTotalCount);
     this.showAppSpinner();
     return this.apiService.post(`${this.getUrlPrefix()}/items-page`, request).pipe(
       finalize(() => this.hideAppSpinner()),
@@ -113,7 +121,6 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   /*********************************************************/
 
   submitAddItem(data) {
-    console.log('submit add item');
     this.showAppSpinner();
     const { method, urlSuffix, params } = this.getRequestUrlAndParams('add', 'post', data);
     this.regSub(this.apiService[method](`${this.getUrlPrefix()}${urlSuffix}`, params)
@@ -126,7 +133,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
             } else {
               this.entityStore.items$.next(null);
             }
-            this.showSuccessToastr(ZString.replaceParams(AppText.success.itemWasAdded, this.entityKey));
+            this.showSuccessToastr(ZString.replaceParams(AppText.success.itemWasAdded, this.entityKey, response.data.insertedId));
             this.navigateTo(['.']);
           } else {
             this.hideAppSpinner();
@@ -138,7 +145,6 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   }
 
   submitEditItem({id, data}) {
-    console.log('submit edit item');
     this.showAppSpinner();
     const { urlSuffix, method, params } = this.getRequestUrlAndParams('edit', 'put', data);
     this.regSub(this.apiService[method](`${this.getUrlPrefix()}/${id}${urlSuffix}`, params)
@@ -150,7 +156,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
               this.hideAppSpinner();
             } else {
               this.entityStore.items$.next(null);
-              if (!this.config.isRefreshTotalCountOnEdit) this.isRefreshTotalCount = false;
+              this.isRefreshTotalCount = this.config.isRefreshTotalCountOnEdit;
             }
             this.showSuccessToastr(ZString.replaceParams(AppText.success.itemWasUpdated, this.entityKey, id));
             this.navigateTo(['.']);
@@ -188,12 +194,14 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
 
   getRequestUrlAndParams(type: string, method, data?): { method: string, urlSuffix: string, params: any } {
     if (this.config.isReturnItemsPageOnItemRequest) {
+      const isTotalCount = type !== 'edit' || this.config.isRefreshTotalCountOnEdit || this.entityStore.totalCount$.value === 0;
+console.log('send isTotalCount:', isTotalCount);
       return {
         method: 'post',
         urlSuffix: `/${type}-page`,
         params: {
           doc: data,
-          getItemsRequest: { ...this.listPageMetrics, isTotalCount: true }
+          getItemsRequest: { ...this.entityStore.listPageMetrics$.value, isTotalCount }
         }
       }
     } else {

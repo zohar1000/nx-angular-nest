@@ -3,7 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 
 
 const routes: Routes = [
-  { path: 'login', loadChildren: () => import('./pages/login/login.module').then(m => m.LoginModule), data: { isFullPage: true }},
+  { path: '', loadChildren: () => import('./pages/dashboard/dashboard.module').then(m => m.DashboardModule) },
+  { path: 'login', loadChildren: () => import('./pages/login/login.module').then(m => m.LoginModule), data: { isFullPage: true } },
   { path: 'user', loadChildren: () => import('./pages/users/user.module').then(m => m.UserModule) }
 ];
 

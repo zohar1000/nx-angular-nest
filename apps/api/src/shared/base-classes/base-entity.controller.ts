@@ -1,4 +1,4 @@
-import { HttpStatusCodes } from '../enums/http-status-codes.enum';
+import { HttpStatusCodes } from '@shared/enums/http-status-codes.enum';
 import { AuthUser } from '../models/auth-user.model';
 import { BaseController } from './base.controller';
 

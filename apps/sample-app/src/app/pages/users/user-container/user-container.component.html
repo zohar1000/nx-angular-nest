@@ -18,12 +18,12 @@
   ></app-edit-user>
   <app-user-list
     *ngSwitchCase="PageType.List"
-    [entityKey]="entityKey"
     [items$]="entityStore.items$"
     [totalCount$]="entityStore.totalCount$"
+    [listPageMetrics$]="entityStore.listPageMetrics$"
     [isLoading$]="isLoading$"
-    [isFirstTime]="isFirstListPage"
     [numberTypeColumns]="numberTypeColumns"
+    [localStorageTableKey]="localStorageTableKey"
     (navigateToAddPage)="navigateToAddPage()"
     (navigateToEditPage)="navigateToEditPage($event)"
     (submitDeleteItem)="submitDeleteItem($event)"

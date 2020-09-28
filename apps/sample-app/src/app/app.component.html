@@ -1,3 +1,5 @@
+<ng-container [NgRouteChange]="{ handler: onRouteChange.bind(this) }"></ng-container>
+
 <router-outlet *ngIf="isFullPage" [ngRouterOutletComm]="{ type: 'parent', receiver: onChildEvent.bind(this) }"></router-outlet>
 
 <mat-sidenav-container *ngIf="!isFullPage" class="container" [hasBackdrop]="true">

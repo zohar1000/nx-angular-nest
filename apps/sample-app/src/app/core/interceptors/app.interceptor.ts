@@ -7,6 +7,7 @@ import { RefreshTokenResponse } from '@shared/models/refresh-token-response.mode
 import { AuthService } from '../services/auth.service';
 import { AppEventType } from '@sample-app/shared/enums/app-event-type.enum';
 import { BaseService } from '@sample-app/shared/base-classes/base.service';
+import { HttpStatusCodes } from '@shared/enums/http-status-codes.enum';
 
 @Injectable({ providedIn: 'root' })
 export class AppInterceptor extends BaseService implements HttpInterceptor {
@@ -70,7 +71,11 @@ export class AppInterceptor extends BaseService implements HttpInterceptor {
   }
 
   showToastrAndReturnError(error) {
-    this.toastrService.error(`Error ${error.status} - ${error.statusText}`);
+    let message;
+    if (error instanceof HttpErrorResponse) message = error?.error?.error?.message;
+    message = message || error.statusText;
+    if (error.status !== HttpStatusCodes.DefaultError) message = `Error ${error.status} - ${message}`;
+    this.toastrService.error(message);
     return throwError(error);
   }
 }
