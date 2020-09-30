@@ -6,6 +6,9 @@ import { AuthService } from './services/auth.service';
 import { UserService } from '../../shared/services/entities/user.service';
 import { LoginDto } from './dtos/login.dto';
 import { LocalStrategyResponse } from '@shared/models/local-strategy-response.model';
+import { RefreshTokenResponse } from '@shared/models/refresh-token-response.model';
+import { ServerResponse } from '@shared/models/server-response.model';
+import { ServerLoginResponse } from '@shared/models/server-login-response.model';
 
 @Controller('/v1/auth')
 export class AuthController extends BaseEntityController {
@@ -17,10 +20,10 @@ export class AuthController extends BaseEntityController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('permissions')
-  async permissions(@Request() req) {
+  async permissions(@Request() req): Promise<ServerResponse | void> {
     try {
-      const loggedInUser = await this.authService.permissions(req.user);
-      return this.successResponse(loggedInUser);
+      const userProfile = await this.authService.permissions(req.user);
+      return this.successResponse(userProfile);
     } catch(e) {
       return this.exceptionResponse(e.message, 401);
     }
@@ -28,10 +31,11 @@ export class AuthController extends BaseEntityController {
 
   @UseGuards(AuthGuard('local'))
   @Post('login')
-  async login(@Request() req, @Body() dto: LoginDto) {
+  async login(@Request() req, @Body() dto: LoginDto): Promise<ServerResponse> {
     try {
-    const resp: LocalStrategyResponse = await this.authService.login(dto, req.user as LocalStrategyResponse);
-      return this.successResponse(resp);
+      const response: ServerLoginResponse = await this.authService.login(dto, req.user as LocalStrategyResponse);
+      if (!response.isSuccess) return this.errorResponse(response.message);
+      return this.successResponse(response);
     } catch(e) {
       return this.errorResponse(e.message);
     }
@@ -39,13 +43,14 @@ export class AuthController extends BaseEntityController {
 
   // @UseGuards(AuthGuard('jwt'))
   @Post('refresh')
-  async refresh(@Body() body) {
+  async refresh(@Body() body): Promise<ServerResponse> {
     try {
-      const response: any = await this.authService.refresh(body.refreshToken);
-      return this.successResponse({ isSuccess: true, ...response });
+      const response: RefreshTokenResponse = await this.authService.refresh(body.refreshToken);
+      if (!response.isSuccess) return this.errorResponse();
+      return this.successResponse(response);
     } catch(e) {
       // return this.exceptionResponse(e.message, 401);
-      return this.successResponse({ isSuccess: false });
+      return this.errorResponse();
     }
   }
 /*

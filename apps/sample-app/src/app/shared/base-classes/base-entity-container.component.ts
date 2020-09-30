@@ -82,7 +82,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
           this.entityStore.currItem$.next(response.data);
         } else {
           this.logError(`Error getting ${this.entity.key} ${id}`, response);
-          this.showErrorToastr(`Error getting ${this.entity.key}`);
+          this.showErrorToastr(response.error?.message || `Error getting ${this.entity.key}`);
         }
       }));
   }
@@ -103,7 +103,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
           this.nextPage(data.items, request.isTotalCount ? data.totalCount : -1);
         } else {
           this.logError(`Error getting items, entity: ${this.entity.key}`, response);
-          this.showErrorToastr(`Error getting ${this.entity.key} records`);
+          this.showErrorToastr(response.error?.message || `Error getting ${this.entity.key} records`);
         }
       })
     )
@@ -132,7 +132,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
           } else {
             this.hideAppSpinner();
             this.logError(`Error adding item, entity: ${this.entity.key}`, response);
-            this.showErrorToastr(`Error adding ${this.entity.key}`);
+            this.showErrorToastr(response.error?.message || `Error adding ${this.entity.key}`);
           }
         })
       ).subscribe());
@@ -157,7 +157,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
           } else {
             this.hideAppSpinner();
             this.logError(`Error saving item ${id}, entity: ${this.entity.key}`, response);
-            this.showErrorToastr(`Error saving ${this.entity.key}`);
+            this.showErrorToastr(response.error?.message || `Error saving ${this.entity.key}`);
           }
         })
       ).subscribe());
@@ -180,7 +180,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
           } else {
             this.hideAppSpinner();
             this.logError(`Error deleting item ${id}, entity: ${this.entity.key}`, response);
-            this.showErrorToastr(`Error deleting ${this.entity.key}`);
+            this.showErrorToastr(response.error?.message || `Error deleting ${this.entity.key}`);
           }
         })
       ).subscribe());

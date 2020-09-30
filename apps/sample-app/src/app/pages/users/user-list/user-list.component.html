@@ -1,6 +1,12 @@
 <div class="table-preface">
   <div class="title-and-role">
     <span class="title">Users</span>
+    <app-user-filter-line
+      class="filter-line"
+      [initialFilter]="(listPageMetrics$ | async).filter"
+      [numberTypeColumns]="entity.numberTypeColumns"
+      (onChangeFilterLine)="onChangeFilterLine($event)">
+    </app-user-filter-line>
   </div>
   <div>
 <!--    <app-download-csv (downloadCsv)="onClickDownloadCsv()"></app-download-csv>-->
@@ -11,12 +17,7 @@
   </div>
 </div>
 
-<app-user-filter-line
-  class="filter-line"
-  [initialFilter]="(listPageMetrics$ | async).filter"
-  [numberTypeColumns]="entity.numberTypeColumns"
-  (onChangeFilterLine)="onChangeFilterLine($event)">
-</app-user-filter-line>
+
 
 <div *ngIf="(items$ | async) && (listPageMetrics$ | async) as metrics" class="mat-elevation-z8">
   <table mat-table matSort aria-label="Elements"

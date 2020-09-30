@@ -43,6 +43,10 @@ export class MainModule {
   }
 
   setStaticFiles(app) {
+    // app.use('/', (req, res, next) => {
+    //   console.log('in * :', req.url);
+    //   next();
+    // });
     app.use(express.static(path.join(process.cwd(), './dist/')));
     app.use('/assets', express.static(path.resolve(process.cwd(), appConfig.paths.assetsFolder)));
     app.use('/favicon.ico', (req, res) => {

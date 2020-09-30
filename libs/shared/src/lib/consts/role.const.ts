@@ -7,7 +7,7 @@ export const RoleLabels = {
   [Role.Member]: 'Member'
 };
 
-export const RoleRank = {
+export const RoleRate = {
   [Role.Owner]: 100,
   [Role.Admin]: 80,
   [Role.Manager]: 60,

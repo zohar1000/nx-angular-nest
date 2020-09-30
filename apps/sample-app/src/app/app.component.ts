@@ -7,6 +7,8 @@ import { RouteChangeData } from 'ng-route-change';
 import { UserProfile } from '@shared/models/user-profile.model';
 import { ServerResponse } from '@shared/models/server-response.model';
 
+// TODO: return user permissions in index.html in prod
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -18,20 +20,18 @@ export class AppComponent extends BaseComponent {
   isSideNavOpened = false;
   isFullPage;
   isInitialized = false;
-  userProfile: UserProfile = null;
+  // userProfile: UserProfile = null;
 
-  constructor(private authService: AuthService) {
+  constructor(public authService: AuthService) {
     super();
-
+    this.regSub(this.appEventsService.getObsaervable(AppEventType.ShowAppSpinner).subscribe(() => setTimeout(() => this.isSpinner = true)));
+    this.regSub(this.appEventsService.getObsaervable(AppEventType.HideAppSpinner).subscribe(() => setTimeout(() => this.isSpinner = false)));
     this.regSub(this.authService.getPermissions()
       .pipe(finalize(() => this.isInitialized = true))
       .subscribe(
-        (response: ServerResponse) => this.userProfile = response.data,
-        () => this.router.navigate(['/login'], { state: { isLogout: true }})
+        (response: ServerResponse) => this.authService.setUser(response.data),
+        () => this.logout()
       ));
-
-    this.regSub(this.appEventsService.getObsaervable(AppEventType.ShowAppSpinner).subscribe(() => setTimeout(() => this.isSpinner = true)));
-    this.regSub(this.appEventsService.getObsaervable(AppEventType.HideAppSpinner).subscribe(() => setTimeout(() => this.isSpinner = false)));
   }
 
   onRouteChange(data: RouteChangeData) {
@@ -45,16 +45,13 @@ export class AppComponent extends BaseComponent {
   }
 
   onChildEvent(data) {
-    // your logic here
     if (data.type === 'LoginSuccess') {
-      this.userProfile = data.user;
       this.router.navigate(['']);
     }
   }
 
   logout() {
-    this.userProfile = null;
-    this.authService.logout();
-    this.router.navigate(['/login'], { state: { isLogout: true }});
+    this.authService.clearUser();
+    this.router.navigate(['/login']);
   }
 }

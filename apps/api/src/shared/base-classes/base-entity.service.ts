@@ -19,8 +19,6 @@ export abstract class BaseEntityService extends BaseService {
   /*********************/
 
   async findOne(query?, projection?): Promise<any> {
-console.log('this.collectionName:', this.collectionName);
-console.log('query:', query);
     return this.mongoService.findOne(this.collectionName, query, projection);
   }
 
@@ -87,7 +85,7 @@ console.log('query:', query);
   /**********************/
 
   async getItemsPage(user: AuthUser, body): Promise<GetItemsResponse> {
-    return new Promise(async (resolve, reject) => {
+    return new Promise<GetItemsResponse>(async (resolve, reject) => {
       try {
         let totalCount;
         const query: any = await this.getPageFilterQuery(body.filter);
@@ -149,7 +147,7 @@ console.log('query:', query);
   }
 
   async getAllProfiles(query?, projection?, opts?) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise<any[]>(async (resolve, reject) => {
       try {
         const docs: any[] = await this.findMany(query, projection, opts);
         const profiles = docs.map(doc => this.getProfileFromDoc(doc));

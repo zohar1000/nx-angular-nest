@@ -12,6 +12,9 @@ import { appConfig } from '../../../app-config';
 import { AuthUser } from '../../../shared/models/auth-user.model';
 import { LocalStrategyResponse } from '@shared/models/local-strategy-response.model';
 import { UserProfile } from '@shared/models/user-profile.model';
+import { RefreshTokenResponse } from '@shared/models/refresh-token-response.model';
+import { ServerLoginResponse } from '@shared/models/server-login-response.model';
+import { AppText } from '@sample-app/shared/consts/app-texts.const';
 
 @Injectable()
 export class AuthService extends BaseService {
@@ -43,17 +46,16 @@ export class AuthService extends BaseService {
   }
 
   async login(dto: LoginDto, resp: LocalStrategyResponse) {
-    return new Promise<LocalStrategyResponse>(async (resolve, reject) => {
+    return new Promise<ServerLoginResponse>(async (resolve, reject) => {
       try {
-        if (resp.isLoginSuccess) {
-          await this.userService.updateById(resp.userDoc._id, { lastLoginTime: Date.now()});
-          const profile: UserProfile = this.getAuthProfile(resp.userDoc);
-          profile.accessToken = await this.getAccessToken({ userId: resp.userDoc._id });
-          profile.refreshToken = await this.getRefreshToken({ userId: resp.userDoc._id });
-          resp.user = profile;
-          delete resp.userDoc;
-        }
-        resolve(resp);
+        if (!resp.isLoginSuccess) resolve( { isSuccess: false, message: AppText.errors.loginFailed });
+        await this.userService.updateById(resp.userDoc._id, { lastLoginTime: Date.now()});
+        const profile: UserProfile = this.getAuthProfile(resp.userDoc);
+        const accessToken = await this.getAccessToken({ userId: resp.userDoc._id });
+        const refreshToken = await this.getRefreshToken({ userId: resp.userDoc._id });
+        resp.user = profile;
+        delete resp.userDoc;
+        resolve({ isSuccess: true, user: resp.user, accessToken, refreshToken });
       } catch (e) {
         this.loge('login failed', dto, e);
         reject(e);
@@ -62,13 +64,13 @@ export class AuthService extends BaseService {
   }
 
   async refresh(refreshToken) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise<RefreshTokenResponse>(async (resolve, reject) => {
       try {
         const token = refreshToken ? await this.verifyRefreshToken(refreshToken) as any : null;
         if (token) {
           const accessToken = await this.getAccessToken({ userId: token.userId });
           refreshToken = await this.getRefreshToken({ userId: token.userId });
-          resolve({ accessToken, refreshToken });
+          resolve({ isSuccess: true, accessToken, refreshToken });
         } else {
           reject(new Error('user is not authorized'));
         }

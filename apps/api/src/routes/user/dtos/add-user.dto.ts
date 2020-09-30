@@ -4,6 +4,5 @@ export class AddUserDto {
   readonly email: string;
   readonly password: string;
   readonly role: string;
-  readonly resellerId: any;
   readonly status: number;
 }

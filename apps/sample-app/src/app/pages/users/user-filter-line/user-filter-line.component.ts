@@ -6,6 +6,7 @@ import { UserStatusFilter } from '@sample-app/shared/consts/user-status.const';
 @Component({
   selector: 'app-user-filter-line',
   templateUrl: './user-filter-line.component.html',
+  styleUrls: ['./user-filter-line.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserFilterLineComponent extends BaseTableFilterLineComponent implements OnInit {

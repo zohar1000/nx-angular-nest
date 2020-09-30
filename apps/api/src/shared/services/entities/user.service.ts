@@ -1,4 +1,4 @@
-import { ZArray, ZObj } from 'zshared';
+import { ZArray, ZObj, ZString } from 'zshared';
 import { Injectable }         from '@nestjs/common';
 // import { InjectModel }         from '@nestjs/mongoose';
 import { BaseEntityService } from '../../base-classes/base-entity.service';
@@ -7,6 +7,11 @@ import { AddUserDto } from '../../../routes/user/dtos/add-user.dto';
 import { UserDoc } from '@shared/models/user-doc.model';
 import { ZMongoService } from 'zshared-server';
 import { UpdateUserDto } from '../../../routes/user/dtos/update-user.dto';
+import { RoleRate } from '@shared/consts/role.const';
+import { AuthUser } from '@api-app/shared/models/auth-user.model';
+import { AppText } from '@sample-app/shared/consts/app-texts.const';
+import { UserStatus } from '@api-app/routes/auth/enums/user-status.enum';
+import { EntityServiceResponse } from '@api-app/shared/models/entity-service-response.model';
 
 @Injectable()
 export class UserService extends BaseEntityService {
@@ -16,25 +21,29 @@ export class UserService extends BaseEntityService {
     super('user', mongoService, 'users', [{ _id: { renameTo: 'id' }}, 'email', 'firstName', 'lastName', 'role', 'lastLoginTime', 'status']);
   }
 
-  async addUser(dto: AddUserDto): Promise<any> {
-    return new Promise(async (resolve, reject) => {
+  async addUser(authUser: AuthUser, dto: AddUserDto) {
+    return new Promise<EntityServiceResponse>(async (resolve, reject) => {
       try {
+        if (RoleRate[authUser.role] < RoleRate[dto.role]) {
+          resolve({ isSuccess: false, message: AppText.errors.cannotOperateOnHigherRole });
+          return;
+        }
         let userDoc: UserDoc = await this.findByEmail(dto.email);
         if (userDoc) {
-          this.throw('The email address is already being used');
-        } else {
-          userDoc = {
-            firstName: dto.firstName || '',
-            lastName: dto.lastName || '',
-            email: dto.email,
-            role: dto.role,
-            status: dto.status,
-            password: this.encryptionService.getHashedPassword(dto.password),
-            lastLoginTime: 0
-          };
-          const response = await this.mongoService.insertOneAutoIncrement(this.FIRST_USER_ID, this.collectionName, userDoc);
-          resolve({ isSuccess: true, data: this.getProfileFromDoc(userDoc), insertedId: response['insertedId'] });
+          resolve({ isSuccess: false, message: AppText.errors.alreadyUsedEmail });
+          return;
         }
+        userDoc = {
+          firstName: dto.firstName || '',
+          lastName: dto.lastName || '',
+          email: dto.email,
+          role: dto.role,
+          status: dto.status,
+          password: this.encryptionService.getHashedPassword(dto.password),
+          lastLoginTime: 0
+        };
+        const response = await this.mongoService.insertOneAutoIncrement(this.FIRST_USER_ID, this.collectionName, userDoc);
+        resolve({ isSuccess: true, data: this.getProfileFromDoc(userDoc), insertedId: response['insertedId'] });
       } catch (e) {
         this.logi('error adding user', e);
         reject(e);
@@ -42,9 +51,20 @@ export class UserService extends BaseEntityService {
     });
   }
 
-  async updateUser(userId, dto: UpdateUserDto) {
-    return new Promise(async (resolve, reject) => {
+  async updateUser(authUser: AuthUser, userId, dto: UpdateUserDto) {
+    return new Promise<EntityServiceResponse>(async (resolve, reject) => {
       try {
+        const callerRoleRate = RoleRate[authUser.role];
+        if (callerRoleRate < RoleRate[dto.role]) {
+          resolve({ isSuccess: false, message: AppText.errors.cannotOperateOnHigherRole });
+          return;
+        }
+        const userDoc: UserDoc = await this.findById(userId);
+        if (!userDoc) this.throw(ZString.replaceParams(AppText.errors.itemDoesNotExist, this.entityName));
+        if (callerRoleRate < RoleRate[userDoc.role]) {
+          resolve({ isSuccess: false, message: AppText.errors.cannotOperateOnHigherRole });
+          return;
+        }
         const fields: any = ZObj.clone(dto);
         if (fields.password) {
           fields.password = this.encryptionService.getHashedPassword(fields.password);
@@ -52,9 +72,31 @@ export class UserService extends BaseEntityService {
           delete fields.password;
         }
         await this.updateById(userId, fields);
-        resolve();
+        resolve({ isSuccess: true });
       } catch (e) {
         this.loge('error trying to update user record', e, userId, dto);
+        reject(e);
+      }
+    });
+  }
+
+  async deleteUser(authUser: AuthUser, userId) {
+    return new Promise<EntityServiceResponse>(async (resolve, reject) => {
+      try {
+        const callerRoleRate = RoleRate[authUser.role];
+        const userDoc: UserDoc = await this.findById(userId);
+        if (!userDoc) {
+          resolve({ isSuccess: false, message: ZString.replaceParams(AppText.errors.itemDoesNotExist, this.entityName) });
+          return;
+        }
+        if (callerRoleRate < RoleRate[userDoc.role]) {
+          resolve({ isSuccess: false, message: AppText.errors.cannotOperateOnHigherRole });
+          return;
+        }
+        await this.deleteById(userId);
+        resolve({ isSuccess: true });
+      } catch (e) {
+        this.loge('error trying to delete user record', e, userId, authUser);
         reject(e);
       }
     });

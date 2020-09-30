@@ -9,8 +9,8 @@
       <i class="material-icons" (click)="sidenav.close()">close</i>
     </mat-toolbar>
     <div class="content">
-      <button mat-menu-item (click)="onClickSidenavItem('login')"><i class="material-icons">exit_to_app</i>Login</button>
-      <button mat-menu-item (click)="onClickSidenavItem('user')"><i class="material-icons">exit_to_app</i>User</button>
+      <button mat-menu-item (click)="onClickSidenavItem('/')"><i class="material-icons">dashboard</i>Dashboard</button>
+      <button mat-menu-item (click)="onClickSidenavItem('user')"><i class="material-icons">group</i>User</button>
     </div>
   </mat-sidenav>
 
@@ -20,13 +20,15 @@
         <i *ngIf="!sidenav.opened" class="material-icons" (click)="sidenav.open()">menu</i>
         <div class="title">Header</div>
       </div>
-      <div *ngIf="userProfile" class="account">
+
+      <!--  logged in  -->
+      <div *ngIf="authService.userProfile" class="account">
         <i *ngIf="!sidenav.opened" class="material-icons" [matMenuTriggerFor]="userAccount">account_circle</i>
         <mat-menu #userAccount="matMenu">
           <div class="account-container">
             <div class="account-header">
-              <div class="name">{{userProfile.firstName}} {{userProfile.lastName}}</div>
-              <div class="email">{{userProfile.email}}</div>
+              <div class="name">{{authService.userProfile.firstName}} {{authService.userProfile.lastName}}</div>
+              <div class="email">{{authService.userProfile.email}}</div>
             </div>
             <button mat-menu-item (click)="logout()">
               <i class="material-icons">exit_to_app</i>
@@ -35,6 +37,7 @@
           </div>
         </mat-menu>
       </div>
+
     </mat-toolbar>
     <div class="page-container">
       <router-outlet></router-outlet>

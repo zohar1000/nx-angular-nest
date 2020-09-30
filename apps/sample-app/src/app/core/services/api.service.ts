@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { Observable } from 'rxjs';
+import { ServerResponse } from '@shared/models/server-response.model';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -10,8 +12,8 @@ export class ApiService {
     return this.http.get(this.getFUllUrl(url));
   }
 
-  post(url, data) {
-    return this.http.post(this.getFUllUrl(url), data);
+  post(url, data): Observable<ServerResponse> {
+    return this.http.post(this.getFUllUrl(url), data) as Observable<ServerResponse>;
   }
 
   put(url, data) {

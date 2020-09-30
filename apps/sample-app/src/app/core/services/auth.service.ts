@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 // import { Observable } from 'rxjs';
 // import { tap } from 'rxjs/operators';
 import { LocalStorageService } from './local-storage.service';
@@ -8,68 +8,60 @@ import { UserProfile } from '@shared/models/user-profile.model';
 import { RefreshTokenResponse } from '@shared/models/refresh-token-response.model';
 import { ServerResponse } from '@shared/models/server-response.model';
 import { LocalStrategyResponse } from '@shared/models/local-strategy-response.model';
-import { environment } from '../../../environments/environment';
-// import { Store } from '@ngrx/store';
-// import { User } from '../../../shared/models/user.model';
-// import { LocalStorageService } from '../../../core/services/local-storage.service';
-// import { AuthTokenName } from '../../../shared/enums/auth-token-name.enum';
-// import { AppState } from '../../../shared/models/app-state.model';
-// import { Login, Logout, Permissions } from '../../../store/auth/auth.actions';
-
-enum AuthTokenName {
-  Access = 'accesstoken',
-  Refresh = 'refreshtoken'
-}
+import { AuthTokenName } from '@shared/enums/auth-token-name.enum';
+import { ApiService } from '@sample-app/core/services/api.service';
+import { Observable, of } from 'rxjs';
+import { ServerLoginResponse } from '@shared/models/server-login-response.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private url = `${environment.serverAddress}/v1/auth`;
+  private url = `v1/auth`;
+  userProfile: UserProfile = null;
 
-  constructor(// private store: Store<AppState>,
-              private http: HttpClient,
+  constructor(private apiService: ApiService,
               private localStorageService: LocalStorageService) {
   }
 
   getPermissions() {
-    return this.http.get(`${this.url}/permissions`)
+    return this.apiService.get(`${this.url}/permissions`)
   }
 
   login(data) {
-    return this.http.post(`${this.url}/login`, data).pipe(
-      map((response: ServerResponse): UserProfile | null => {
-        const localStrategyResponse: LocalStrategyResponse = response.data;
-        if (!localStrategyResponse.isLoginSuccess) {
-          return null;
-        } else {
-          this.storeAuthTokens(localStrategyResponse.user);
-          return localStrategyResponse.user;
-        }
+    return this.apiService.post(`${this.url}/login`, data).pipe(
+      tap((response: ServerResponse): UserProfile | null => {
+        if (!response.isSuccess) return;
+        const loginResponse: ServerLoginResponse = response.data;
+        this.setUser(loginResponse.user);
+        this.storeAuthTokens(loginResponse);
       })
     )
-  }
-/*
-  loginSuccess(user: User) {
-    this.storeAuthTokens(user);
-    const authState = { firstName: user.firstName, email: user.email, role: user.role };
-    this.store.dispatch(Login(authState));
-  }
-*/
-  public logout() {
-    this.localStorageService.clear();
-    // this.store.dispatch(Logout());
   }
 
   getAccessToken() {
     return localStorage.getItem(AuthTokenName.Access);
   }
 
-  storeAuthTokens(data: UserProfile | RefreshTokenResponse) {
+  storeAuthTokens(data: ServerLoginResponse | RefreshTokenResponse) {
     this.localStorageService.setItem(AuthTokenName.Access, data.accessToken);
     this.localStorageService.setItem(AuthTokenName.Refresh, data.refreshToken);
   }
 
-  refresh() {
+  setUser(userProfile: UserProfile) {
+    this.userProfile = userProfile;
+  }
+
+  clearUser() {
+    this.userProfile = null;
+    this.localStorageService.deleteItem(AuthTokenName.Access);
+    this.localStorageService.deleteItem(AuthTokenName.Refresh);
+  }
+
+  refresh(): Observable<ServerResponse> {
     const refreshToken = localStorage.getItem(AuthTokenName.Refresh);
-    return this.http.post(`${this.url}/refresh`, { refreshToken });
+    if (refreshToken) {
+      return this.apiService.post(`${this.url}/refresh`, { refreshToken });
+    } else {
+      return of({ isSuccess: false });
+    }
   }
 }

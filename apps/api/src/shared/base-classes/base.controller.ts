@@ -13,7 +13,7 @@ export abstract class BaseController extends EventEmitter {
     return { isSuccess: true, data };
   }
 
-  protected errorResponse(message = 'server error occurred', code = this.DEFAULT_ERROR_CODE): ServerResponse {
+  protected errorResponse(message = '', code = this.DEFAULT_ERROR_CODE): ServerResponse {
     return { isSuccess: false, error: { code, message: message }};
   }
 

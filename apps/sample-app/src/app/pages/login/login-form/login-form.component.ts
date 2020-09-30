@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
+import { AppText } from '@sample-app/shared/consts/app-texts.const';
 
 @Component({
   selector: 'app-login-form',
@@ -21,7 +22,7 @@ export class LoginFormComponent {
     if (this.form.valid) {
       this.submitEmitter.emit(this.form.value);
     } else {
-      this.errorMessage$.next('incorrect user/password');
+      this.errorMessage$.next(AppText.errors.loginFailed);
     }
   }
 }

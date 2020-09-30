@@ -8,10 +8,11 @@ import { AuthService } from '../services/auth.service';
 import { AppEventType } from '@sample-app/shared/enums/app-event-type.enum';
 import { BaseService } from '@sample-app/shared/base-classes/base.service';
 import { HttpStatusCodes } from '@shared/enums/http-status-codes.enum';
+import { ServerResponse } from '@shared/models/server-response.model';
 
 @Injectable({ providedIn: 'root' })
 export class AppInterceptor extends BaseService implements HttpInterceptor {
-  private isRefreshing = false;
+  private isDuringRefresh = false;
   private refreshToken$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
   constructor(private router: Router, private authService: AuthService) {
@@ -25,7 +26,6 @@ export class AppInterceptor extends BaseService implements HttpInterceptor {
 
     return next.handle(req).pipe(
       catchError(error => {
-        this.appEventsService.sendAppEvent(AppEventType.HideAppSpinner);
         if (error instanceof HttpErrorResponse && error.status === 401) {
           return this.handle401Error(error, req, next);
         } else {
@@ -36,21 +36,22 @@ export class AppInterceptor extends BaseService implements HttpInterceptor {
   }
 
   private handle401Error(org401Error, req: HttpRequest<any>, next: HttpHandler) {
-    if (!this.isRefreshing) {
-      this.isRefreshing = true;
+    if (!this.isDuringRefresh) {
+      this.isDuringRefresh = true;
       this.refreshToken$.next(null);
 
       return this.authService.refresh().pipe(
-        switchMap((response: RefreshTokenResponse) => {
-          this.isRefreshing = false;
-          this.refreshToken$.next(response);
-          if (!response.isSuccess) {
-            this.router.navigate(['/login'], { state: { isLogout: true }});
-            return throwError(org401Error);
-          } else {
-            this.authService.storeAuthTokens(response);
-            return next.handle(this.addToken(req, response.accessToken));
+        switchMap((serverResponse: ServerResponse) => {
+          this.isDuringRefresh = false;
+          if (serverResponse.isSuccess) {
+            const refreshTokenResponse: RefreshTokenResponse = serverResponse.data;
+            this.authService.storeAuthTokens(refreshTokenResponse);
+            this.refreshToken$.next(refreshTokenResponse);
+            return next.handle(this.addToken(req, refreshTokenResponse.accessToken));
           }
+          this.refreshToken$.next({ isSuccess: false });
+          this.router.navigate(['/login']);
+          return throwError(org401Error);
         }));
     } else {
       return this.refreshToken$.pipe(
@@ -71,6 +72,7 @@ export class AppInterceptor extends BaseService implements HttpInterceptor {
   }
 
   showToastrAndReturnError(error) {
+    this.appEventsService.sendAppEvent(AppEventType.HideAppSpinner);
     let message;
     if (error instanceof HttpErrorResponse) message = error?.error?.error?.message;
     message = message || error.statusText;

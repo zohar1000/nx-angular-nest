@@ -41,7 +41,7 @@ const services = [
   // MailService,
   FileService,
   SanitationService,
-  // RolesGuard,
+  // MemberRolesGuard,
   // ObjUtils,
   // AppEventsService,
   GlobalService,
@@ -58,7 +58,6 @@ const services = [
 @Module({
   imports: [
 /*    MongooseModule.forFeature([
-      { name: 'resellers', schema: ResellerSchema },
       { name: 'locations', schema: LocationSchema },
       { name: 'devices', schema: DeviceSchema },
       { name: 'device-events', schema: DeviceEventSchema },

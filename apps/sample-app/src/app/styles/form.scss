@@ -5,6 +5,15 @@
 .mat-form-field {
   width: 24rem !important; // #69f0ae !important;
   font-size: 1rem !important;
+
+  &.min-height {
+    font-size: 0 !important;
+
+    .mat-form-field-infix {
+      border-top: 0 !important;
+      border-bottom: 0 !important;
+    }
+  }
 }
 
 .mat-form-field-label {

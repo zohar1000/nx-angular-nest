@@ -1,6 +1,6 @@
 <div *ngIf="data" class="filter-line">
   <span class="filter-label">Role:</span>
-  <mat-form-field>
+  <mat-form-field class="min-height">
     <mat-select #filterRole (selectionChange)="onChangeFilterField('role', filterRole.value)" [value]="filter.role">
       <mat-option *ngFor="let role of data.roles | keyvalue" [value]="role.key">
         {{role.value}}
@@ -9,7 +9,7 @@
   </mat-form-field>
 
   <span class="filter-label">Status:</span>
-  <mat-form-field>
+  <mat-form-field class="min-height">
     <mat-select #filterStatus (selectionChange)="onChangeFilterField('status', filterStatus.value)" [value]="filter.status">
       <mat-option *ngFor="let status of data.statuses | keyvalue" [value]="status.key">
         {{status.value}}
