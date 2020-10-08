@@ -21,13 +21,14 @@ export interface AppConfig {
       refreshTokenSecretKey: string;
     }
   };
-  console: {
+  logging: {
     isDebug: boolean;
     isLogClientRequests: boolean;
     excludedLogRequests?: string[];
     isLogClientResponses: boolean;
     excludedLogResponses?: string[];
     isLogKeepAliveRequests: boolean;
+    maxLogRecords: number;
   };
   simulation: {
     isEnabled: boolean;

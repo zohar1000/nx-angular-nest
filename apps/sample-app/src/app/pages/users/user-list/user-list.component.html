@@ -1,5 +1,5 @@
 <div class="table-preface">
-  <div class="title-and-role">
+  <div class="title-bar">
     <span class="title">Users</span>
     <app-user-filter-line
       class="filter-line"
@@ -8,9 +8,9 @@
       (onChangeFilterLine)="onChangeFilterLine($event)">
     </app-user-filter-line>
   </div>
-  <div>
+  <div class="info-bar">
 <!--    <app-download-csv (downloadCsv)="onClickDownloadCsv()"></app-download-csv>-->
-    <span class="items-count">total: {{(totalCount$ | async)}}</span>
+    <span class="items-count">users: {{(totalCount$ | async)}}</span>
     <span>
         <button (click)="onClickAdd()" mat-flat-button class="small-button add-button" color="accent">ADD USER</button>
       </span>

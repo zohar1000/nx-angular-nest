@@ -2,6 +2,7 @@
 
 notes.txt
 apps/api/app-config.json5
+test*.js
 
 # compiled output
 /dist

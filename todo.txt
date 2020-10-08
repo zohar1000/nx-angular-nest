@@ -1,2 +1,7 @@
+- elastic search
+- pwa
+- translation - transloco
+
+
 nest:
 - check on upgradeInsecureRequests in helmet config
