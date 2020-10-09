@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PassportStrategy }     from '@nestjs/passport';
-import { Injectable }           from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { Injectable } from '@nestjs/common';
 import { UserStatus } from '../enums/user-status.enum';
 import { UserService } from '../../../shared/services/entities/user.service';
 import { UserDoc } from '@shared/models/user-doc.model';

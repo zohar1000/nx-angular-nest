@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Request, Body, Param, Put, Delete, UseGuards, HttpException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { ErrorService } from '../../shared/services/error.service';
 import { BaseEntityController } from '../../shared/base-classes/base-entity.controller';
 import { UserService } from '../../shared/services/entities/user.service';

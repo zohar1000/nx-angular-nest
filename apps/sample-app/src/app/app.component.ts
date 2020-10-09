@@ -4,7 +4,6 @@ import { BaseComponent } from './shared/base-classes/base.component';
 import { AuthService } from './core/services/auth.service';
 import { AppEventType } from '@sample-app/shared/enums/app-event-type.enum';
 import { RouteChangeData } from 'ng-route-change';
-import { UserProfile } from '@shared/models/user-profile.model';
 import { ServerResponse } from '@shared/models/server-response.model';
 
 // TODO: return user permissions in index.html in prod

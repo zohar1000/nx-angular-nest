@@ -8,6 +8,7 @@ import { SharedModule } from './shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { setAppInjector } from './app.injector';
 import { CoreModule } from './core/core.module';
+import { TranslocoRootModule } from './transloco/transloco-root.module';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { CoreModule } from './core/core.module';
     // app
     AppRoutingModule,
     CoreModule,
-    SharedModule
+    SharedModule,
+    TranslocoRootModule
   ],
   bootstrap: [AppComponent],
 })

@@ -2,6 +2,7 @@
 
 <router-outlet *ngIf="isFullPage" [ngRouterOutletComm]="{ type: 'parent', receiver: onChildEvent.bind(this) }"></router-outlet>
 
+<ng-container *transloco="let t">
 <mat-sidenav-container *ngIf="!isFullPage" class="container" [hasBackdrop]="true">
   <mat-sidenav #sidenav class="sidenav" mode="side" [(opened)]="isSideNavOpened">
     <mat-toolbar class="toolbar">
@@ -10,7 +11,7 @@
     </mat-toolbar>
     <div class="content">
       <button mat-menu-item (click)="onClickSidenavItem('/')"><i class="material-icons">dashboard</i>Dashboard</button>
-      <button mat-menu-item (click)="onClickSidenavItem('user')"><i class="material-icons">group</i>User</button>
+      <button mat-menu-item (click)="onClickSidenavItem('user')"><i class="material-icons">group</i>{{ t('sideNav.items.users') }}</button>
     </div>
   </mat-sidenav>
 
@@ -45,4 +46,6 @@
   </mat-sidenav-content>
 
 </mat-sidenav-container>
+</ng-container>
+
 <ngx-loading [show]="isSpinner"></ngx-loading>

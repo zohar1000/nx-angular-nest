@@ -1,8 +1,7 @@
 import { DataSource } from '@angular/cdk/collections';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { map, tap } from 'rxjs/operators';
 
 // TODO: Replace this with your own data model type
 export interface TableItem {

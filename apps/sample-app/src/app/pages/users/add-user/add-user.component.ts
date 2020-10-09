@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { BaseFormComponent } from '@sample-app/shared/base-classes/base-form.component';
 import { FormControl, Validators } from '@angular/forms';
 import { UserStatus } from '@api-app/routes/auth/enums/user-status.enum';

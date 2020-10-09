@@ -5,10 +5,6 @@ import { appInjector } from '@sample-app/app.injector';
 export class GlobalErrorHandler implements ErrorHandler {
   errorLogService: ErrorLogService;
 
-  constructor() {
-    setTimeout(() => { throw new Error('Test error!'); }, 1000)
-  }
-
   handleError(error) {
 // console.log('error message:', `Error ${error.status} - ${error.statusText}`);
     if (!this.errorLogService) this.errorLogService = appInjector.get(ErrorLogService);

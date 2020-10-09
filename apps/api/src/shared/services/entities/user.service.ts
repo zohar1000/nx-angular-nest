@@ -1,5 +1,5 @@
-import { ZArray, ZObj, ZString } from 'zshared';
-import { Injectable }         from '@nestjs/common';
+import { ZObj, ZString } from 'zshared';
+import { Injectable } from '@nestjs/common';
 // import { InjectModel }         from '@nestjs/mongoose';
 import { BaseEntityService } from '../../base-classes/base-entity.service';
 import { EncryptionService } from '../encryption.service';
@@ -10,7 +10,6 @@ import { UpdateUserDto } from '../../../routes/user/dtos/update-user.dto';
 import { RoleRate } from '@shared/consts/role.const';
 import { AuthUser } from '@api-app/shared/models/auth-user.model';
 import { AppText } from '@sample-app/shared/consts/app-texts.const';
-import { UserStatus } from '@api-app/routes/auth/enums/user-status.enum';
 import { EntityServiceResponse } from '@api-app/shared/models/entity-service-response.model';
 
 @Injectable()

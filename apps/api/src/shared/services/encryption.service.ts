@@ -1,7 +1,7 @@
 import { appConfig } from '../../app-config';
+import { Injectable } from '@nestjs/common';
 
 const crypto = require('crypto');
-import { Injectable }    from '@nestjs/common';
 
 @Injectable()
 export class EncryptionService {

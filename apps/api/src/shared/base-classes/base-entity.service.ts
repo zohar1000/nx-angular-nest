@@ -1,5 +1,5 @@
 import { ZObj } from 'zshared';
-import { ZMongoService, ZMongoReadOpts, ZMongoInsertOpts } from 'zshared-server';
+import { ZMongoReadOpts, ZMongoService } from 'zshared-server';
 // import { Role } from '../enums/role.enum';
 import { BaseService } from './base.service';
 import { AuthUser } from '../models/auth-user.model';

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Request, Get } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ErrorService } from '../../shared/services/error.service';
 import { BaseEntityController } from '../../shared/base-classes/base-entity.controller';

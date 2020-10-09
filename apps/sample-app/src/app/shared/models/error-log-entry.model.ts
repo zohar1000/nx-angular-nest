@@ -1,4 +1,4 @@
-import { SeverityLevel } from '../../../../../../libs/shared/src/lib/enums/severity-level.enum';
+import { SeverityLevel } from '@shared/enums/severity-level.enum';
 
 export interface ErrorLogEntry {
   severityLevel: SeverityLevel;
@@ -6,7 +6,6 @@ export interface ErrorLogEntry {
   message: string;
   eventName?: string;
   eventMessage?: string;
-  // extraInfo: any[] = [];
   stack: string;
   additionalParams?: any[];
 }

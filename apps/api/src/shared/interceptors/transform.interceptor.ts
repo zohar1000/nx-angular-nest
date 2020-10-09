@@ -1,9 +1,9 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
-import { Observable, of }                                             from 'rxjs';
-import { map }                                                        from 'rxjs/operators';
-import { HttpStatusCodes }                                            from '@shared/enums/http-status-codes.enum';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { HttpStatusCodes } from '@shared/enums/http-status-codes.enum';
 import { logt } from 'zshared';
-import { SanitationService }                                          from '../services/sanitation.service';
+import { SanitationService } from '../services/sanitation.service';
 import { ErrorService } from '../services/error.service';
 import { appConfig } from '../../app-config';
 
@@ -13,8 +13,8 @@ export interface Response<T> {
 
 @Injectable()
 export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> {
-  isLogResponses = appConfig.console.isLogClientResponses;
-  excludedLogResponses = !appConfig.console.excludedLogResponses || appConfig.console.excludedLogResponses.length === 0 ? null : appConfig.console.excludedLogResponses;
+  isLogResponses = appConfig.logging.isLogClientResponses;
+  excludedLogResponses = !appConfig.logging.excludedLogResponses || appConfig.logging.excludedLogResponses.length === 0 ? null : appConfig.logging.excludedLogResponses;
 
   constructor(private errorService: ErrorService) {}
 

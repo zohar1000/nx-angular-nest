@@ -3,7 +3,6 @@ import { BaseContainerComponent } from '../../../shared/base-classes/base-contai
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { AppText } from '@sample-app/shared/consts/app-texts.const';
-import { UserProfile } from '@shared/models/user-profile.model';
 import { ServerResponse } from '@shared/models/server-response.model';
 
 @Component({

@@ -1,10 +1,11 @@
 import { EventEmitter } from 'events';
-const mongodb = require('mongodb');
 import { ErrorService } from '../services/error.service';
 import { GlobalService } from '@api-app/shared/services/global.service';
 import { FileService } from '@api-app/shared/services/file.service';
 import { SanitationService } from '@api-app/shared/services/sanitation.service';
 import { take } from 'rxjs/operators';
+
+const mongodb = require('mongodb');
 // import { GlobalService}      from './global.service';
 // import { MailService }       from './mail.service';
 // import { SanitationService } from './sanitation.service';
