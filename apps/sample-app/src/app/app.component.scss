@@ -45,12 +45,24 @@ $header-line-height: 32px;
           margin-left: 1rem;
         }
       }
-      .account {
+      .header-info {
         margin-right: 1rem;
         display: inline-flex;
         align-items: center;
-        i {
-          font-size: 1.8rem !important;
+        .lang {
+          .mat-select {
+            font-size: 0.8rem;
+            color: #999999;
+          }
+        }
+        .account {
+          margin-right: 1rem;
+          margin-left: 2rem;
+          display: inline-flex;
+          align-items: center;
+          i {
+            font-size: 1.8rem !important;
+          }
         }
       }
     }
@@ -60,6 +72,11 @@ $header-line-height: 32px;
     }
   }
 }
+
+//mat-select .mat-select-arrow-wrapper {
+//  display: none !important;
+//  background: red !important;
+//}
 
 .account-container {
   padding: 1rem !important;

@@ -26,6 +26,5 @@ export class AppModule {
   constructor(mongoService: ZMongoService) {
     const mongoConfig = appConfig.mongo;
     mongoService.init(mongoConfig.connStr, mongoConfig.dbName);
-
   }
 }

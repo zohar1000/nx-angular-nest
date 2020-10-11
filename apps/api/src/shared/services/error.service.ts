@@ -7,14 +7,14 @@ export class ErrorService {
   constructor() {
     Error.stackTraceLimit = 30;
 
-    process.on('uncaughtException', err =>  {
+    process.on('uncaughtException', (err: Error) =>  {
       logt('==> Global Error Handler ********************************************************');
       console.log('Uncaught system exception:', err);
       console.log('Stack trace:', this.getStackTrace(err));
       console.log('******************************************************************************************');
     });
 
-    process.on('unhandledRejection', (reason, promise) => {
+    process.on('unhandledRejection', (reason: Error, promise) => {
       logt('==> Global Error Handler ********************************************************');
       console.log('Unhandled promise rejection, reason:', reason,', promise:', promise);
       console.log('Stack trace:', this.getStackTrace(reason));
@@ -120,11 +120,11 @@ export class ErrorService {
     console.log(COLORS.default, '');
   }
 
-  getStackTrace(event = null, loggingServiceClassName = '') {
-    let e = event;
+  getStackTrace(error: Error, loggingServiceClassName = '') {
+    let e = error;
     if (!e || !e.stack) e = new Error();
     if (typeof e.stack !== 'string') {
-      return e.stack.toString();
+      return String(e.stack);
     } else {
       const lines =  e.stack
         .split('\n')

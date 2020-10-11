@@ -8,8 +8,8 @@ export abstract class BaseEntityController extends BaseController {
   readonly DEFAULT_ERROR_CODE = HttpStatusCodes.DefaultError;
   protected constructor(
     protected entityName = '',
-    protected entityService = null,
-    errorService = null) {
+    protected entityService,
+    errorService) {
     super(errorService);
   }
 

@@ -1,26 +1,28 @@
 import { Directive } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
 import { appInjector } from '../../app.injector';
 import { BaseGeneric } from '@sample-app/shared/base-classes/base-generic.component';
+import { TranslyService, TranslyOnText } from 'ngx-transly';
+import { AppText } from '@sample-app/shared/models/app-text.model';
+import { BehaviorSubject } from 'rxjs';
 
 @Directive()
 export abstract class BaseComponent extends BaseGeneric {
   public isSpinner = false;
-  protected httpClient: HttpClient;
-  // protected dialog: MatDialog;
   protected router: Router;
-  protected toastrService: ToastrService;
-  // protected spinnerService: NgxSpinnerService;
+  translyService: TranslyService;
+  translate;
+  appText$: BehaviorSubject<AppText>;
+  isAppText$;
 
   constructor() {
     super();
-    this.httpClient = appInjector.get(HttpClient);
-    this.toastrService = appInjector.get(ToastrService);
     this.router = appInjector.get(Router);
-    // this.spinnerService = appInjector.get(NgxSpinnerService);
-    // this.dialog = appInjector.get(MatDialog);
+    this.translyService = appInjector.get(TranslyService);
+    this.translate = this.translyService.translate;
+    this.appText$ = this.translyService.text$ as BehaviorSubject<AppText>;
+    this.isAppText$ = this.translyService.isText$;
+    this.translyService.onText((data: TranslyOnText) => this.onTranslyText(data));
   }
 
   protected showSpinner() {
@@ -30,4 +32,6 @@ export abstract class BaseComponent extends BaseGeneric {
   protected hideSpinner() {
     this.isSpinner = false;
   }
+
+  onTranslyText(data: TranslyOnText) {}
 }

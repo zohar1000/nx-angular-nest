@@ -6,8 +6,8 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { BehaviorSubject } from 'rxjs';
 import { LocalStorageService } from '@sample-app/core/services/local-storage.service';
-import { appInjector } from '@sample-app/app.injector';
-import { LocalStorageTable } from '@shared/models/local-storage-table.mode';
+import { appInjector, sharedInjector } from '@sample-app/app.injector';
+import { LocalStorageTable } from '@shared/models/local-storage-table.model';
 import { MatDialog } from '@angular/material/dialog';
 import { take } from 'rxjs/operators';
 import { ListPageMetrics } from '@shared/models/list-page-metrics.model';
@@ -22,7 +22,7 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
   @Input() entity: Entity;
   @Input() items$;
   @Input() totalCount$: BehaviorSubject<number>;
-  @Input() listPageMetrics$: BehaviorSubject<ListPageMetrics>;
+  @Input() listPageMetrics$!: BehaviorSubject<ListPageMetrics>;
   @Input() isLoading$: BehaviorSubject<boolean>;
   @Input() localStorageTableKey: string;
   @Output() navigateToAddPage = new EventEmitter();
@@ -35,13 +35,11 @@ export abstract class BaseEntityListComponent extends BaseComponent implements O
   @ViewChild('deleteDialog') deleteDialogTemplateRef: TemplateRef<any>;
   dataSource: BaseTableDataSource;
   localStorageService: LocalStorageService;
-
-  constructor(public dialog: MatDialog) {
-    super();
-  }
+  dialog: MatDialog;
 
   ngOnInit() {
     this.localStorageService = appInjector.get(LocalStorageService);
+    this.dialog = sharedInjector.get(MatDialog);
     this.dataSource = new BaseTableDataSource(this.items$);
   }
 

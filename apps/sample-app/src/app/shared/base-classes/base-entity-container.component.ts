@@ -10,12 +10,11 @@ import { BehaviorSubject, ReplaySubject } from 'rxjs';
 import { GetItemsRequest } from '@shared/models/get-items-request.model';
 import { GetItemsResponse } from '@shared/models/get-items-response.model';
 import { ListPageMetrics } from '@shared/models/list-page-metrics.model';
-import { AppText } from '@sample-app/shared/consts/app-texts.const';
-import { ZString } from 'zshared';
+// import { appText } from '@sample-app/shared/consts/app-text.const';
 import { Entity } from '@sample-app/shared/models/entity.model';
 
 @Directive()
-export abstract class BaseEntityContainerComponent extends BaseComponent implements OnInit {
+export abstract class BaseEntityContainerComponent extends BaseComponent {
   readonly DEFAULT_CONFIG = {
     isLoadItemsOnInit: true,
     isRefreshTotalCountOnEdit: true,
@@ -36,9 +35,6 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
               protected activatedRoute: ActivatedRoute) {
     super();
     this.entity = this.getEntity();
-  }
-
-  ngOnInit(): void {
     this.localStorageTableKey = `table_${this.entity.key}`;
     this.initConfig();
     this.entityStore.init(this.localStorageTableKey, this.entity);
@@ -88,7 +84,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
   }
 
   getItems() {
-    const request: GetItemsRequest = { ...this.entityStore.listPageMetrics$.value, isTotalCount: this.isRefreshTotalCount || this.entityStore.totalCount$.value === 0 };
+    const request: GetItemsRequest = { ...this.entityStore.listPageMetrics$.value, isTotalCount: this.isRefreshTotalCount || this.entityStore.totalCount$.value === 0 } as GetItemsRequest;
     this.isRefreshTotalCount = true;
     this.getItems$.next(request);
   }
@@ -127,7 +123,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
             } else {
               this.entityStore.items$.next(null);
             }
-            this.showSuccessToastr(ZString.replaceParams(AppText.success.itemWasAdded, this.entity.label, response.data.insertedId));
+            this.showSuccessToastr(this.translate(this.appText$.value.success.itemWasAdded, { entity: this.entity.label, id: response.data.insertedId }));
             this.navigateTo(['.']);
           } else {
             this.hideAppSpinner();
@@ -152,7 +148,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
               this.entityStore.items$.next(null);
               this.isRefreshTotalCount = this.config.isRefreshTotalCountOnEdit;
             }
-            this.showSuccessToastr(ZString.replaceParams(AppText.success.itemWasUpdated, this.entity.label, id));
+            this.showSuccessToastr(this.translate(this.appText$.value.success.itemWasUpdated, { entity: this.entity.label, id }));
             this.navigateTo(['.']);
           } else {
             this.hideAppSpinner();
@@ -176,7 +172,7 @@ export abstract class BaseEntityContainerComponent extends BaseComponent impleme
             } else {
               this.getItems()
             }
-            this.showSuccessToastr(ZString.replaceParams(AppText.success.itemWasDeleted, this.entity.label, id));
+            this.showSuccessToastr(this.translate(this.appText$.value.success.itemWasDeleted, { entity: this.entity.label, id }));
           } else {
             this.hideAppSpinner();
             this.logError(`Error deleting item ${id}, entity: ${this.entity.key}`, response);

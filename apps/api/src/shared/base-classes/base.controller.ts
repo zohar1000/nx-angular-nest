@@ -5,11 +5,11 @@ import { ServerResponse } from '@shared/models/server-response.model';
 
 export abstract class BaseController extends EventEmitter {
   readonly DEFAULT_ERROR_CODE = HttpStatusCodes.DefaultError;
-  protected constructor(protected errorService = null) {
+  protected constructor(protected errorService) {
     super();
   }
 
-  protected successResponse(data = {}): ServerResponse {
+  protected successResponse(data: any = {}): ServerResponse {
     return { isSuccess: true, data };
   }
 

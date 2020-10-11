@@ -1,9 +1,9 @@
 <div class="table-preface">
   <div class="title-bar">
-    <span class="title">Users</span>
+    <span class="title">{{appText$.value.pages.users.list.title}}</span>
     <app-user-filter-line
       class="filter-line"
-      [initialFilter]="(listPageMetrics$ | async).filter"
+      [initialFilter]="(listPageMetrics$ | async)!.filter"
       [numberTypeColumns]="entity.numberTypeColumns"
       (onChangeFilterLine)="onChangeFilterLine($event)">
     </app-user-filter-line>
@@ -17,8 +17,6 @@
   </div>
 </div>
 
-
-
 <div *ngIf="(items$ | async) && (listPageMetrics$ | async) as metrics" class="mat-elevation-z8">
   <table mat-table matSort aria-label="Elements"
          [dataSource]="dataSource"
@@ -27,32 +25,32 @@
          (matSortChange)="onChangeSort($event)"
   >
     <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{appText$.value.general.columns.id}} </th>
       <td mat-cell *matCellDef="let row">{{row.id}}</td>
     </ng-container>
 
     <ng-container matColumnDef="firstName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>First Name</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{text.firstName}} </th>
       <td mat-cell *matCellDef="let row">{{row.firstName}}</td>
     </ng-container>
 
     <ng-container matColumnDef="lastName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Name</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{text.lastName}}</th>
       <td mat-cell *matCellDef="let row">{{row.lastName}}</td>
     </ng-container>
 
     <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{text.status}} </th>
       <td mat-cell *matCellDef="let user"> {{user.status | userStatusLabel}} </td>
     </ng-container>
 
     <ng-container matColumnDef="email">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{text.email}} </th>
       <td mat-cell *matCellDef="let user"> {{user.email}} </td>
     </ng-container>
 
     <ng-container matColumnDef="role">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Role </th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{text.role}} </th>
       <td mat-cell *matCellDef="let user"> {{user.role | roleLabel}} </td>
     </ng-container>
 
@@ -62,14 +60,14 @@
     </ng-container>
 
     <ng-container matColumnDef="edit">
-      <th mat-header-cell *matHeaderCellDef> Edit </th>
+      <th mat-header-cell *matHeaderCellDef> {{appText$.value.general.columns.edit}} </th>
       <td mat-cell *matCellDef="let user">
         <i class="material-icons" (click)="onClickEdit(user.id)">edit</i>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="delete">
-      <th mat-header-cell *matHeaderCellDef> Delete </th>
+      <th mat-header-cell *matHeaderCellDef> {{appText$.value.general.columns.delete}} </th>
       <td mat-cell *matCellDef="let user">
         <i class="material-icons" (click)="onClickDelete(user.id)">delete</i>
       </td>

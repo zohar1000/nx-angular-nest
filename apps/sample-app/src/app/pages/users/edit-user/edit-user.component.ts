@@ -3,7 +3,8 @@ import { BaseFormComponent } from '@sample-app/shared/base-classes/base-form.com
 import { FormControl, Validators } from '@angular/forms';
 import { UserProfile } from '@shared/models/user-profile.model';
 import { ZObj } from 'zshared';
-import { AppText } from '@sample-app/shared/consts/app-texts.const';
+import { appText$ } from '@sample-app/shared/consts/app-text.const';
+import { AppText } from '@sample-app/shared/models/app-text.model';
 
 @Component({
   selector: 'app-edit-user',
@@ -12,8 +13,15 @@ import { AppText } from '@sample-app/shared/consts/app-texts.const';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditUserComponent extends BaseFormComponent {
+  text;
+
+  onTranslyText(data) {
+    super.onTranslyText(data);
+    this.text = (data.text as AppText).pages.users.addUser;
+  }
+
   checkFormValidity(formValue) {
-    return ZObj.areEquals(formValue, this.initialFormValue) ? AppText.errors.editFormNotChanged : '';
+    return ZObj.areEquals(formValue, this.initialFormValue) ? appText$.value.errors.editFormNotChanged : '';
   }
 
   setFormGroup() {

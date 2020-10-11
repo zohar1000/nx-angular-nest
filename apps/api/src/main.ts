@@ -1,15 +1,5 @@
-// const bodyParser = require('body-parser');
-// const compression = require('compression');
-// const morgan = require('morgan');
-// import * as helmet from 'helmet';
-// import { HttpExceptionFilter } from './shared/exception-filters/http-exception.filter';
-// import { environment } from './environments/environment';
 import { initAppConfig } from './app-config';
-// import { Logger } from '@nestjs/common';
-// import { AppModule } from './app.module';
 import { environment } from './environments/environment';
-
-// const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const JSON5 = require('json5');

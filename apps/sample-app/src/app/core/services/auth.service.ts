@@ -14,7 +14,7 @@ import { ServerLoginResponse } from '@shared/models/server-login-response.model'
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private url = `v1/auth`;
-  userProfile: UserProfile = null;
+  userProfile: UserProfile | null = null;
 
   constructor(private apiService: ApiService,
               private localStorageService: LocalStorageService) {
@@ -26,10 +26,10 @@ export class AuthService {
 
   login(data) {
     return this.apiService.post(`${this.url}/login`, data).pipe(
-      tap((response: ServerResponse): UserProfile | null => {
+      tap((response: ServerResponse) => {
         if (!response.isSuccess) return;
         const loginResponse: ServerLoginResponse = response.data;
-        this.setUser(loginResponse.user);
+        this.setUser(loginResponse.user as UserProfile);
         this.storeAuthTokens(loginResponse);
       })
     )

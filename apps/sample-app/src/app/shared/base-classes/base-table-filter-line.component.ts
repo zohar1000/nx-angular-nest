@@ -1,5 +1,6 @@
 import { Directive, EventEmitter, Input, Output } from '@angular/core';
 import { BaseComponent } from './base.component';
+import { ListPageMetrics } from '@shared/models/list-page-metrics.model';
 
 // import { BaseTableService } from './base-table.service';
 
@@ -7,8 +8,8 @@ import { BaseComponent } from './base.component';
 export abstract class BaseTableFilterLineComponent extends BaseComponent {
   static oneDayInMs = 86400000;  // 1 day - 24*60*60*1000
   @Input('initialFilter')
-  set initialFilter(initialFilter) {
-    if (!this.filter) this.filter = initialFilter;
+  set initialFilter(filter) {
+    if (!this.filter) this.filter = filter;
   }
   @Input() numberTypeColumns;
   @Output() onChangeFilterLine = new EventEmitter<any>();

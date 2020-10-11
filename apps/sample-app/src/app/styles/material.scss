@@ -54,3 +54,41 @@ i {
     color: $primary-color;
   }*/
 }
+
+.mat-form-field {
+  &.min-width {
+    width: min-content !important;
+    .mat-form-field-infix {
+      width: auto !important;
+      .mat-select-value {
+        max-width: none !important;
+        width: min-content !important;
+      }
+    }
+  }
+  &.min-vertical {
+    .mat-form-field-wrapper {
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      .mat-form-field-infix {
+        border-top: 0 !important;
+        padding: 0 !important;
+      }
+    }
+  }
+}
+
+.mat-select {
+  &.no-arrow {
+    .mat-select-arrow {
+      border: 0 !important;
+      margin: 0 !important;
+    }
+  }
+  &.weak-arrow {
+    .mat-select-arrow-wrapper {
+       color: #dddddd !important;
+    }
+  }
+
+}

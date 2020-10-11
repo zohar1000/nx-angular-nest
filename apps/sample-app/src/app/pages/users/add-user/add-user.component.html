@@ -1,24 +1,24 @@
-<div class="form-container">
-  <div class="title">Add User</div>
+<div class="form-container" *ngIf="(appText$ | async) as appText">
+  <div class="title">{{text.title}}</div>
 
   <form class="column-form" [formGroup]="formGroup">
     <div>
       <mat-form-field>
-        <mat-label>First Name</mat-label>
+        <mat-label>{{text.firstName}}</mat-label>
         <input matInput formControlName="firstName">
       </mat-form-field>
     </div>
 
     <div>
       <mat-form-field>
-        <mat-label>Last Name</mat-label>
+        <mat-label>{{text.lastName}}</mat-label>
         <input matInput formControlName="lastName">
       </mat-form-field>
     </div>
 
     <div>
       <mat-form-field>
-        <mat-label>Role</mat-label>
+        <mat-label>{{text.role}}</mat-label>
         <mat-select matInput formControlName="role">
           <mat-option *ngFor="let role of rolesLabels | keyvalue" [value]="role.key">
             {{role.value}}
@@ -29,7 +29,7 @@
 
     <div>
       <mat-form-field>
-        <mat-label>Status</mat-label>
+        <mat-label>{{text.status}}</mat-label>
         <mat-select matInput formControlName="status">
           <mat-option *ngFor="let status of userStatusLabels | keyvalue" [value]="status.key">
             {{status.value}}
@@ -40,21 +40,21 @@
 
     <div>
       <mat-form-field>
-        <mat-label>Email</mat-label>
+        <mat-label>{{text.email}}</mat-label>
         <input matInput formControlName="email">
       </mat-form-field>
     </div>
 
     <div>
       <mat-form-field>
-        <mat-label>Password</mat-label>
+        <mat-label>{{text.password}}</mat-label>
         <input matInput formControlName="password" type="password">
       </mat-form-field>
     </div>
 
     <div class="buttons-bar">
-      <button mat-flat-button (click)="onClickCancel()" color="warn">CANCEL</button>
-      <button mat-flat-button (click)="onClickSubmit()" color="primary" type="submit" [disabled]="formGroup.invalid">ADD</button>
+      <button mat-flat-button (click)="onClickCancel()" color="warn">{{appText.general.buttons.cancel}}</button>
+      <button mat-flat-button (click)="onClickSubmit()" color="primary" type="submit" [disabled]="formGroup.invalid">{{appText.general.buttons.add}}</button>
     </div>
   </form>
 </div>

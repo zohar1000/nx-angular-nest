@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
-import { AppText } from '@sample-app/shared/consts/app-texts.const';
+import { BaseComponent } from '@sample-app/shared/base-classes/base.component';
 
 @Component({
   selector: 'app-login-form',
@@ -9,7 +9,7 @@ import { AppText } from '@sample-app/shared/consts/app-texts.const';
   styleUrls: ['./login-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LoginFormComponent {
+export class LoginFormComponent extends BaseComponent {
   @Input() errorMessage$: BehaviorSubject<string>;
   @Output() submitEmitter = new EventEmitter();
   form: FormGroup = new FormGroup({
@@ -22,7 +22,7 @@ export class LoginFormComponent {
     if (this.form.valid) {
       this.submitEmitter.emit(this.form.value);
     } else {
-      this.errorMessage$.next(AppText.errors.loginFailed);
+      this.errorMessage$.next(this.appText$.value.errors.loginFailed);
     }
   }
 }

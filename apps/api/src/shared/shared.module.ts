@@ -5,11 +5,8 @@ import { SanitationService } from './services/sanitation.service';
 import { EncryptionService } from './services/encryption.service';
 import { UserService } from './services/entities/user.service';
 import { ZMongoService } from 'zshared-server';
-// import { environment } from '../environments/environment';
 import { UserModule } from '../routes/user/user.module';
 import { GlobalService } from '@api-app/shared/services/global.service';
-// import { APP_INTERCEPTOR } from '@nestjs/core';
-// import { TransformInterceptor } from './interceptors/transform.interceptor';
 
 const globalServicesFactory = {
   provide: 'GLOBAL_SERVICES',

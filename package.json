@@ -46,7 +46,6 @@
     "@nestjs/jwt": "^7.1.0",
     "@nestjs/passport": "^7.1.0",
     "@nestjs/platform-express": "^7.4.2",
-    "@ngneat/transloco": "^2.19.1",
     "@nrwl/angular": "^10.3.0",
     "base64-img": "^1.0.4",
     "body-parser": "^1.19.0",

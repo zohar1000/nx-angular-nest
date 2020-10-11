@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, EventEmitter } from '@angular/core'
 import { BaseContainerComponent } from '../../../shared/base-classes/base-container.component';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
-import { AppText } from '@sample-app/shared/consts/app-texts.const';
 import { ServerResponse } from '@shared/models/server-response.model';
 
 @Component({
@@ -22,7 +21,7 @@ export class LoginContainerComponent extends BaseContainerComponent {
   onSubmit(formValue) {
     this.regSub(this.authService.login(formValue).subscribe((response: ServerResponse) => {
       if (!response.isSuccess) {
-        this.errorMessage$.next(AppText.errors.loginFailed);
+        this.errorMessage$.next(this.appText$.value.errors.loginFailed);
       } else {
         this.sendToParentEmitter.emit({ type: 'LoginSuccess' })
       }

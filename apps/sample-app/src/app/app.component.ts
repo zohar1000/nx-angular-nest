@@ -5,6 +5,7 @@ import { AuthService } from './core/services/auth.service';
 import { AppEventType } from '@sample-app/shared/enums/app-event-type.enum';
 import { RouteChangeData } from 'ng-route-change';
 import { ServerResponse } from '@shared/models/server-response.model';
+import { TranslyOnText } from 'ngx-transly';
 
 // TODO: return user permissions in index.html in prod
 
@@ -16,10 +17,12 @@ import { ServerResponse } from '@shared/models/server-response.model';
 })
 export class AppComponent extends BaseComponent {
   @ViewChild('sidenav') sidenav;
+  @ViewChild('langSelect') langSelect;
   isSideNavOpened = false;
   isFullPage;
   isInitialized = false;
-  // userProfile: UserProfile = null;
+  langCode;
+  langs;
 
   constructor(public authService: AuthService) {
     super();
@@ -31,6 +34,12 @@ export class AppComponent extends BaseComponent {
         (response: ServerResponse) => this.authService.setUser(response.data),
         () => this.logout()
       ));
+  }
+
+  onTranslyText(data: TranslyOnText) {
+    super.onTranslyText(data);
+    this.langs = data.langs;
+    this.langCode = data.langCode;
   }
 
   onRouteChange(data: RouteChangeData) {
@@ -52,5 +61,9 @@ export class AppComponent extends BaseComponent {
   logout() {
     this.authService.clearUser();
     this.router.navigate(['/login']);
+  }
+
+  async onChangeLang() {
+    await this.translyService.setLang(this.langCode);
   }
 }

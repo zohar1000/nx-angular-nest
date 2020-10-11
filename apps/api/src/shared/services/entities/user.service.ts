@@ -1,16 +1,16 @@
-import { ZObj, ZString } from 'zshared';
+import { ZObj } from 'zshared';
 import { Injectable } from '@nestjs/common';
-// import { InjectModel }         from '@nestjs/mongoose';
 import { BaseEntityService } from '../../base-classes/base-entity.service';
 import { EncryptionService } from '../encryption.service';
 import { AddUserDto } from '../../../routes/user/dtos/add-user.dto';
 import { UserDoc } from '@shared/models/user-doc.model';
-import { ZMongoService } from 'zshared-server';
+import { ZMongoService, ZMongoInsertOneResponse } from 'zshared-server';
 import { UpdateUserDto } from '../../../routes/user/dtos/update-user.dto';
 import { RoleRate } from '@shared/consts/role.const';
 import { AuthUser } from '@api-app/shared/models/auth-user.model';
-import { AppText } from '@sample-app/shared/consts/app-texts.const';
+import { appText$ } from '@sample-app/shared/consts/app-text.const';
 import { EntityServiceResponse } from '@api-app/shared/models/entity-service-response.model';
+import { ztranslate } from '@sample-app/core/services/ztranslate.service';
 
 @Injectable()
 export class UserService extends BaseEntityService {
@@ -24,12 +24,12 @@ export class UserService extends BaseEntityService {
     return new Promise<EntityServiceResponse>(async (resolve, reject) => {
       try {
         if (RoleRate[authUser.role] < RoleRate[dto.role]) {
-          resolve({ isSuccess: false, message: AppText.errors.cannotOperateOnHigherRole });
+          resolve({ isSuccess: false, message: appText$.value.errors.cannotOperateOnHigherRole });
           return;
         }
         let userDoc: UserDoc = await this.findByEmail(dto.email);
         if (userDoc) {
-          resolve({ isSuccess: false, message: AppText.errors.alreadyUsedEmail });
+          resolve({ isSuccess: false, message: appText$.value.errors.alreadyUsedEmail });
           return;
         }
         userDoc = {
@@ -41,7 +41,7 @@ export class UserService extends BaseEntityService {
           password: this.encryptionService.getHashedPassword(dto.password),
           lastLoginTime: 0
         };
-        const response = await this.mongoService.insertOneAutoIncrement(this.FIRST_USER_ID, this.collectionName, userDoc);
+        const response = await this.mongoService.insertOneAutoIncrement(this.FIRST_USER_ID, this.collectionName, userDoc) as ZMongoInsertOneResponse;
         resolve({ isSuccess: true, data: this.getProfileFromDoc(userDoc), insertedId: response['insertedId'] });
       } catch (e) {
         this.logi('error adding user', e);
@@ -54,14 +54,14 @@ export class UserService extends BaseEntityService {
     return new Promise<EntityServiceResponse>(async (resolve, reject) => {
       try {
         const callerRoleRate = RoleRate[authUser.role];
-        if (callerRoleRate < RoleRate[dto.role]) {
-          resolve({ isSuccess: false, message: AppText.errors.cannotOperateOnHigherRole });
+        if (dto.role && callerRoleRate < RoleRate[dto.role]) {
+          resolve({ isSuccess: false, message: appText$.value.errors.cannotOperateOnHigherRole });
           return;
         }
         const userDoc: UserDoc = await this.findById(userId);
-        if (!userDoc) this.throw(ZString.replaceParams(AppText.errors.itemDoesNotExist, this.entityName));
+        if (!userDoc) this.throw(ztranslate(appText$.value.errors.itemDoesNotExist, { item: this.entityName }));
         if (callerRoleRate < RoleRate[userDoc.role]) {
-          resolve({ isSuccess: false, message: AppText.errors.cannotOperateOnHigherRole });
+          resolve({ isSuccess: false, message: appText$.value.errors.cannotOperateOnHigherRole });
           return;
         }
         const fields: any = ZObj.clone(dto);
@@ -85,11 +85,11 @@ export class UserService extends BaseEntityService {
         const callerRoleRate = RoleRate[authUser.role];
         const userDoc: UserDoc = await this.findById(userId);
         if (!userDoc) {
-          resolve({ isSuccess: false, message: ZString.replaceParams(AppText.errors.itemDoesNotExist, this.entityName) });
+          resolve({ isSuccess: false, message: ztranslate(appText$.value.errors.itemDoesNotExist, { item: this.entityName }) });
           return;
         }
         if (callerRoleRate < RoleRate[userDoc.role]) {
-          resolve({ isSuccess: false, message: AppText.errors.cannotOperateOnHigherRole });
+          resolve({ isSuccess: false, message: appText$.value.errors.cannotOperateOnHigherRole });
           return;
         }
         await this.deleteById(userId);

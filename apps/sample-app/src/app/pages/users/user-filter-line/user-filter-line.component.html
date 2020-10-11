@@ -1,5 +1,5 @@
-<div *ngIf="data" class="filter-line">
-  <span class="filter-label">Role:</span>
+<div *ngIf="data && (appText$ | async) as appText" class="filter-line">
+  <span class="filter-label">{{appText.pages.users.addUser.role}}:</span>
   <mat-form-field class="min-height">
     <mat-select #filterRole (selectionChange)="onChangeFilterField('role', filterRole.value)" [value]="filter.role">
       <mat-option *ngFor="let role of data.roles | keyvalue" [value]="role.key">
@@ -8,7 +8,7 @@
     </mat-select>
   </mat-form-field>
 
-  <span class="filter-label">Status:</span>
+  <span class="filter-label">{{appText.pages.users.addUser.status}}:</span>
   <mat-form-field class="min-height">
     <mat-select #filterStatus (selectionChange)="onChangeFilterField('status', filterStatus.value)" [value]="filter.status">
       <mat-option *ngFor="let status of data.statuses | keyvalue" [value]="status.key">

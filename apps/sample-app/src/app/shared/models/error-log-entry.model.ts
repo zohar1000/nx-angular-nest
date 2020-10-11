@@ -6,6 +6,6 @@ export interface ErrorLogEntry {
   message: string;
   eventName?: string;
   eventMessage?: string;
-  stack: string;
+  stack: string | undefined;
   additionalParams?: any[];
 }

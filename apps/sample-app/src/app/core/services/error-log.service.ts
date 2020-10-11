@@ -59,7 +59,7 @@ export class ErrorLogService {
     if (error) console.error(error);
     if (logEntry.additionalParams) {
       console.group(color + 'Additional params:');
-      logEntry.additionalParams.forEach(info => typeof(info) === 'object' ? print(SafeStringify(info, null, 0)) : print(info));
+      logEntry.additionalParams.forEach(info => typeof(info) === 'object' ? print(SafeStringify(info, undefined, 0)) : print(info));
       console.groupEnd();
     }
     console.warn(color + 'Stack trace');

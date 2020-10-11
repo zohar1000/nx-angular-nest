@@ -47,7 +47,7 @@ export class AppInterceptor extends BaseService implements HttpInterceptor {
             const refreshTokenResponse: RefreshTokenResponse = serverResponse.data;
             this.authService.storeAuthTokens(refreshTokenResponse);
             this.refreshToken$.next(refreshTokenResponse);
-            return next.handle(this.addToken(req, refreshTokenResponse.accessToken));
+            return next.handle(this.addToken(req, refreshTokenResponse.accessToken as string));
           }
           this.refreshToken$.next({ isSuccess: false });
           this.router.navigate(['/login']);
@@ -61,7 +61,7 @@ export class AppInterceptor extends BaseService implements HttpInterceptor {
           if (!response.isSuccess) {
             return this.showToastrAndReturnError(org401Error);
           } else {
-            return next.handle(this.addToken(req, response.accessToken));
+            return next.handle(this.addToken(req, response.accessToken as string));
           }
         }));
     }

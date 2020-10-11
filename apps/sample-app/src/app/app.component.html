@@ -2,50 +2,54 @@
 
 <router-outlet *ngIf="isFullPage" [ngRouterOutletComm]="{ type: 'parent', receiver: onChildEvent.bind(this) }"></router-outlet>
 
-<ng-container *transloco="let t">
 <mat-sidenav-container *ngIf="!isFullPage" class="container" [hasBackdrop]="true">
   <mat-sidenav #sidenav class="sidenav" mode="side" [(opened)]="isSideNavOpened">
     <mat-toolbar class="toolbar">
-      <div class="logo" (click)="onClickSidenavItem()">Logo</div>
+      <div class="logo" (click)="onClickSidenavItem()">{{appText$.value.navbar?.logo}}</div>
       <i class="material-icons" (click)="sidenav.close()">close</i>
     </mat-toolbar>
     <div class="content">
-      <button mat-menu-item (click)="onClickSidenavItem('/')"><i class="material-icons">dashboard</i>Dashboard</button>
-      <button mat-menu-item (click)="onClickSidenavItem('user')"><i class="material-icons">group</i>{{ t('sideNav.items.users') }}</button>
+      <button mat-menu-item (click)="onClickSidenavItem('/')"><i class="material-icons">dashboard</i>{{appText$.value.pages?.dashboard.title}}</button>
+      <button mat-menu-item (click)="onClickSidenavItem('user')"><i class="material-icons">group</i>{{appText$.value.pages?.users.title}}</button>
     </div>
   </mat-sidenav>
 
   <mat-sidenav-content class="main">
-    <mat-toolbar class="header">
+    <mat-toolbar *ngIf="(appText$ | async)?.navbar as navbarText" class="header">
       <div class="header-menu">
         <i *ngIf="!sidenav.opened" class="material-icons" (click)="sidenav.open()">menu</i>
-        <div class="title">Header</div>
+        <div class="title">{{navbarText.header}}</div>
       </div>
 
-      <!--  logged in  -->
-      <div *ngIf="authService.userProfile" class="account">
-        <i *ngIf="!sidenav.opened" class="material-icons" [matMenuTriggerFor]="userAccount">account_circle</i>
-        <mat-menu #userAccount="matMenu">
-          <div class="account-container">
-            <div class="account-header">
-              <div class="name">{{authService.userProfile.firstName}} {{authService.userProfile.lastName}}</div>
-              <div class="email">{{authService.userProfile.email}}</div>
+      <div class="header-info">
+        <mat-form-field class="lang min-width min-vertical" appearance="none">
+          <mat-select #langSelect (selectionChange)="onChangeLang()" [(value)]="langCode" class="weak-arrow">
+            <mat-option *ngFor="let lang of langs" [value]="lang.code">{{lang.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div *ngIf="authService.userProfile" class="account">
+          <i *ngIf="!sidenav.opened" class="material-icons" [matMenuTriggerFor]="userAccount">account_circle</i>
+          <mat-menu #userAccount="matMenu">
+            <div class="account-container">
+              <div class="account-header">
+                <div class="name">{{authService.userProfile.firstName}} {{authService.userProfile.lastName}}</div>
+                <div class="email">{{authService.userProfile.email}}</div>
+              </div>
+              <button mat-menu-item (click)="logout()">
+                <i class="material-icons">exit_to_app</i>
+                {{navbarText.logout}}
+              </button>
             </div>
-            <button mat-menu-item (click)="logout()">
-              <i class="material-icons">exit_to_app</i>
-              Logout
-            </button>
-          </div>
-        </mat-menu>
+          </mat-menu>
+        </div>
       </div>
-
     </mat-toolbar>
+
     <div class="page-container">
       <router-outlet></router-outlet>
     </div>
   </mat-sidenav-content>
 
 </mat-sidenav-container>
-</ng-container>
 
 <ngx-loading [show]="isSpinner"></ngx-loading>

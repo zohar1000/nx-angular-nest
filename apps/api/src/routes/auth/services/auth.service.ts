@@ -14,7 +14,7 @@ import { LocalStrategyResponse } from '@shared/models/local-strategy-response.mo
 import { UserProfile } from '@shared/models/user-profile.model';
 import { RefreshTokenResponse } from '@shared/models/refresh-token-response.model';
 import { ServerLoginResponse } from '@shared/models/server-login-response.model';
-import { AppText } from '@sample-app/shared/consts/app-texts.const';
+import { appText$ } from '@sample-app/shared/consts/app-text.const';
 
 @Injectable()
 export class AuthService extends BaseService {
@@ -48,14 +48,18 @@ export class AuthService extends BaseService {
   async login(dto: LoginDto, resp: LocalStrategyResponse) {
     return new Promise<ServerLoginResponse>(async (resolve, reject) => {
       try {
-        if (!resp.isLoginSuccess) resolve( { isSuccess: false, message: AppText.errors.loginFailed });
-        await this.userService.updateById(resp.userDoc._id, { lastLoginTime: Date.now()});
-        const profile: UserProfile = this.getAuthProfile(resp.userDoc);
-        const accessToken = await this.getAccessToken({ userId: resp.userDoc._id });
-        const refreshToken = await this.getRefreshToken({ userId: resp.userDoc._id });
-        resp.user = profile;
-        delete resp.userDoc;
-        resolve({ isSuccess: true, user: resp.user, accessToken, refreshToken });
+        if (!resp.isLoginSuccess) {
+          resolve( { isSuccess: false, message: appText$.value.errors.loginFailed });
+        } else {
+          const userDoc = resp.userDoc as UserDoc;
+          await this.userService.updateById(userDoc._id, { lastLoginTime: Date.now()});
+          const profile: UserProfile = this.getAuthProfile(userDoc);
+          const accessToken = await this.getAccessToken({ userId: userDoc._id });
+          const refreshToken = await this.getRefreshToken({ userId: userDoc._id });
+          resp.user = profile;
+          delete resp.userDoc;
+          resolve({ isSuccess: true, user: resp.user, accessToken, refreshToken });
+        }
       } catch (e) {
         this.loge('login failed', dto, e);
         reject(e);
@@ -135,7 +139,7 @@ export class AuthService extends BaseService {
   async validateUser(email: string, password: string): Promise<any> {
     return new Promise<LocalStrategyResponse>(async(resolve, reject) => {
       let message = '';
-      let userDoc: UserDoc;
+      let userDoc!: UserDoc;
       try {
         userDoc = await this.userService.findByEmail(email);
         if (!userDoc) {

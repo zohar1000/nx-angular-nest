@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { BaseComponent } from '@sample-app/shared/base-classes/base.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -6,10 +7,4 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardComponent implements OnInit {
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
-}
+export class DashboardComponent extends BaseComponent {}
