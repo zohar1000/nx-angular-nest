@@ -1,10 +1,9 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { AppText } from '@sample-app/shared/models/app-text.model';
 
 @Component({
   selector: 'app-lang-en',
-  template: '<div>LANG EN!!!!</div>',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  template: ''
 })
 export class LangEnComponent {
   language = 'English';
@@ -33,6 +32,7 @@ export class LangEnComponent {
       cannotOperateOnHigherRole: 'You cannot operate on a role higher than yours',
       itemDoesNotExist: '{item} does not exist',
       alreadyUsedEmail: 'The email address is already being used',
+      noInternetConnection: 'No internet connection'
     },
     success: {
       itemWasAdded: '{entity} {id} was added successfully',

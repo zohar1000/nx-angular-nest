@@ -25,7 +25,7 @@ export class ErrorLogService {
     const entry: ErrorLogEntry = this.getNewEntry(level, message);
     let error;
 
-    for (const [i, param] of params.entries()) {
+    for (const param of params) {
       if (param instanceof Error) {
         if (!error) error = param;
         entry.eventName = param.name;
@@ -52,7 +52,6 @@ export class ErrorLogService {
     const print = text => console.log(color + text);
 
     console.group(color + 'LOG EVENT MESSAGE  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-    const messages = [`Log Level: ${logEntry.severityLevel}`];
     if (logEntry.message) print(`Message: '${logEntry.message}'`);
     if (logEntry.eventName && logEntry.eventName !== 'Error') print(`Error event name: ${logEntry.eventName}`);
     if (logEntry.eventMessage) print(`Error event message: '${logEntry.eventMessage}'`);

@@ -5,7 +5,7 @@
       <form [formGroup]="form" (ngSubmit)="submit()">
         <p>
           <mat-form-field>
-            <input type="text" matInput placeholder="{{appText.general.email}}" [formControlName]="'email'">
+            <input type="text" matInput placeholder="{{appText.general.email}}" [formControlName]="'email'" autofocus>
           </mat-form-field>
         </p>
 

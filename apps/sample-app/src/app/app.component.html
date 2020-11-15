@@ -22,7 +22,7 @@
       </div>
 
       <div class="header-info">
-        <mat-form-field class="lang min-width min-vertical" appearance="none">
+        <mat-form-field class="lang min-width min-vertical" appearance="standard">
           <mat-select #langSelect (selectionChange)="onChangeLang()" [(value)]="langCode" class="weak-arrow">
             <mat-option *ngFor="let lang of langs" [value]="lang.code">{{lang.name}}</mat-option>
           </mat-select>

@@ -19,9 +19,10 @@ export class UserController extends BaseEntityController {
   }
 
   @Get('/temp1')
-  async temp1() {
+  async temp1(@Request() req) {
     try {
-      const response = await this.entityService.temp1();
+      // const response = await this.entityService.temp1();
+      const response = { url: req.url };
       return this.successResponse(response);
     } catch(e) {
       this.errorService.loge(`${this.constructor.name}: error getting page for ${this.entityName}`, e);

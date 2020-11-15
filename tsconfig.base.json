@@ -11,12 +11,17 @@
     "target": "es2015",
     "module": "esnext",
     "typeRoots": ["node_modules/@types"],
-    "lib": ["es2017", "dom"],
+    "lib": ["es2018", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "strictNullChecks": true,
     "baseUrl": ".",
     "suppressImplicitAnyIndexErrors": true,
+    "noUnusedLocals":true,
+    "noImplicitReturns": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "downlevelIteration": true,
     "paths": {
       "@nx-angular-nest/api-interfaces": ["libs/api-interfaces/src/index.ts"],
       "@nx-angular-nest/shared": ["libs/shared/src/index.ts"],
@@ -26,7 +31,10 @@
     }
   },
   "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": false
   },
   "exclude": ["node_modules", "tmp"]
 }

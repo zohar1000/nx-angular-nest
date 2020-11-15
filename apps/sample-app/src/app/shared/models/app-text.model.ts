@@ -24,6 +24,7 @@ export interface AppText {
     cannotOperateOnHigherRole: string;
     itemDoesNotExist: string;
     alreadyUsedEmail: string;
+    noInternetConnection: string;
   },
   success: {
     itemWasAdded: string;

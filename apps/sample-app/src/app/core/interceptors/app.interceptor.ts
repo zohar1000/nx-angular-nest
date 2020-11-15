@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, filter, switchMap, take } from 'rxjs/operators';
+import { catchError, filter, retry, switchMap, take } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { RefreshTokenResponse } from '@shared/models/refresh-token-response.model';
 import { AuthService } from '../services/auth.service';
-import { AppEventType } from '@sample-app/shared/enums/app-event-type.enum';
 import { BaseService } from '@sample-app/shared/base-classes/base.service';
-import { HttpStatusCodes } from '@shared/enums/http-status-codes.enum';
 import { ServerResponse } from '@shared/models/server-response.model';
 
 @Injectable({ providedIn: 'root' })
@@ -25,11 +23,12 @@ export class AppInterceptor extends BaseService implements HttpInterceptor {
     if (accessToken) req = this.addToken(req, accessToken);
 
     return next.handle(req).pipe(
+      retry(1),
       catchError(error => {
         if (error instanceof HttpErrorResponse && error.status === 401) {
           return this.handle401Error(error, req, next);
         } else {
-          return this.showToastrAndReturnError(error);
+          return throwError(error);
         }
       })
     );
@@ -59,7 +58,7 @@ export class AppInterceptor extends BaseService implements HttpInterceptor {
         take(1),
         switchMap((response: RefreshTokenResponse) => {
           if (!response.isSuccess) {
-            return this.showToastrAndReturnError(org401Error);
+            return throwError(org401Error);
           } else {
             return next.handle(this.addToken(req, response.accessToken as string));
           }
@@ -69,15 +68,5 @@ export class AppInterceptor extends BaseService implements HttpInterceptor {
 
   private addToken(req: HttpRequest<any>, accessToken: string) {
     return req.clone({ setHeaders: { Authorization: `Bearer ${accessToken}` } });
-  }
-
-  showToastrAndReturnError(error) {
-    this.appEventsService.sendAppEvent(AppEventType.HideAppSpinner);
-    let message;
-    if (error instanceof HttpErrorResponse) message = error?.error?.error?.message;
-    message = message || error.statusText;
-    if (error.status !== HttpStatusCodes.DefaultError) message = `Error ${error.status} - ${message}`;
-    this.toastrService.error(message);
-    return throwError(error);
   }
 }

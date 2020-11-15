@@ -1,6 +1,5 @@
 import { Directive, EventEmitter, Input, Output } from '@angular/core';
 import { BaseComponent } from './base.component';
-import { ListPageMetrics } from '@shared/models/list-page-metrics.model';
 
 // import { BaseTableService } from './base-table.service';
 

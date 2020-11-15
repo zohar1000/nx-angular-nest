@@ -33,6 +33,7 @@ export class LangEsComponent {
       cannotOperateOnHigherRole: 'You cannot operate on a role higher than yours',
       itemDoesNotExist: '{item} does not exist',
       alreadyUsedEmail: 'The email address is already being used',
+      noInternetConnection: 'No internet connection'
     },
     success: {
       itemWasAdded: '{entity} {id} was added successfully',

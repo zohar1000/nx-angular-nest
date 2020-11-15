@@ -1,7 +1,7 @@
 import { BaseEntityStore } from './base-entity.store';
 import { BaseComponent } from '@sample-app/shared/base-classes/base.component';
 import { ActivatedRoute } from '@angular/router';
-import { Directive, OnInit } from '@angular/core';
+import { Directive } from '@angular/core';
 import { RouteChangeData } from 'ng-route-change';
 import { PageType } from '@sample-app/shared/enums/page-type.enum';
 import { finalize, switchMap, tap } from 'rxjs/operators';
